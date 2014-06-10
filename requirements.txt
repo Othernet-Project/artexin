@@ -1,0 +1,4 @@
+nltk==2.0.4
+beautifulsoup4==4.3.2
+readability-lxml==0.3.0.3
+Pillow==2.4.0

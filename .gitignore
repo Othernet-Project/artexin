@@ -1,0 +1,6 @@
+*.sw[op]
+*.py[co]
+*.html
+*.png
+*.jpg
+/.vagrant
