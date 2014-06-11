@@ -235,11 +235,13 @@ def is_http_url(url):
         False
         >>> is_http_url('http://www.example.com/foo')
         True
+        >>> is_http_url('//www.example.com')
+        True
 
     :param url:     URL to test
     :returns:       True if URL is full url with scheme and FQDN
     """
-    return url.startswith('http://') or url.startswith('https://')
+    return any([url.startswith(i) for i in ('http://', 'https://', '//')])
 
 
 def full_url(base, rest):
