@@ -13,6 +13,7 @@ from __future__ import unicode_literals, print_function
 import re
 import urlparse
 import itertools
+from posixpath import join
 
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
@@ -164,44 +165,6 @@ def base_path(path):
     return '/'.join(comps)
 
 
-def join(path1, path2):
-    """ Join two paths and normalize them
-
-    Note that the ``join()`` function is different from Python's standard
-    ``posixpath.join()`` in that it always considers ``path2`` as being path
-    fragment that needs to be concatenated with ``path1``. This is demonstrated
-    by the following example::
-
-        >>> import posixpath
-        >>> posixpath.join('foo/bar', '/baz')
-        u'/baz'
-        >>> join('foo/bar', '/baz')
-        u'foo/bar/baz'
-
-    Another notable difference is that ``join()`` takes exactly two arguments,
-    whereas ``posixpath.join()`` takes one or more arguments.
-
-    Example::
-
-        >>> join('foo', 'bar')
-        u'foo/bar'
-        >>> join('foo', '../bar')
-        u'bar'
-        >>> join('foo/bar', '/baz')
-        u'foo/bar/baz'
-        >>> join('/', '/foo/bar')
-        u'/foo/bar'
-
-    :param path1:   Fragment of a URL path
-    :param path2:   Fragment of a URL path
-    :returns:       Normalized and concatenated path
-    """
-    import posixpath
-    full = path1 + '/' + path2
-    full = MULTISLASH.sub('/', full)
-    return normalize(full)
-
-
 def absolute_path(path, base):
     """ Return absolute path of ``path`` relative to ``base``
 
@@ -211,6 +174,8 @@ def absolute_path(path, base):
         u'/foo/bar/'
         >>> absolute_path('../foo1/bar1/baz1', '/foo/bar/baz')
         u'/foo/foo1/bar1/baz1'
+        >>> absolute_path('/foo/bar/baz', '/baz')
+        u'/foo/bar/baz'
 
     :param path:    Path for which to calculate the absolute path
     :param base:    Path on which the base the calculation
