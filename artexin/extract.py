@@ -18,7 +18,8 @@ from readability.readability import Document
 from bs4 import BeautifulSoup, Tag
 
 from htmlutils import get_cls
-from urlutils import split, join, absolute_path, is_http_url, full_url
+from urlutils import (split, join, absolute_path, is_http_url, full_url,
+                      normalize_scheme)
 from fetch import fetch_image
 
 
@@ -142,6 +143,7 @@ def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
     images = []  # image paths
     soup = BeautifulSoup(html)
     base, doc_path = split(base_url)
+    proto = base.split(':')[0]
 
     for img in soup.find_all('img'):
         src = img.get('src')
@@ -157,28 +159,27 @@ def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
             img.src = os.path.basename(images[idx])
             continue
 
-        imgpath = os.path.join(imgdir, 'image%04d' % len(images))
+        imgpath_base = os.path.join(imgdir, 'image%04d' % len(images))
 
         if is_http_url(src):
-            # External image URLs are used as they are
-            try:
-                images.append(fetch_image(src, imgpath)[1])
-            except Exception:
-                # FIXME: ``Exception`` might be a bit too broad
-                img.decompose()  # No usable image, so kill the tag
+            imgurl = normalize_scheme(src, proto)
         else:
-            # With internal images, we need to convert the image URL to an
-            # absolute URL
             imgurl = full_url(base, absolute_path(src, doc_path))
-            try:
-                imgpath = fetch_image(imgurl, imgpath)[1]
-                images.append(imgpath)
-            except Exception:
-                # FIXME: ``Exception`` might be a bit too broad
-                img.decompose()
-                continue
+
+        try:
+            imgpath = fetch_image(imgurl, imgpath_base)[1]
+            images.append(imgpath)
+        except Exception:
+            # FIXME: ``Exception`` might be a bit too broad
+            img.decompose()  # No usable image, so kill the tag
+            continue
+
+        # Rewrite the path to point to image
+        img['src'] = './%s' % os.path.basename(imgpath)
+
+        # Register as seen
         seen.append(src)
-    print(seen)
+
     return unicode(soup), images
 
 
@@ -271,24 +272,5 @@ def process_anchor(c, fn):
 
 if __name__ == '__main__':
     import doctest
-    from fetch import fetch_content
-    import shutil
-    #doctest.testmod()
+    doctest.testmod()
 
-    def writefiles(url, name, extractor=extract):
-        dirpath = os.path.join('/vagrant/', name)
-        htmlpath = os.path.join(dirpath, '%s.html' % name)
-        try:
-            os.mkdir(dirpath)
-        except OSError:
-            pass
-        c = fetch_content(url)
-        title, html = extractor(c)
-        html, images = process_images(html, url, dirpath)
-        f = open(htmlpath, 'w')
-        f.write(html.encode('utf-8', errors='remove'))
-        f.close()
-
-
-    writefiles('http://en.wikipedia.org/wiki/Sunflower', 'sunflower',
-               extractor=extract_wikipedia)
