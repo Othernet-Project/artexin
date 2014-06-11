@@ -13,12 +13,13 @@ from __future__ import unicode_literals, print_function
 import re
 import urlparse
 import itertools
+from posixpath import join
 
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
 __version__ = 0.1
 __all__ = ('mask', 'split', 'normalize', 'base_path', 'join', 'absolute_path',
-           'is_http_url',)
+           'is_http_url', 'normalize_scheme',)
 
 
 MULTISLASH = re.compile(r'\/+')
@@ -164,44 +165,6 @@ def base_path(path):
     return '/'.join(comps)
 
 
-def join(path1, path2):
-    """ Join two paths and normalize them
-
-    Note that the ``join()`` function is different from Python's standard
-    ``posixpath.join()`` in that it always considers ``path2`` as being path
-    fragment that needs to be concatenated with ``path1``. This is demonstrated
-    by the following example::
-
-        >>> import posixpath
-        >>> posixpath.join('foo/bar', '/baz')
-        u'/baz'
-        >>> join('foo/bar', '/baz')
-        u'foo/bar/baz'
-
-    Another notable difference is that ``join()`` takes exactly two arguments,
-    whereas ``posixpath.join()`` takes one or more arguments.
-
-    Example::
-
-        >>> join('foo', 'bar')
-        u'foo/bar'
-        >>> join('foo', '../bar')
-        u'bar'
-        >>> join('foo/bar', '/baz')
-        u'foo/bar/baz'
-        >>> join('/', '/foo/bar')
-        u'/foo/bar'
-
-    :param path1:   Fragment of a URL path
-    :param path2:   Fragment of a URL path
-    :returns:       Normalized and concatenated path
-    """
-    import posixpath
-    full = path1 + '/' + path2
-    full = MULTISLASH.sub('/', full)
-    return normalize(full)
-
-
 def absolute_path(path, base):
     """ Return absolute path of ``path`` relative to ``base``
 
@@ -211,6 +174,8 @@ def absolute_path(path, base):
         u'/foo/bar/'
         >>> absolute_path('../foo1/bar1/baz1', '/foo/bar/baz')
         u'/foo/foo1/bar1/baz1'
+        >>> absolute_path('/foo/bar/baz', '/baz')
+        u'/foo/bar/baz'
 
     :param path:    Path for which to calculate the absolute path
     :param base:    Path on which the base the calculation
@@ -235,11 +200,13 @@ def is_http_url(url):
         False
         >>> is_http_url('http://www.example.com/foo')
         True
+        >>> is_http_url('//www.example.com')
+        True
 
     :param url:     URL to test
     :returns:       True if URL is full url with scheme and FQDN
     """
-    return url.startswith('http://') or url.startswith('https://')
+    return any([url.startswith(i) for i in ('http://', 'https://', '//')])
 
 
 def full_url(base, rest):
@@ -269,6 +236,23 @@ def full_url(base, rest):
     rest = urlparse.urlparse(rest)
     return urlparse.urlunparse(base[:2] + rest[2:])
 
+
+def normalize_scheme(url, scheme='http'):
+    """ Normalize URL so it has a scheme if it is a mutli-scheme URL
+
+    Example::
+
+        >>> normalize_scheme('http://www.example.com', 'http')
+        u'http://www.example.com'
+        >>> normalize_scheme('//example.com', 'http')
+        u'http://example.com'
+
+    :param url:     URL to be normalized
+    :param scheme:  Scheme to use for the URL
+    """
+    if url.startswith('//'):
+        return scheme + ':' + url
+    return url
 
 if __name__ == '__main__':
     import doctest

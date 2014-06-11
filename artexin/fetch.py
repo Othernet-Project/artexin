@@ -11,18 +11,24 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 from __future__ import unicode_literals
 
 import os
+import shutil
 from urllib2 import urlopen
 from cStringIO import StringIO
 import tempfile
+import time
 
 from bs4 import BeautifulSoup
 from PIL import Image
+from selenium import webdriver
 
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
 __version__ = 0.1
-__all__ = ('fetch_content', 'get_parsed', 'get_title')
+__all__ = ('fetch_content', 'fetch_rendered', 'fetch_image', 'get_parsed',
+           'get_title')
 
+
+AJAX_TIMEOUT = 5  # 5 seconds
 
 IEXTENSIONS = {  # Image file extensions
     'BMP':   '.bmp',
@@ -65,6 +71,39 @@ def fetch_content(url):
     return urlopen(url).read()
 
 
+def fetch_rendered(url):
+    """ Fetch content using headless browser
+
+    The difference between this function and ``fetch_content()`` is that this
+    function will render the page using QT4 WebKit browser instead of simply
+    donwloading the HTML. This function is therefore more resource-intensive,
+    but yields better results for pages that use JavaScript to modify the DOM
+    in a significant way (loads relevant images or content, for instance).
+
+    Let's compare the output of ``fetch_content()`` and ``fetch_rendered()``
+    using a test page for Crowbar software::
+
+        >>> url = 'http://simile.mit.edu/crowbar/test.html'
+        >>> c = fetch_content(url)
+        >>> s = BeautifulSoup(c)
+        >>> s.h1.string
+        u'Hi lame crawler'
+        >>> c = fetch_rendered(url)
+        >>> s = BeautifulSoup(c)
+        >>> s.h1.string
+        u'Hi Crowbar!'
+
+    :param url:     Document's URL
+    :returns:       Document contents as bytestring
+    """
+    driver = webdriver.PhantomJS()
+    driver.get(url)
+    time.sleep(AJAX_TIMEOUT)  # Wait for AJAX events to occur
+    html = driver.page_source
+    driver.quit  # This is correct usage, not a function call by design
+    return html
+
+
 def fetch_image(url, path):
     """ Fetches image from given URL
 
@@ -104,6 +143,7 @@ def fetch_image(url, path):
     tmp = tempfile.NamedTemporaryFile(delete=False)
     tmp.write(content)
     tmp.close()
+    assert os.path.exists(tmp.name), 'Missing temp file %s' % tmp.name
 
     # Open the content as image and deduce its format
     img = Image.open(StringIO(content))
@@ -112,7 +152,9 @@ def fetch_image(url, path):
 
     # Calculate the full path of the image and move the temporary file there
     full_path = "%s%s" % (path, IEXTENSIONS[fmt])
-    os.rename(tmp.name, full_path)
+    shutil.move(tmp.name, full_path)
+    assert os.path.exists(full_path), 'Missing image at %s' % full_path
+    assert not os.path.exists(tmp.name), 'Temp file not removed'
 
     return fmt, full_path
 
