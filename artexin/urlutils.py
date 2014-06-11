@@ -18,7 +18,7 @@ import itertools
 __author__ = 'Outernet Inc <branko@outernet.is>'
 __version__ = 0.1
 __all__ = ('mask', 'split', 'normalize', 'base_path', 'join', 'absolute_path',
-           'is_http_url',)
+           'is_http_url', 'normalize_scheme',)
 
 
 MULTISLASH = re.compile(r'\/+')
@@ -271,6 +271,23 @@ def full_url(base, rest):
     rest = urlparse.urlparse(rest)
     return urlparse.urlunparse(base[:2] + rest[2:])
 
+
+def normalize_scheme(url, scheme='http'):
+    """ Normalize URL so it has a scheme if it is a mutli-scheme URL
+
+    Example::
+
+        >>> normalize_scheme('http://www.example.com', 'http')
+        u'http://www.example.com'
+        >>> normalize_scheme('//example.com', 'http')
+        u'http://example.com'
+
+    :param url:     URL to be normalized
+    :param scheme:  Scheme to use for the URL
+    """
+    if url.startswith('//'):
+        return scheme + ':' + url
+    return url
 
 if __name__ == '__main__':
     import doctest
