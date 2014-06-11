@@ -28,7 +28,7 @@ DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
 DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential python \
   python-setuptools python-dev python-lxml libjpeg8 libjpeg8-dev zlib1g \
   zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.5-dev tk8.5-dev \
-  python-tk
+  python-tk phantomjs
 
 # Setup Python libraries
 echo "Installing dependencies"
@@ -40,12 +40,24 @@ pip install -r "$SRCDIR/dev_requirements.txt"
 echo "Installing NLTK corpus data (please be patient)"
 python -m nltk.downloader all
 
+# Set up the runtest script
 echo "Set up scripts"
 if [[ ! -f "$BINDIR/runtests" ]]; then
 	ln -s $SRCDIR/scripts/runtests.sh /usr/local/bin/runtests
 fi
 
-if [[ ! -f "$ARFILE" ]]; then
+# Add /usr/local/bin to vagrant user's PATH
+if [[ ! -f "${ARFILE}_0.1" ]]; then
 	echo 'export PATH=$PATH:/usr/local/bin' >> /home/vagrant/.bashrc
-	touch "$ARFILE"
+	touch "${ARFILE}_0.1"
 fi
+
+# Create and start PhantomJS WebDriver service on port 8910
+if [[ ! -f "/etc/init/phantom" ]]; then
+    cat <<<EOF
+    start on started networking
+    stop on shutdown
+    exec /usr/bin/phantomjs --webdriver=127.0.0.1:8910
+    EOF > /etc/init/phantom
+fi
+service phantom start
