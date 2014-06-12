@@ -52,8 +52,26 @@ def extract(html):
     :param html:    String containing the HTML document
     :returns:       Two-tuple containing document title and article body
     """
+    # Extract article
     doc = Document(html)
-    return (doc.title(), doc.summary())
+
+    # Create basic <head> tag with <title> and charset tags
+    clean_html = doc.summary()
+    soup = BeautifulSoup(clean_html)
+    head = soup.new_tag('head')
+    title = soup.new_tag('title')
+    title.string = doc.title()
+    meta_charset = soup.new_tag('meta', charset='utf-8')
+    meta_equiv = soup.new_tag('meta', content="text/html; charset='utf-8'")
+    meta_equiv['name'] = 'http-equiv'  # new_tag() doesn't allow 'name' kwarg
+    soup.html.insert(0, head)
+    soup.head.append(meta_charset)
+    soup.head.append(meta_equiv)
+    soup.head.append(title)
+
+    # Add doctype
+    final = '<!DOCTYPE html>\n' + soup.prettify()
+    return (doc.title(), final)
 
 
 def extract_wikipedia(html):
