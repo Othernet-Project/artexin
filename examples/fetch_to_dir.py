@@ -19,7 +19,8 @@ import time
 sys.path.insert(0, up(up(abspath(__file__))))
 
 from artexin.fetch import fetch_rendered
-from artexin.extract import extract, extract_wikipedia, process_images
+from artexin.preprocessors import pp_wikipedia
+from artexin.extract import extract, process_images
 
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
@@ -28,26 +29,26 @@ __version__ = 0.1
 
 PAGES = [
     ('http://www.nasa.gov/press/2014/may/nasa-releases-earth-day-global-selfie-mosaic-of-our-home-planet',
-     'nasa_selfies',
-     extract),
+     'nasa_selfies'),
     ('http://en.wikipedia.org/wiki/Sunflower',
      'sunflower',
-     extract_wikipedia),
+     [pp_wikipedia]),
     ('http://en.wikipedia.org/wiki/Logarithm',
      'logarithm',
-     extract_wikipedia),
+     [pp_wikipedia]),
     ('http://freepythontips.wordpress.com/2013/07/30/20-python-libraries-you-cant-live-without/',
-     '20_python_libs',
-     extract)
+     '20_python_libs')
 ]
 
-def writefiles(url, name, extractor=extract):
+def writefiles(url, name, preprocessors=[]):
     dirpath = os.path.join('/vagrant/', name)
     htmlpath = os.path.join(dirpath, '%s.html' % name)
     print("Fetching `%s`" % url)
     c = fetch_rendered(url)
     print("Processing HTML")
-    title, html = extractor(c)
+    for p in preprocessors:
+        c = p(c)
+    title, html = extract(c)
     try:
         os.mkdir(dirpath)
     except OSError:
