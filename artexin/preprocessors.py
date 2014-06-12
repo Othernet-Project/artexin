@@ -78,12 +78,48 @@ def pp_wikipedia(html):
         soup.body.clear()
         soup.body.append(artbody)
 
+    # Strip [EDIT] links
     for tag in soup.find_all('span', {'class': 'mw-editsection'}):
-        # Strip [EDIT] links
         tag.decompose()
 
-    for anchor in soup.find_all('a', {'title': 'Enlarge'}):
-        anchor.decompose()
+    # Strip links to larger image
+    for tag in soup.find_all('a', {'class': 'image'}):
+        tag.unwrap()
+
+    # Strip magnify icon
+    for tag in soup.find_all('div', {'class': 'magnify'}):
+        tag.decompose()
+
+    # Convert all div.thumbcaption to p.thumbcaption
+    for tag in soup.find_all('div', {'class': 'thumbcaption'}):
+        tag.wrap(soup.new_tag('p'))
+        tag.unwrap()
+
+    # Remove all internal wiki links
+    for tag in soup.find_all('a'):
+        if tag.get('href', '').startswith('/wiki/'):
+            tag.unwrap()
+
+    # Remove create new page link
+    for tag in soup.find_all('a', {'class': 'new'}):
+        if tag.get('href', '').startswith('/w/index.php'):
+            tag.unwrap()
+
+    # Remove navbox
+    for tag in soup.find_all('table', {'class': 'navbox'}):
+        tag.decompose()
+
+    # Remove wiki metadata
+    for tag in soup.find_all('table', {'class': 'metadata'}):
+        tag.decompose()
+
+    # Remove small plainlinks
+    for tag in soup.find_all('table', {'class': 'plainlinks'}):
+        tag.decompose()
+
+    # Remove hat notes
+    for tag in soup.find_all('div', {'class': 'hatnote'}):
+        tag.decompose()
 
     return unicode(soup)
 
