@@ -31,7 +31,7 @@ __all__ = ('extract', 'extract_wikipedia', 'process_image')
 PROCESSED_IMG_DIR = tempfile.gettempdir()
 
 
-def extract(html):
+def extract(html, **kwargs):
     """ Extract an article from given URL
 
     Example::
@@ -49,11 +49,12 @@ def extract(html):
         >>> '<div id="navigation">' in s
         False
 
-    :param html:    String containing the HTML document
-    :returns:       Two-tuple containing document title and article body
+    :param html:        String containing the HTML document
+    :param **kwargs:    Extra arguments for readability's ``Document()`` class
+    :returns:           Two-tuple containing document title and article body
     """
     # Extract article
-    doc = Document(html)
+    doc = Document(html, **kwargs)
 
     # Create basic <head> tag with <title> and charset tags
     clean_html = doc.summary()
@@ -74,7 +75,7 @@ def extract(html):
     return (doc.title(), final)
 
 
-def extract_wikipedia(html):
+def extract_wikipedia(html, **kwargs):
     """ Extract Wikipedia article
 
     None of the article extractions libraries managed to extract the complete
@@ -95,8 +96,9 @@ def extract_wikipedia(html):
         >>> '<a href="/w/index.php?title=Sunflower&amp' in s
         False
 
-    :param html:    String containing the HTML document
-    :returns:       Two-tuple containing document title and article body
+    :param html:        String containing the HTML document
+    :param **kwargs:    Extra arguments for readability's ``Document()`` class
+    :returns:           Two-tuple containing document title and article body
     """
     soup = BeautifulSoup(html)
 
@@ -116,7 +118,7 @@ def extract_wikipedia(html):
         # Strip [EDIT] links
         tag.decompose()
 
-    return extract(unicode(soup))
+    return extract(unicode(soup), **kwargs)
 
 
 def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
