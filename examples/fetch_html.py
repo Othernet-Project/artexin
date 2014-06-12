@@ -6,6 +6,8 @@ and extract relevant text from a single web page. The page is chosen to contain
 a significant amount of boilerplate template code but no significant
 JavaScript.
 
+Also demonstrates the use of extra keyword arguments in ``extract()`` call.
+
 Copyright 2014, Outernet Inc.
 Some rights reserved.
 
@@ -30,8 +32,9 @@ __version__ = 0.1
 
 if __name__ == '__main__':
     start = time.time()
-    c = fetch_content('http://www.html-5-tutorial.com/all-html-tags.htm')
-    title, html = extract(c)
+    url = 'http://www.html-5-tutorial.com/all-html-tags.htm'
+    c = fetch_content(url)
+    title, html = extract(c, url=url)
     print("Fetched `%s`" % title)
     f = open('/vagrant/test.html', 'w')
     f.write(html.encode('utf-8'))
