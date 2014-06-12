@@ -25,7 +25,7 @@ from fetch import fetch_image
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
 __version__ = 0.1
-__all__ = ('extract', 'extract_wikipedia', 'process_image')
+__all__ = ('extract', 'process_image',)
 
 
 PROCESSED_IMG_DIR = tempfile.gettempdir()
@@ -73,52 +73,6 @@ def extract(html, **kwargs):
     # Add doctype
     final = '<!DOCTYPE html>\n' + soup.prettify()
     return (doc.title(), final)
-
-
-def extract_wikipedia(html, **kwargs):
-    """ Extract Wikipedia article
-
-    None of the article extractions libraries managed to extract the complete
-    Wikipedia article with all relevant parts intact. Because of this, we
-    decided to implement a separate extraction method for Wikipedia articles
-    that address some of the issues (e.g., Missing H1 tag).
-
-    Example:
-
-        >>> from fetch import fetch_content
-        >>> c = fetch_content('http://en.wikipedia.org/wiki/Sunflower')
-        >>> t, s = extract_wikipedia(c)
-        >>> f = open('/vagrant/sunflower.html', 'w')
-        >>> f.write(s.encode('utf-8'))
-        >>> f.close()
-        >>> '<h1>Sunflower</h1>' in s
-        True
-        >>> '<a href="/w/index.php?title=Sunflower&amp' in s
-        False
-
-    :param html:        String containing the HTML document
-    :param **kwargs:    Extra arguments for readability's ``Document()`` class
-    :returns:           Two-tuple containing document title and article body
-    """
-    soup = BeautifulSoup(html)
-
-    # Move H1 into article body container and extract the body container
-    title = soup.new_tag('h1')
-    title.string = soup.h1.string
-    artbody = soup.find('div', {'id': 'mw-content-text'})
-    if artbody:
-        # There is a body, so we can use it to replace the entire contents of
-        # the <body> tag.
-        artbody.insert(0, title)
-        artbody.extract()
-        soup.body.clear()
-        soup.body.append(artbody)
-
-    for tag in soup.find_all('span', {'class': 'mw-editsection'}):
-        # Strip [EDIT] links
-        tag.decompose()
-
-    return extract(unicode(soup), **kwargs)
 
 
 def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
