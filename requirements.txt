@@ -3,3 +3,4 @@ beautifulsoup4==4.3.2
 readability-lxml==0.3.0.3
 Pillow==2.4.0
 selenium==2.42.1
+simplejson==3.5.2
