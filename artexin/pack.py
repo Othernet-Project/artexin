@@ -70,8 +70,6 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
     :param keep_dir:    Keep the directory in which content was collected
     :returns:           Full path of the newly created zipball
     """
-    meta['url'] = url
-    meta['domain'] = urlparse.urlparse(url)[1]
 
     # Create the destination directory
     md5 = hashlib.md5()
@@ -84,16 +82,23 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
 
     # Fetch and prepare the HTML
     page = fetch_rendered(url)
-    meta['timestamp'] = datetime.datetime.utcnow().isoformat()
+    timestamp = datetime.datetime.utcnow().isoformat()
     for preprocessor in prep:
         page = preprocessor(page)
-    meta['title'], html = extract(page)
+    title, html = extract(page)
     html = strip_links(html)
 
     # Process images
     html, images = process_images(html, url, imgdir=dest)
 
     # Write file metadata
+    meta.update({
+        'url': url,
+        'domain': urlparse.urlparse(url)[1],
+        'timestamp': timestamp,
+        'title': title,
+        'images': len(images),
+    })
     with open(os.path.join(dest, 'info.json'), 'w') as f:
         f.write(json.dumps(meta, indent=2))
 
@@ -109,7 +114,7 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
     if not keep_dir:
         shutil.rmtree(dest)
 
-    return zippath
+    return zippath, html, images, meta
 
 
 if __name__ == '__main__':
