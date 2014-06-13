@@ -53,11 +53,11 @@ if [[ ! -f "${ARFILE}_0.1" ]]; then
 fi
 
 # Create and start PhantomJS WebDriver service on port 8910
-if [[ ! -f "/etc/init/phantom" ]]; then
-    cat <<<EOF
-    start on started networking
-    stop on shutdown
-    exec /usr/bin/phantomjs --webdriver=127.0.0.1:8910
-    EOF > /etc/init/phantom
+if [[ ! -f "/etc/init/phantom.conf" ]]; then
+cat > /etc/init/phantom.conf <<EOF
+start on started networking
+stop on shutdown
+exec /usr/bin/phantomjs --webdriver=127.0.0.1:8910
+EOF
 fi
 service phantom start
