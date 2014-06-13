@@ -20,7 +20,7 @@ sys.path.insert(0, up(up(abspath(__file__))))
 
 from artexin.fetch import fetch_rendered
 from artexin.preprocessors import pp_wikipedia
-from artexin.extract import extract, process_images
+from artexin.extract import extract, process_images, strip_links
 
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
@@ -55,6 +55,8 @@ def writefiles(url, name, preprocessors=[]):
         pass
     print("Processing and downloading images")
     html, images = process_images(html, url, dirpath)
+    print("Stripping links")
+    html = strip_links(html)
     print("Page has %s images" % len(images))
     print("Writing HTML to %s" % htmlpath)
     f = open(htmlpath, 'w')

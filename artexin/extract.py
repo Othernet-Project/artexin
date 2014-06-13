@@ -25,7 +25,7 @@ from fetch import fetch_image
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
 __version__ = 0.1
-__all__ = ('extract', 'process_image',)
+__all__ = ('extract', 'process_image', 'strip_links',)
 
 
 PROCESSED_IMG_DIR = tempfile.gettempdir()
@@ -39,10 +39,7 @@ def extract(html, **kwargs):
         >>> from fetch import fetch_content
         >>> c = fetch_content('http://hetland.org/writing/instant-hacking.html')
         >>> t, s = extract(c)
-        >>> f = open('/vagrant/instant.html', 'w')
-        >>> f.write(s.encode('utf-8'))
-        >>> f.close()
-        >>> '<h1>What is Programming?</h1>' in s
+        >>> 'What is Programming?' in s
         True
         >>> '<a href="./../research">Research</a>' in s
         False
@@ -155,6 +152,25 @@ def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
         seen.append(src)
 
     return unicode(soup), images
+
+
+def strip_links(html):
+    """ Strips all links that don't point to fragments
+
+    Example::
+
+        >>> html = '<html><body><a href="/foo">foo</a></body></html>'
+        >>> strip_links(html)
+        u'<html><body>foo</body></html>'
+
+    :param html:    HTML source
+    :returns:       Processed HTML
+    """
+    soup = BeautifulSoup(html)
+    for tag in soup.find_all('a'):
+        if not tag.get('href', '').startswith('#'):
+            tag.unwrap()
+    return unicode(soup)
 
 
 if __name__ == '__main__':
