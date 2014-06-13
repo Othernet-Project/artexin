@@ -25,7 +25,7 @@ from fetch import fetch_image
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
 __version__ = 0.1
-__all__ = ('extract', 'process_image', 'strip_links',)
+__all__ = ('extract', 'process_images', 'strip_links',)
 
 
 PROCESSED_IMG_DIR = tempfile.gettempdir()
