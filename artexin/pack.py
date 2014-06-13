@@ -14,6 +14,12 @@ import zipfile
 import hashlib
 import tempfile
 import datetime
+import urlparse
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 from fetch import fetch_rendered
 from extract import *
@@ -48,7 +54,7 @@ def zipdir(path, dirpath):
         zipball.testzip()
 
 
-def collect(url, prep=[], base_dir=BASE_DIR, keep_dir=False):
+def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
     """ Collect at ``url`` into a directory within ``base_dir`` and zip it
 
     The directory is created within ``base_dir`` that is named after the md5
@@ -59,10 +65,14 @@ def collect(url, prep=[], base_dir=BASE_DIR, keep_dir=False):
     :param url:         Identifier for the batch (usually URL of the page)
     :param prep:        Iterable containing HTML preprocessors from
                         ``artexin.preprocessors``
+    :param meta:        Document extra metadata
     :param base_dir:    Base directory in which to operate
     :param keep_dir:    Keep the directory in which content was collected
     :returns:           Full path of the newly created zipball
     """
+    meta['url'] = url
+    meta['domain'] = urlparse.urlparse(url)[1]
+
     # Create the destination directory
     md5 = hashlib.md5()
     md5.update(url)
@@ -74,18 +84,18 @@ def collect(url, prep=[], base_dir=BASE_DIR, keep_dir=False):
 
     # Fetch and prepare the HTML
     page = fetch_rendered(url)
-    timestamp = datetime.datetime.utcnow().strftime(TS_FORMAT)
+    meta['timestamp'] = datetime.datetime.utcnow().isoformat()
     for preprocessor in prep:
         page = preprocessor(page)
-    title, html = extract(page)
+    meta['title'], html = extract(page)
     html = strip_links(html)
 
     # Process images
     html, images = process_images(html, url, imgdir=dest)
 
     # Write file metadata
-    with open(os.path.join(dest, 'info.txt'), 'w') as f:
-        f.write(('%s\n%s\n' % (title, timestamp)).encode('utf-8'))
+    with open(os.path.join(dest, 'info.json'), 'w') as f:
+        f.write(json.dumps(meta, indent=2))
 
     # Write the HTML file
     with open(os.path.join(dest, 'index.html'), 'w') as f:
