@@ -39,10 +39,7 @@ def extract(html, **kwargs):
         >>> from fetch import fetch_content
         >>> c = fetch_content('http://hetland.org/writing/instant-hacking.html')
         >>> t, s = extract(c)
-        >>> f = open('/vagrant/instant.html', 'w')
-        >>> f.write(s.encode('utf-8'))
-        >>> f.close()
-        >>> '<h1>What is Programming?</h1>' in s
+        >>> 'What is Programming?' in s
         True
         >>> '<a href="./../research">Research</a>' in s
         False
