@@ -29,6 +29,7 @@ __all__ = ('fetch_content', 'fetch_rendered', 'fetch_image', 'get_parsed',
 
 
 AJAX_TIMEOUT = 5  # 5 seconds
+GHOST_LOG_PATH = '/dev/null'  # Set this to a file to enable logging
 
 IEXTENSIONS = {  # Image file extensions
     'BMP':   '.bmp',
@@ -96,7 +97,7 @@ def fetch_rendered(url):
     :param url:     Document's URL
     :returns:       Document contents as bytestring
     """
-    driver = webdriver.PhantomJS()
+    driver = webdriver.PhantomJS(service_log_path=GHOST_LOG_PATH)
     driver.get(url)
     time.sleep(AJAX_TIMEOUT)  # Wait for AJAX events to occur
     html = driver.page_source
