@@ -34,7 +34,7 @@ PAGES = [
 
 if __name__ == '__main__':
     start = time.time()
-    results = batch(PAGES, base_dir='/vagrant', max_procs=20)
+    results = batch(PAGES, base_dir='/vagrant', max_procs=8)
     took = time.time() - start
 
     for zip_path, html, images, meta in results:
