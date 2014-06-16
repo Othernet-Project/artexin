@@ -1,8 +1,10 @@
 """
-fetch_to_dir.py: Fetch specified pages into seaprate directories
+fetch_and_zip.py: Fetch specified pages and zip them up
 
-This demo script uses the low-level methods from the artexin package to fetch
-and extract articles from a few different pages on the web.
+This demo script uses the higher-level functions from ``artexin.pack`` module
+to fetch and zip up specified pages one by one. Also seee
+``fetch_and_zip_batch.py`` example for batch operation using an even
+higher-level API.
 
 Copyright 2014, Outernet Inc.
 Some rights reserved.
