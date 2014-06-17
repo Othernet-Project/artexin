@@ -75,8 +75,8 @@ def get_title(soup):
     :returns:       Document's title or None
     """
     try:
-        return next((e for e in [soup.title, soup.h1, soup.h2, soup.h3]
-                    if e is not None)).string
+        return str(next((e for e in [soup.title, soup.h1, soup.h2, soup.h3]
+                         if e is not None)).string)
     except StopIteration:
         return ''
 
