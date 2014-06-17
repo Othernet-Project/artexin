@@ -14,7 +14,7 @@ import zipfile
 import hashlib
 import tempfile
 import datetime
-import urlparse
+import urllib.parse as urlparse
 
 try:
     import simplejson as json
@@ -73,7 +73,7 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
 
     # Create the destination directory
     md5 = hashlib.md5()
-    md5.update(url)
+    md5.update(bytes(url, 'utf-8'))
     checksum = md5.hexdigest()
     dest = os.path.join(base_dir, checksum)
     if os.path.exists(dest):
@@ -104,7 +104,7 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
 
     # Write the HTML file
     with open(os.path.join(dest, 'index.html'), 'w') as f:
-        f.write(html.encode('utf-8'))
+        f.write(html)
 
     # Create a zip file
     zippath = os.path.join(base_dir, '%s.zip' % checksum)

@@ -15,10 +15,11 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 
 import sys
 import os
-from os.path import dirname as up, abspath
+from os.path import dirname as up, abspath, join
 import time
 
 sys.path.insert(0, up(up(abspath(__file__))))
+sys.path.insert(0, join(up(up(abspath(__file__))), 'artexin'))
 
 from artexin.pack import collect
 from artexin.preprocessor_mappings import get_preps
