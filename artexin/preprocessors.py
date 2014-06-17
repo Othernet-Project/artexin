@@ -8,8 +8,6 @@ This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
-from __future__ import unicode_literals, print_function
-
 from bs4 import BeautifulSoup
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
@@ -121,7 +119,7 @@ def pp_wikipedia(html):
     for tag in soup.find_all('div', {'class': 'hatnote'}):
         tag.decompose()
 
-    return unicode(soup)
+    return str(soup)
 
 
 if __name__ == '__main__':

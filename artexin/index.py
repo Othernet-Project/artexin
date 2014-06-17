@@ -8,10 +8,9 @@ This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
-from __future__ import unicode_literals
+import re
 
 import nltk
-import re
 
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
@@ -31,7 +30,7 @@ def fix_ws(s):
     Example::
 
         >>> fix_ws('This text contains a tab\\t and two newlines\\n\\n')
-        u'This text contains a tab and two newlines'
+        'This text contains a tab and two newlines'
 
     :param s:   sentence
     :returns:   string with normalized whitespace
@@ -45,9 +44,9 @@ def strip_period(t):
     Example::
 
         >>> strip_period('sentences.')
-        u'sentences'
+        'sentences'
         >>> strip_period('two')
-        u'two'
+        'two'
 
     :param t:   string token probably extracted using tokenizers
     :returns:   token with stripped trailing period
@@ -92,7 +91,7 @@ def split_sentences(t, tdata='nltkdata/tokenizers/punkt/english.pickle'):
 
         >>> t = "This is a paragraph. It has two sentences."
         >>> list(split_sentences(t))
-        [u'This is a paragraph.', u'It has two sentences.']
+        ['This is a paragraph.', 'It has two sentences.']
 
     :param t:       source text
 
@@ -109,7 +108,7 @@ def split_words(t, tdata='nltkdata/tokenizers/punkt/english.pickle'):
     Example::
 
         >>> list(split_words('This is a sample sentence, so to speak.'))
-        [u'This', u'is', u'a', u'sample', u'sentence', u'so', u'to', u'speak']
+        ['This', 'is', 'a', 'sample', 'sentence', 'so', 'to', 'speak']
 
     :param t:       source text
     :param tdata:   tokenizer data file path
@@ -150,7 +149,7 @@ def get_counts(sentences):
         # Get words that appear more than 5 times
         >>> tc = sorted(tc.items(), key=lambda x: (x[1], x[0]), reverse=True)
         >>> [i[0] for i in tc if i[1] > 5]
-        [u'the', u'of', u'that', u'to', u'and', u'was', u'she']
+        ['the', 'of', 'that', 'to', 'and', 'was', 'she']
 
         # See if some combination of words appear in a text
         >>> pc.get('the events', 0)

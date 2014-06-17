@@ -15,7 +15,9 @@
 
 set -e  # Halt on all errors
 
-EI="easy_install -q"
+EI="easy_install3 -q"
+PY="python3"
+PIP="pip"
 SRCDIR=/vagrant
 BINDIR=/usr/local/bin
 ARFILE=/var/artexin
@@ -25,20 +27,19 @@ apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
 
 # Install build requirements
-DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential python \
-  python-setuptools python-dev python-lxml libjpeg8 libjpeg8-dev zlib1g \
-  zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.5-dev tk8.5-dev \
-  python-tk phantomjs
+DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential python3 \
+  python3-setuptools python3-dev python3-lxml python3-tk python3-imaging \
+  phantomjs
 
 # Setup Python libraries
 echo "Installing dependencies"
 $EI pip
-pip install -r "$SRCDIR/requirements.txt"
-pip install -r "$SRCDIR/dev_requirements.txt"
+$PIP install -r "$SRCDIR/requirements.txt"
+$PIP install -r "$SRCDIR/dev_requirements.txt"
 
 # Install NLTK data files
 echo "Installing NLTK corpus data (please be patient)"
-python -m nltk.downloader all
+$PY -m nltk.downloader all
 
 # Set up the runtest script
 echo "Set up scripts"

@@ -18,10 +18,11 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 
 import sys
 import os
-from os.path import dirname as up, abspath
+from os.path import dirname as up, abspath, join
 import time
 
 sys.path.insert(0, up(up(abspath(__file__))))
+sys.path.insert(0, join(up(up(abspath(__file__))), 'artexin'))
 
 from artexin.fetch import fetch_content
 from artexin.extract import extract
@@ -36,8 +37,7 @@ if __name__ == '__main__':
     c = fetch_content(url)
     title, html = extract(c, url=url)
     print("Fetched `%s`" % title)
-    f = open('/vagrant/test.html', 'w')
-    f.write(html.encode('utf-8'))
-    f.close()
+    with open('/vagrant/test.html', 'w') as f:
+        f.write(html)
     print("Finished in %s seconds" % (time.time() - start))
 

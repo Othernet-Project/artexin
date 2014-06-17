@@ -8,10 +8,8 @@ This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
-from __future__ import unicode_literals, print_function
-
 import re
-import urlparse
+import urllib.parse as urlparse
 import itertools
 from posixpath import join
 
@@ -19,13 +17,13 @@ from posixpath import join
 __author__ = 'Outernet Inc <branko@outernet.is>'
 __version__ = 0.1
 __all__ = ('mask', 'split', 'normalize', 'base_path', 'join', 'absolute_path',
-           'is_http_url', 'normalize_scheme',)
+           'is_http_url', 'normalize_scheme', 'full_url')
 
 
 MULTISLASH = re.compile(r'\/+')
 FLIP = lambda x: 1 ^ x  # flips the bit in ``x`` (1 becomes 0, 0 becomes 1)
 ROOT_MASK = (1, 1, 0, 0, 0, 0)  # used with urlparse() results
-TAIL_MASK = map(FLIP, ROOT_MASK)  # reverse of ROOT_MASK
+TAIL_MASK = tuple(map(FLIP, ROOT_MASK))  # reverse of ROOT_MASK
 
 
 def mask(iterable, mask, empty=''):
@@ -47,7 +45,7 @@ def mask(iterable, mask, empty=''):
         >>> i = ['foo', 'bar', 'baz']
         >>> m = [0, 0, 1]
         >>> list(mask(i, m))
-        [u'', u'', u'baz']
+        ['', '', 'baz']
 
     :param iterable:    Iterable to be masked
     :param mask:        The mask iterable
@@ -55,7 +53,7 @@ def mask(iterable, mask, empty=''):
                         (default: empty string)
     :return:            Iterator containing masked values
     """
-    return itertools.imap(lambda x, y: y if x else empty, mask, iterable)
+    return tuple(map(lambda m, i: i if m else empty, mask, iterable))
 
 
 def split(url):
@@ -64,19 +62,19 @@ def split(url):
     Example::
 
         >>> split('http://example.com/foo')
-        (u'http://example.com', u'/foo')
+        ('http://example.com', '/foo')
         >>> split('/foo/bar')
-        (u'', u'/foo/bar')
+        ('', '/foo/bar')
         >>> split('https://user:pwd@www.test.com/foo/bar')
-        (u'https://user:pwd@www.test.com', u'/foo/bar')
+        ('https://user:pwd@www.test.com', '/foo/bar')
         >>> split('http://localhost/?foo=bar')
-        (u'http://localhost', u'/?foo=bar')
+        ('http://localhost', '/?foo=bar')
         >>> split('http://localhost/foo?bar=baz')
-        (u'http://localhost', u'/foo?bar=baz')
+        ('http://localhost', '/foo?bar=baz')
 
         # FIXME: This example does not work as expected, no idea why
         >>> split('http://localhost?foo=bar')
-        (u'http://localhost', u'/?foo=bar')
+        ('http://localhost', '/?foo=bar')
 
     :param url:     URL to strip the root from
     :returns:       path with root stripped
@@ -97,15 +95,15 @@ def normalize(path):
     Example::
 
         >>> normalize('a/../b')
-        u'b'
+        'b'
         >>> normalize('/foo/bar/../baz/./fam')
-        u'/foo/baz/fam'
+        '/foo/baz/fam'
         >>> normalize('../foo/bar')
-        u'../foo/bar'
+        '../foo/bar'
         >>> normalize('.././../foo/bar')
-        u'../../foo/bar'
+        '../../foo/bar'
         >>> normalize('.././../foo/../bar')
-        u'../../bar'
+        '../../bar'
 
     :param path:    Full path to resource
     :returns:       Normalized path
@@ -137,21 +135,21 @@ def base_path(path):
     Example::
 
         >>> base_path('/foo/bar/baz/')
-        u'/foo/bar/baz/'
+        '/foo/bar/baz/'
         >>> base_path('/foo/bar/baz')
-        u'/foo/bar/'
+        '/foo/bar/'
         >>> base_path('/')
-        u'/'
+        '/'
         >>> base_path('')
-        u'/'
+        '/'
         >>> base_path('foo')
-        u'/'
+        '/'
         >>> base_path('foo/bar')
-        u'foo/'
+        'foo/'
         >>> base_path('/foo/bar/../baz')
-        u'/foo/'
+        '/foo/'
         >>> base_path('../foo/fam/')
-        u'../foo/fam/'
+        '../foo/fam/'
 
     :param path:    Full path of the resource
     :returns:       The base path
@@ -171,11 +169,11 @@ def absolute_path(path, base):
     Example::
 
         >>> absolute_path('foo/bar/', '/')
-        u'/foo/bar/'
+        '/foo/bar/'
         >>> absolute_path('../foo1/bar1/baz1', '/foo/bar/baz')
-        u'/foo/foo1/bar1/baz1'
+        '/foo/foo1/bar1/baz1'
         >>> absolute_path('/foo/bar/baz', '/baz')
-        u'/foo/bar/baz'
+        '/foo/bar/baz'
 
     :param path:    Path for which to calculate the absolute path
     :param base:    Path on which the base the calculation
@@ -221,13 +219,13 @@ def full_url(base, rest):
     Example::
 
         >>> full_url('http://example.com', '/foo/bar')
-        u'http://example.com/foo/bar'
+        'http://example.com/foo/bar'
         >>> full_url('http://example.com/foo', '/foo/bar')
-        u'http://example.com/foo/bar'
+        'http://example.com/foo/bar'
         >>> full_url('http://example.com', 'foo/bar')
-        u'http://example.com/foo/bar'
+        'http://example.com/foo/bar'
         >>> full_url('', 'foo/bar')
-        u'foo/bar'
+        'foo/bar'
 
     :param base:    Base URL (scheme, domain)
     :param rest:    Rest of the url (path, query params, fragments, etc)
@@ -243,9 +241,9 @@ def normalize_scheme(url, scheme='http'):
     Example::
 
         >>> normalize_scheme('http://www.example.com', 'http')
-        u'http://www.example.com'
+        'http://www.example.com'
         >>> normalize_scheme('//example.com', 'http')
-        u'http://example.com'
+        'http://example.com'
 
     :param url:     URL to be normalized
     :param scheme:  Scheme to use for the URL
