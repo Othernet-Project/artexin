@@ -8,18 +8,15 @@ This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
-from __future__ import unicode_literals, print_function
-
-import urlparse
+import urllib.parse as urlparse
 import tempfile
 import os
 
-from readability.readability import Document
+from breadability.readable import Article
 from bs4 import BeautifulSoup, Tag
 
 from htmlutils import get_cls
-from urlutils import (split, join, absolute_path, is_http_url, full_url,
-                      normalize_scheme)
+from urlutils import *
 from fetch import fetch_image
 
 
@@ -31,7 +28,60 @@ __all__ = ('extract', 'process_images', 'strip_links',)
 PROCESSED_IMG_DIR = tempfile.gettempdir()
 
 
-def extract(html, **kwargs):
+def get_title(soup):
+    """ Get HTML title from the parsed document
+
+    Function will look at ``<title>``, and headings level 1 through 3 and use
+    the first tag that matches. If it finds no matching tag, it returns None.
+
+    Example::
+
+        >>> c = BeautifulSoup('''<html>
+        ... <head>
+        ... <title>Foo bar</title>
+        ... </head>
+        ... <body></body>
+        ... </html>''')
+        >>> str(get_title(c))
+        'Foo bar'
+
+        >>> c = BeautifulSoup('''<html>
+        ... <head></head>
+        ... <body><h1>Foo bar baz</h1></body>
+        ... </html>''')
+        >>> str(get_title(c))
+        'Foo bar baz'
+
+        >>> c = BeautifulSoup('''<html>
+        ... <head></head>
+        ... <body>
+        ... <h2>Foo bar baz 1</h2>
+        ... <h2>Foo bar baz 2</h2>
+        ... </body>
+        ... </html>''')
+        >>> str(get_title(c))
+        'Foo bar baz 1'
+
+        >>> c = BeautifulSoup('''<html>
+        ... <head></head>
+        ... <body>
+        ... <p>Foo bar baz</p>
+        ... </body>
+        ... </html>''')
+        >>> get_title(c)
+        ''
+
+    :param soup:    Soup object
+    :returns:       Document's title or None
+    """
+    try:
+        return next((e for e in [soup.title, soup.h1, soup.h2, soup.h3]
+                    if e is not None)).string
+    except StopIteration:
+        return ''
+
+
+def extract(html):
     """ Extract an article from given URL
 
     Example::
@@ -51,14 +101,15 @@ def extract(html, **kwargs):
     :returns:           Two-tuple containing document title and article body
     """
     # Extract article
-    doc = Document(html, **kwargs)
+    doc = Article(html, return_fragment=False)
 
     # Create basic <head> tag with <title> and charset tags
-    clean_html = doc.summary()
+    clean_html = doc.readable
     soup = BeautifulSoup(clean_html)
+    title_text = get_title(soup)
     head = soup.new_tag('head')
     title = soup.new_tag('title')
-    title.string = doc.title()
+    title.string = title_text
     meta_charset = soup.new_tag('meta', charset='utf-8')
     meta_equiv = soup.new_tag('meta', content="text/html; charset='utf-8'")
     meta_equiv['name'] = 'http-equiv'  # new_tag() doesn't allow 'name' kwarg
@@ -69,7 +120,7 @@ def extract(html, **kwargs):
 
     # Add doctype
     final = '<!DOCTYPE html>\n' + soup.prettify()
-    return (doc.title(), final)
+    return (title_text, final)
 
 
 def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
@@ -151,7 +202,7 @@ def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
         # Register as seen
         seen.append(src)
 
-    return unicode(soup), images
+    return str(soup), images
 
 
 def strip_links(html):
@@ -161,7 +212,7 @@ def strip_links(html):
 
         >>> html = '<html><body><a href="/foo">foo</a></body></html>'
         >>> strip_links(html)
-        u'<html><body>foo</body></html>'
+        '<html><body>foo</body></html>'
 
     :param html:    HTML source
     :returns:       Processed HTML
@@ -170,7 +221,7 @@ def strip_links(html):
     for tag in soup.find_all('a'):
         if not tag.get('href', '').startswith('#'):
             tag.unwrap()
-    return unicode(soup)
+    return str(soup)
 
 
 if __name__ == '__main__':

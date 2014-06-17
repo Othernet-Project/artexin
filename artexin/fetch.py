@@ -8,14 +8,12 @@ This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
-from __future__ import unicode_literals
-
 import os
 import shutil
-from urllib2 import urlopen
-from cStringIO import StringIO
+from io import BytesIO
 import tempfile
 import time
+from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 from PIL import Image
@@ -24,8 +22,7 @@ from selenium import webdriver
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
 __version__ = 0.1
-__all__ = ('fetch_content', 'fetch_rendered', 'fetch_image', 'get_parsed',
-           'get_title')
+__all__ = ('fetch_content', 'fetch_rendered', 'fetch_image', 'get_parsed')
 
 
 AJAX_TIMEOUT = 5  # 5 seconds
@@ -88,11 +85,11 @@ def fetch_rendered(url):
         >>> c = fetch_content(url)
         >>> s = BeautifulSoup(c)
         >>> s.h1.string
-        u'Hi lame crawler'
+        'Hi lame crawler'
         >>> c = fetch_rendered(url)
         >>> s = BeautifulSoup(c)
         >>> s.h1.string
-        u'Hi Crowbar!'
+        'Hi Crowbar!'
 
     :param url:     Document's URL
     :returns:       Document contents as bytestring
@@ -118,7 +115,7 @@ def fetch_image(url, path):
         >>> fmt
         'PNG'
         >>> full_path
-        u'/tmp/logo.png'
+        '/tmp/logo.png'
 
         # Trying to fetch non-existent image
         >>> url = 'http://nonexistent/'
@@ -132,7 +129,7 @@ def fetch_image(url, path):
         >>> fetch_image(url, '/tmp/nonimage')
         Traceback (most recent call last):
         ...
-        IOError: ...
+        OSError: cannot identify image
 
     :param url:     Image's URL
     :param path:    Image path without extension
@@ -147,7 +144,7 @@ def fetch_image(url, path):
     assert os.path.exists(tmp.name), 'Missing temp file %s' % tmp.name
 
     # Open the content as image and deduce its format
-    img = Image.open(StringIO(content))
+    img = Image.open(BytesIO(content))
     img.verify()  # caller will have to trap exceptions
     fmt = img.format
 
