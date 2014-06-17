@@ -81,7 +81,7 @@ def get_title(soup):
         return ''
 
 
-def extract(html):
+def extract(html, **kwargs):
     """ Extract an article from given URL
 
     Example::
@@ -101,7 +101,7 @@ def extract(html):
     :returns:           Two-tuple containing document title and article body
     """
     # Extract article
-    doc = Article(html, return_fragment=False)
+    doc = Article(html, return_fragment=False, **kwargs)
 
     # Create basic <head> tag with <title> and charset tags
     clean_html = doc.readable
