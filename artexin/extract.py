@@ -242,6 +242,7 @@ def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
 
     # Process all unique images
     imgdata = ((idx, url, imgdir) for idx, url in enumerate(urls))
+    # TODO: Make the following line branch off into separate (light) thread
     results = list(map(process_image, imgdata))
 
     # Update src in all image tags
