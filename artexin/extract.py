@@ -11,6 +11,7 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 import urllib.parse as urlparse
 import tempfile
 import os
+from itertools import repeat
 
 from breadability.readable import Article
 from bs4 import BeautifulSoup, Tag
@@ -123,6 +124,56 @@ def extract(html, **kwargs):
     return (title_text, final)
 
 
+def prepare_url(url, base, docpath):
+    """ Prepare image URL for processing
+
+    This function converts non-absolute URLs to absolute ones, and adds the
+    scheme to scheme-less (multi-scheme) URLs.
+
+        >>> prepare_url('/foo/bar', 'http://www.example.com', '/foo')
+
+    :param url:     URL
+    :param base:    Base URL of the document (FQDN)
+    :param docpath: Path of the document without the base
+    :result:        Prepared URL
+    """
+    proto = base.split(':')[0]
+    if is_http_url(url):
+        return normalize_scheme(url, proto)
+    return full_url(base, absolute_path(url, docpath))
+
+
+def process_image(data):
+    """ Download and process single image
+
+    :param data:    Tuple of image data (index, src URL, base URL of document)
+    :returns:       Either image path if image was successfully downloaded and
+                    stored, or ``None`` otherwise
+    """
+    idx, imgurl, imgdir = data
+    imgpath_base = os.path.join(imgdir, 'image%04d' % idx)
+    try:
+        imgpath = fetch_image(imgurl, imgpath_base)[1]
+        return imgpath
+    except Exception:
+        # FIXME: ``Exception`` might be a bit too broad
+        return None
+
+
+def imgsrc(path):
+    """ Get ``src`` attribute value from image path
+
+    Example::
+
+        >>> imgsrc('/tmp/foo.png')
+        './foo.png'
+
+    :param path:    Path of the image on disk
+    :returns:       Value for the ``src`` attribute
+    """
+    return './%s' % os.path.basename(path)
+
+
 def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
     """ Return list of absolute URLs for all images in pecified HTML
 
@@ -159,48 +210,55 @@ def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
     :returns:           Tuple of processed document and image path list
     """
 
-    # TODO: Also process links that point to larger versions of the image.
-
-    seen = []  # original image URLs that have been seen
-    images = []  # image paths
+    seen = []     # All unique paths that have been seen thus far
+    tags = []     # List of tags belonging to unique paths
+    dupes = []    # Duplicate images (tuple: tag, index in uniques)
+    images = []  # list of valid image paths
     soup = BeautifulSoup(html)
-    base, doc_path = split(base_url)
-    proto = base.split(':')[0]
 
+    # The reason uniques have a bit of cruft is we anticipate sending all
+    # necessary data to process the image as a single tuple to another
+    # function. This is done so that data can be serialized and sent to another
+    # process which may not necessarily have access to variables in this scope.
+
+    # Split all images into those with unique image tags and duplicates
     for img in soup.find_all('img'):
         src = img.get('src')
-
-        if not src:
-            img.decompose()  # Remove <img> tags with empty src
+        if src is None:
+            img.decompose()  # Don't keep images with no src
             continue
-
         if src in seen:
-            # This image has already been processed, so we don't want to do it
-            # again. Just use the existing data.
-            idx = seen.index(src)
-            img.src = os.path.basename(images[idx])
-            continue
-
-        imgpath_base = os.path.join(imgdir, 'image%04d' % len(images))
-
-        if is_http_url(src):
-            imgurl = normalize_scheme(src, proto)
+            dupes.append([img, seen.index(src)])
         else:
-            imgurl = full_url(base, absolute_path(src, doc_path))
+            seen.append(src)
+            tags.append(img)
 
-        try:
-            imgpath = fetch_image(imgurl, imgpath_base)[1]
+    nurls = len(seen)  # Number of unique URLs
+    fornurls = lambda x: repeat(x, nurls)  # Repeat anything ``nurls`` times
+
+    # Prepare all URLs
+    base, docpath = split(base_url)
+    urls = map(prepare_url, seen, fornurls(base), fornurls(docpath))
+
+    # Process all unique images
+    imgdata = ((idx, url, imgdir) for idx, url in enumerate(urls))
+    results = list(map(process_image, imgdata))
+
+    # Update src in all image tags
+    for tag, imgpath in zip(tags, results):
+        if imgpath is None:
+            tag.decompose()
+        else:
+            tag['src'] = imgsrc(imgpath)
             images.append(imgpath)
-        except Exception:
-            # FIXME: ``Exception`` might be a bit too broad
-            img.decompose()  # No usable image, so kill the tag
-            continue
 
-        # Rewrite the path to point to image
-        img['src'] = './%s' % os.path.basename(imgpath)
-
-        # Register as seen
-        seen.append(src)
+    # Update src in all dupes
+    for tag, idx in dupes:
+        imgpath = results[idx]
+        if imgpath is None:
+            tag.decompose()
+        else:
+            tag['src'] = imgsrc(imgpath)
 
     return str(soup), images
 
