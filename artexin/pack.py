@@ -27,7 +27,7 @@ from extract import *
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
 __version__ = 0.1
-__all__ = ('zipdir', 'collect')
+__all__ = ('zipdir', 'collect', 'BASE_DIR')
 
 
 COMPRESSION = zipfile.ZIP_DEFLATED

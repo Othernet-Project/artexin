@@ -1,10 +1,8 @@
 """
-fetch_and_zip.py: Fetch specified pages and zip them up
+fetch_and_zip_batch.py: Fetch and zip specified pages in batch operation
 
-This demo script uses the higher-level functions from ``artexin.pack`` module
-to fetch and zip up specified pages one by one. Also seee
-``fetch_and_zip_batch.py`` example for batch operation using an even
-higher-level API.
+This demo script uses the high-level functions from ``artexin.batch`` package
+to process a set of pages.
 
 Copyright 2014, Outernet Inc.
 Some rights reserved.
@@ -14,15 +12,13 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
 import sys
-import os
 from os.path import dirname as up, abspath, join
 import time
 
 sys.path.insert(0, up(up(abspath(__file__))))
 sys.path.insert(0, join(up(up(abspath(__file__))), 'artexin'))
 
-from artexin.pack import collect
-from artexin.preprocessor_mappings import get_preps
+from artexin.batch import batch
 
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
@@ -39,10 +35,10 @@ PAGES = [
 
 if __name__ == '__main__':
     start = time.time()
-    for page in PAGES:
-        print('Processing: %s' % page)
-        collect(page, get_preps(page), base_dir='/vagrant')
+    results = batch(PAGES, base_dir='/vagrant', max_procs=8)
     took = time.time() - start
-    avg = took / len(PAGES)
-    print('Took %s seconds (avg: %s seconds)' % (took, avg))
 
+    for zip_path, html, images, meta in results:
+        print("Created: %s" % zip_path)
+
+    print("Took %s seconds" % took)
