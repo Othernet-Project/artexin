@@ -117,7 +117,16 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
     if not keep_dir:
         shutil.rmtree(dest)
 
-    return zippath, html, images, meta
+    stat = os.stat(zippath)
+
+    meta.update({
+        'zipfile': zippath,
+        'images': len(images),
+        'size': stat.st_size,
+        'hash': checksum
+    })
+
+    return meta
 
 
 if __name__ == '__main__':
