@@ -103,12 +103,14 @@ def extract(html, **kwargs):
     :returns:           Two-tuple containing document title and article body
     """
     # Extract article
+    soup = BeautifulSoup(html)
+    title_text = get_title(soup)
+
     doc = Article(html, return_fragment=False, **kwargs)
 
     # Create basic <head> tag with <title> and charset tags
     clean_html = doc.readable
     soup = BeautifulSoup(clean_html)
-    title_text = get_title(soup)
     head = soup.new_tag('head')
     title = soup.new_tag('title')
     title.string = title_text
