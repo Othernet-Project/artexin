@@ -1,6 +1,6 @@
 % rebase('base.tpl', title='Collect webpages')
 <h1>Collect webpages</h1>
-<form action="/collect" method="POST">
+<form action="/collections/" method="POST">
     <textarea id="urls" name="urls">
     </textarea>
     <p>
