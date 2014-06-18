@@ -8,10 +8,15 @@ This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
+import time
+import tempfile
 from os.path import abspath, dirname, join
 
 import bottle
+from bottle import request
 from werkzeug.debug import DebuggedApplication
+
+from artexin.batch import batch
 
 import artexin_webui
 
@@ -22,8 +27,18 @@ __all__ = ('collection_form',)
 
 MODPATH = dirname(abspath(__file__))
 TPLPATH = join(MODPATH, 'views')
+CDIR = tempfile.gettempdir()
+CPROC = 8
 
+app = bottle.app()
 
+# Configure the application
+app.config.update({
+    'collection_dir': CDIR,
+    'collection_proc': CPROC,
+})
+
+# GET /collections/
 @bottle.get('/collections/')
 @bottle.view('collection_form')
 def collection_form():
@@ -31,8 +46,25 @@ def collection_form():
     return {}
 
 
+# POST /collections/
+@bottle.post('/collections/')
+@bottle.view('collection_result')
+def collections_process():
+    """ Process URLs that were passed through the collection form """
+    urls = request.forms.get('urls')
+    if urls is None:
+        return "no URLs given"
+    start = time.time()
+    urls = [url.strip() for url in urls.split('\n')]
+    results = batch(urls, base_dir=request.app.config['collection_dir'],
+                    max_procs=request.app.config['collection_proc'])
+    return {
+        'metadata': (r[3] for r in results),
+        'time': time.time() - start
+    }
+
+
 bottle.TEMPLATE_PATH.insert(0, TPLPATH)
-wsgiapp = bottle.app()
 
 if __name__ == '__main__':
     import sys
@@ -52,14 +84,25 @@ if __name__ == '__main__':
     parser.add_argument('--server', help='WSGI server to use as backend '
                         '(default: wsgiref)', default='wsgiref',
                         metavar='SRV')
+    parser.add_argument('--cdir', help='directory in which the processed '
+                        'pages are dumped (default: %s)' % CDIR,
+                        default=CDIR, metavar='PATH')
+    parser.add_argument('--cproc', help='number of processes to use for'
+                        'collecting pages (default: %s)' % CPROC, type=int,
+                        default=CPROC, metavar='N')
     args = parser.parse_args(sys.argv[1:])
+
+    bottle.TEMPLATE_PATH[0] = args.views
+    app.config['collection_dir'] = args.cdir
+    app.config['collection_procs'] = args.cproc
+
+    print("Collection directory: %s" % args.cdir)
+    print("Collection processes: %s" % args.cproc)
 
     if args.debug is True:
         # Wrap in werkzeug debugger
-        wsgiapp = DebuggedApplication(wsgiapp)
-
-    bottle.TEMPLATE_PATH[0] = args.views
+        app = DebuggedApplication(app)
 
     # Run the app using cherrypy
-    bottle.run(wsgiapp, args.server, port=args.port, host=args.bind,
+    bottle.run(app, args.server, port=args.port, host=args.bind,
                debug=args.debug, reloader=args.debug)
