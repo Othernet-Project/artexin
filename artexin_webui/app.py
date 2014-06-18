@@ -23,7 +23,7 @@ import artexin_webui
 
 __version__ = artexin_webui.__version__
 __author__ = artexin_webui.__author__
-__all__ = ('collection_form',)
+__all__ = ('collections_form', 'collections_process',)
 
 MODPATH = dirname(abspath(__file__))
 TPLPATH = join(MODPATH, 'views')
@@ -41,7 +41,7 @@ app.config.update({
 # GET /collections/
 @bottle.get('/collections/')
 @bottle.view('collection_form')
-def collection_form():
+def collections_form():
     """ Handles display of page collection queue UI """
     return {}
 
