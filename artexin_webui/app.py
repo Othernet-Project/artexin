@@ -29,6 +29,7 @@ MODPATH = dirname(abspath(__file__))
 TPLPATH = join(MODPATH, 'views')
 CDIR = tempfile.gettempdir()
 CPROC = 8
+DEFAULT_DB = 'artexinweb'
 
 app = bottle.app()
 
@@ -70,6 +71,9 @@ if __name__ == '__main__':
     import sys
     import argparse
 
+    import mongoengine
+
+
     parser = argparse.ArgumentParser(description='start the ArtExIn Web UI')
     parser.add_argument('--port', '-p', type=int, help='port at which the '
                         'WebUI will listen (default: 8080)', default=8080,
@@ -90,14 +94,21 @@ if __name__ == '__main__':
     parser.add_argument('--cproc', help='number of processes to use for'
                         'collecting pages (default: %s)' % CPROC, type=int,
                         default=CPROC, metavar='N')
+    parser.add_argument('--db', help='name of the MongoDB database to use '
+                        '(default: %s)' % DEFAULT_DB,
+                        default=DEFAULT_DB, metavar='DB')
     args = parser.parse_args(sys.argv[1:])
 
     bottle.TEMPLATE_PATH[0] = args.views
     app.config['collection_dir'] = args.cdir
     app.config['collection_procs'] = args.cproc
+    app.config['mongodb'] = args.db
+
+    mongoengine.connect(args.db)
 
     print("Collection directory: %s" % args.cdir)
     print("Collection processes: %s" % args.cproc)
+    print("Connected to DB:      %s" % args.db)
 
     if args.debug is True:
         # Wrap in werkzeug debugger
