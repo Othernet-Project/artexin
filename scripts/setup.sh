@@ -22,6 +22,13 @@ SRCDIR=/vagrant
 BINDIR=/usr/local/bin
 ARFILE=/var/artexin
 
+linkscript() {
+    if [[ ! -f "$BINDIR/$1" ]]; then
+        ln -s "$SRCDIR/scripts/${1}.sh" "$BINDIR/$1"
+    fi
+}
+
+
 # Update local package DB and upgrade installed packages
 apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
@@ -29,7 +36,7 @@ DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
 # Install build requirements
 DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential python3 \
   python3-setuptools python3-dev python3-lxml python3-tk python3-imaging \
-  phantomjs
+  phantomjs nginx
 
 # Setup Python libraries
 echo "Installing dependencies"
@@ -43,9 +50,8 @@ $PY -m nltk.downloader all
 
 # Set up the runtest script
 echo "Set up scripts"
-if [[ ! -f "$BINDIR/runtests" ]]; then
-	ln -s $SRCDIR/scripts/runtests.sh /usr/local/bin/runtests
-fi
+linkscript runtests
+linkscript start
 
 # Add /usr/local/bin to vagrant user's PATH
 if [[ ! -f "${ARFILE}_0.1" ]]; then
@@ -53,7 +59,13 @@ if [[ ! -f "${ARFILE}_0.1" ]]; then
 	touch "${ARFILE}_0.1"
 fi
 
+echo "Set up nginx default site"
+mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.orig
+ln -s "$SRCDIR/conf/default" /etc/nginx/sites-available/default
+service nginx restart
+
 # Create and start PhantomJS WebDriver service on port 8910
+echo "Set up PhantomJS"
 if [[ ! -f "/etc/init/phantom.conf" ]]; then
 cat > /etc/init/phantom.conf <<EOF
 start on started networking
