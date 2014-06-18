@@ -117,7 +117,14 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
 
     stat = os.stat(zippath)
 
-    return zippath, html, images, meta, stat.st_size
+    meta.update({
+        'zipfile': zippath,
+        'images': len(images),
+        'size': stat.st_size,
+        'hash': checksum
+    })
+
+    return meta
 
 
 if __name__ == '__main__':
