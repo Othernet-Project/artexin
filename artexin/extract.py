@@ -16,13 +16,14 @@ from itertools import repeat
 from breadability.readable import Article
 from bs4 import BeautifulSoup, Tag
 
-from htmlutils import get_cls
-from urlutils import *
-from fetch import fetch_image
+from . import __version__ as _version, __author__ as _author
+from .htmlutils import get_cls
+from .urlutils import *
+from .fetch import fetch_image
 
 
-__author__ = 'Outernet Inc <branko@outernet.is>'
-__version__ = 0.1
+__version__ = _version
+__author__ = _author
 __all__ = ('extract', 'process_images', 'strip_links',)
 
 
@@ -87,7 +88,7 @@ def extract(html, **kwargs):
 
     Example::
 
-        >>> from fetch import fetch_content
+        >>> from artexin.fetch import fetch_content
         >>> c = fetch_content('http://hetland.org/writing/instant-hacking.html')
         >>> t, s = extract(c)
         >>> 'What is Programming?' in s
@@ -131,6 +132,20 @@ def prepare_url(url, base, docpath):
     scheme to scheme-less (multi-scheme) URLs.
 
         >>> prepare_url('/foo/bar', 'http://www.example.com', '/foo')
+        'http://www.example.com/foo/bar'
+        >>> prepare_url('bar/baz', 'http://www.example.com', '/foo')
+        'http://www.example.com/bar/baz'
+        >>> prepare_url('../baz', 'http://www.example.com', '/foo/bar')
+        'http://www.example.com/baz'
+        >>> prepare_url('http://img.example.com/foo', 'http://www.example.com',
+        ...             '/foo')
+        'http://img.example.com/foo'
+        >>> prepare_url('//img.example.com/bar', 'http://www.example.com',
+        ...             '/foo')
+        'http://img.example.com/bar'
+        >>> prepare_url('//img.example.com/baz', 'https://www.example.com',
+        ...             '/foo')
+        'https://img.example.com/baz'
 
     :param url:     URL
     :param base:    Base URL of the document (FQDN)

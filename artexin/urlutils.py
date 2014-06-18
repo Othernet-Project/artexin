@@ -13,9 +13,11 @@ import urllib.parse as urlparse
 import itertools
 from posixpath import join
 
+from . import __version__ as _version, __author__ as _author
 
-__author__ = 'Outernet Inc <branko@outernet.is>'
-__version__ = 0.1
+
+__version__ = _version
+__author__ = _author
 __all__ = ('mask', 'split', 'normalize', 'base_path', 'join', 'absolute_path',
            'is_http_url', 'normalize_scheme', 'full_url')
 
@@ -173,6 +175,10 @@ def absolute_path(path, base):
         >>> absolute_path('../foo1/bar1/baz1', '/foo/bar/baz')
         '/foo/foo1/bar1/baz1'
         >>> absolute_path('/foo/bar/baz', '/baz')
+        '/foo/bar/baz'
+        >>> absolute_path('bar/baz', '/foo')
+        '/bar/baz'
+        >>> absolute_path('bar/baz', '/foo/')
         '/foo/bar/baz'
 
     :param path:    Path for which to calculate the absolute path

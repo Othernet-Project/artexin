@@ -10,15 +10,15 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 
 from __future__ import unicode_literals
 
-from pack import collect, BASE_DIR
-from preprocessor_mappings import get_preps
 import multiprocessing
 
-from pack import collect
+from . import __version__ as _version, __author__ as _author
+from .pack import collect, BASE_DIR
+from .preprocessor_mappings import get_preps
 
 
-__author__ = 'Outernet Inc <branko@outernet.is>'
-__version__ = 0.1
+__version__ = _version
+__author__ = _author
 __all__ = ('batch',)
 
 

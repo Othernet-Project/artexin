@@ -51,9 +51,8 @@ Run the following command to run the unit tests::
 The above command simply runs the script in ``scripts/runtests.sh`` (it's just
 a symlink).
 
-Alternatively, you can run each ``.py`` file separately. The source code is
-located in ``/vagrant`` directory within the virtual machine.
-
+You cannot run tests for individual modules because they may use relative
+imports from different modules in the same package.
 
 .. _Outernet Inc: https://www.outernet.is/
 .. _Vagrant: http://www.vagrantup.com/

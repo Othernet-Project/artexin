@@ -10,9 +10,11 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 
 from bs4 import BeautifulSoup, NavigableString
 
+from . import __version__ as _version, __author__ as _author
 
-__author__ = 'Outernet Inc <branko@outernet.is>'
-__version__ = 0.1
+
+__version__ = _version
+__author__ = _author
 __all__ = ('get_cls',)
 
 

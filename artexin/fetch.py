@@ -19,9 +19,11 @@ from bs4 import BeautifulSoup
 from PIL import Image
 from selenium import webdriver
 
+from . import __version__ as _version, __author__ as _author
 
-__author__ = 'Outernet Inc <branko@outernet.is>'
-__version__ = 0.1
+
+__version__ = _version
+__author__ = _author
 __all__ = ('fetch_content', 'fetch_rendered', 'fetch_image', 'get_parsed')
 
 
@@ -58,10 +60,12 @@ def fetch_content(url):
 
     Failures are propagated as they are without any error trapping::
 
-        >>> c = fetch_content('http://nonexistent/')
-        Traceback (most recent call last):
-        ...
-        URLError: ...
+        >>> import urllib
+        >>> try:
+        ...     fetch_content('http://nonexistent/')
+        ...     assert False, "Did not raise an exception"
+        ... except urllib.error.URLError:
+        ...     pass
 
     :param url:     Document's URL
     :returns:       Document contents as bytestring
@@ -119,17 +123,19 @@ def fetch_image(url, path):
 
         # Trying to fetch non-existent image
         >>> url = 'http://nonexistent/'
-        >>> fetch_image(url, '/tmp/logo')
-        Traceback (most recent call last):
-        ...
-        URLError: <urlopen error [Errno -2] Name or service not known>
+        >>> import urllib
+        >>> try:
+        ...     fetch_image(url, '/tmp/logo')
+        ...     assert False, "Did not raise an exception"
+        ... except urllib.error.URLError:
+        ...     pass
+
 
         # Trying to fetch something that isn't a file
         >>> url = 'http://www.outernet.is/'
         >>> fetch_image(url, '/tmp/nonimage')
         Traceback (most recent call last):
-        ...
-        OSError: cannot identify image
+        OSError: ...
 
     :param url:     Image's URL
     :param path:    Image path without extension
@@ -181,4 +187,5 @@ if __name__ == '__main__':
     # We use optionflags=doctest.IGNORE_EXCEPTION_DETAIL to ignore the
     # slight differences between Python 2.7.x and Python 3.x URLError
     # exception.
-    doctest.testmod(optionflags=doctest.IGNORE_EXCEPTION_DETAIL)
+    flags = doctest.IGNORE_EXCEPTION_DETAIL | doctest.ELLIPSIS
+    doctest.testmod(optionflags=flags)

@@ -10,8 +10,11 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 
 from bs4 import BeautifulSoup
 
-__author__ = 'Outernet Inc <branko@outernet.is>'
-__version__ = 0.1
+from . import __version__ as _version, __author__ as _author
+
+
+__version__ = _version
+__author__ = _author
 __all__ = ('pp_noop', 'pp_wikipedia',)
 
 
@@ -31,7 +34,7 @@ def pp_wikipedia(html):
     Simply calling the ``pp_wikipedia()`` function with HTML string returns
     the processed document as string.
 
-        >>> from fetch import fetch_content
+        >>> from .fetch import fetch_content
         >>> c = fetch_content('http://en.wikipedia.org/wiki/Sunflower')
         >>> s = pp_wikipedia(c)
 
