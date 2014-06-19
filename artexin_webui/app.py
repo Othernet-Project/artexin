@@ -56,7 +56,7 @@ def collections_process():
     if urls is None:
         return "no URLs given"
     start = time.time()
-    urls = [url.strip() for url in urls.split('\n')]
+    urls = list(set([url.strip() for url in urls.strip().split('\n')]))
     results = batch(urls, base_dir=request.app.config['collection_dir'],
                     max_procs=request.app.config['collection_proc'])
     return {
