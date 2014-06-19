@@ -79,14 +79,14 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
     dest = os.path.join(base_dir, checksum)
     if os.path.exists(dest):
         shutil.rmtree(dest)
-    os.mkdir(dest)
+    os.mkdir(dest)  # FIXME: Handle failure
 
     # Fetch and prepare the HTML
-    page = fetch_rendered(url)
+    page = fetch_rendered(url)  # FIXME: Handle failure
     timestamp = datetime.datetime.utcnow().isoformat()
     for preprocessor in prep:
         page = preprocessor(page)
-    title, html = extract(page)
+    title, html = extract(page)  # FIXME: Handle failure
     html = strip_links(html)
 
     # Process images
@@ -100,16 +100,18 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
         'title': title,
         'images': len(images),
     })
+    # FIXME: Handle failure
     with open(os.path.join(dest, 'info.json'), 'w') as f:
         f.write(json.dumps(meta, indent=2))
 
     # Write the HTML file
+    # FIXME: Handle failure
     with open(os.path.join(dest, 'index.html'), 'w') as f:
         f.write(html)
 
     # Create a zip file
     zippath = os.path.join(base_dir, '%s.zip' % checksum)
-    zipdir(zippath, dest)
+    zipdir(zippath, dest)  # FIXME: Handle failure
 
     # Clean-up
     if not keep_dir:
