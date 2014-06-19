@@ -60,7 +60,7 @@ def collections_process():
     results = batch(urls, base_dir=request.app.config['collection_dir'],
                     max_procs=request.app.config['collection_proc'])
     return {
-        'metadata': (r[3] for r in results),
+        'metadata': results,
         'time': time.time() - start
     }
 
