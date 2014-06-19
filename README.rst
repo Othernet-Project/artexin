@@ -54,7 +54,27 @@ a symlink).
 You cannot run tests for individual modules because they may use relative
 imports from different modules in the same package.
 
+Known issues
+============
+
+There are some known issues with the development environment.
+
+Accessing localhost:8080 on host system says host does not exist
+----------------------------------------------------------------
+
+Nginx may actually not start correctly when Vagrant box is started. Simply
+restart nginx using the following command::
+
+    $ sudo service nginx restart
+
+
+Reporting bugs
+==============
+
+Please report all bugs to our `issue tracker`_.
+
 .. _Outernet Inc: https://www.outernet.is/
 .. _Vagrant: http://www.vagrantup.com/
 .. _virtualenv: http://virtualenv.readthedocs.org/en/latest/
 .. _NLTK: http://www.nltk.org/
+.. _issue tracker: https://github.com/Outernet-Project/artexin/issues
