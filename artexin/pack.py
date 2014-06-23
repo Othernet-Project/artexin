@@ -12,9 +12,11 @@ import os
 import shutil
 import zipfile
 import hashlib
+import logging
 import tempfile
 import datetime
 import urllib.parse as urlparse
+from http.client import BadStatusLine
 
 try:
     import simplejson as json
@@ -72,6 +74,12 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
     :returns:           Full path of the newly created zipball
     """
 
+    # Common metadata
+    meta.update({
+        'url': url,
+        'domain': urlparse.urlparse(url)[1],
+    })
+
     # Create the destination directory
     md5 = hashlib.md5()
     md5.update(bytes(url, 'utf-8'))
@@ -82,8 +90,20 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
     os.mkdir(dest)  # FIXME: Handle failure
 
     # Fetch and prepare the HTML
-    page = fetch_rendered(url)  # FIXME: Handle failure
-    timestamp = datetime.datetime.utcnow().isoformat()
+    try:
+        page = fetch_rendered(url)
+    except Exception as err:
+        # We will trap any exceptions and return a meta object with 'error' key
+        # set to exception object. This won't help debugging a whole lot, but
+        # it will give us a peek into what went down. We will also log the
+        # exception just in case.
+        logging.exception('Error %s while processing %s' % (err, url))
+        meta.update({
+            'timestamp': datetime.datetime.utcnow(),
+            'error': err,
+        })
+
+    timestamp = datetime.datetime.utcnow()
     for preprocessor in prep:
         page = preprocessor(page)
     title, html = extract(page)  # FIXME: Handle failure
@@ -94,9 +114,7 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
 
     # Write file metadata
     meta.update({
-        'url': url,
-        'domain': urlparse.urlparse(url)[1],
-        'timestamp': timestamp,
+        'timestamp': timestamp.strftime(TS_FORMAT),
         'title': title,
         'images': len(images),
     })
@@ -123,7 +141,8 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
         'zipfile': zippath,
         'images': len(images),
         'size': stat.st_size,
-        'hash': checksum
+        'hash': checksum,
+        'timestamp': timestamp,  # Pass timestamp as native datetime object
     })
 
     return meta

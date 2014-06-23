@@ -6,8 +6,6 @@
     <li>
     <h2>{{ m['title'] }}</h2>
     <p><strong>{{ m['domain'] }}</strong> (<a href="{{ m['url'] }}">open page</a>)</p>
-    <p><strong>{{ m['zipfile'] }}</strong>
-    <p><strong>size:</strong> {{ m['size'] }} bytes</p>
     <p><strong>number of images:</strong> {{ m['images'] }}</p>
     </li>
 % end 
