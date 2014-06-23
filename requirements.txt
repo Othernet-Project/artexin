@@ -6,3 +6,4 @@ https://github.com/nltk/nltk/archive/3.0a4.zip#egg=nltk
 bottle==0.12.7
 werkzeug==0.9.6
 CherryPy==3.3.0
+mongoengine==0.8.7
