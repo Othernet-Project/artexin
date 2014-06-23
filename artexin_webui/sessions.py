@@ -16,6 +16,12 @@ from bson.binary import Binary
 from bottle import request, response, hook
 from werkzeug.contrib.sessions import SessionStore
 
+from . import __version__ as _version, __author__ as _author
+
+__version__ = _version
+__author__ = _author
+__all__ = ('Session', 'MongoSessionStore', 'session',)
+
 SES_EXP = 14 # days
 SES_COOKIE = 'cute_panda'
 
