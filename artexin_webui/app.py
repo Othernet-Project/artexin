@@ -19,6 +19,7 @@ from werkzeug.debug import DebuggedApplication
 import artexin_webui
 from artexin_webui.schema import *
 from artexin_webui import helpers
+from artexin_webui import sessions
 
 
 __version__ = artexin_webui.__version__
@@ -136,6 +137,9 @@ if __name__ == '__main__':
     app.config['mongodb'] = args.db
 
     mongoengine.connect(args.db)
+
+    # Add session-related hooks
+    sessions.session(sessions.MongoSessionStore())
 
     print("Collection directory: %s" % args.cdir)
     print("Collection processes: %s" % args.cproc)
