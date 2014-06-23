@@ -1,5 +1,5 @@
 """
-sessions.py: bottle sessions using MongoEngine and werkzeug middleware
+sessions.py: bottle sessions using MongoEngine and werkzeug session API
 
 Copyright 2014, Outernet Inc.
 Some rights reserved.
