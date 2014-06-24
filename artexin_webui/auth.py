@@ -17,7 +17,7 @@ from urllib.parse import quote, urljoin
 import pbkdf2
 import bottle
 import mongoengine as mongo
-from bottle import request, response, template
+from bottle import request, response, redirect, template
 
 from . import __version__ as _version, __author__ as _author
 from .sessions import cycle
@@ -171,6 +171,21 @@ class User(mongo.Document):
         return '<User: %s>' % self.email
 
 
+def safe_redirect(url, code=302):
+    """ Perform redirect without using bottle's built-in ``redirect()`` call
+
+    This function modifies the default response object instead of creating a
+    new one. It's expected that the default response is returned directly from
+    the handler instead of returning dicts and strings.
+
+    :param url:     URL to which to redirect
+    """
+    response.body = ""
+    response.status = code
+    response.set_header('Location', urljoin(request.url, url))
+    return response
+
+
 def restricted(f, role=None, allow_super=True, login=LOGIN_PATH, tpl='403'):
     """ Decorator for restricting access to routes
 
@@ -189,38 +204,22 @@ def restricted(f, role=None, allow_super=True, login=LOGIN_PATH, tpl='403'):
     def wrapped(*args, **kwargs):
         redir = quote('?'.join([request.path, request.query_string]))
         user = request.session.get('user')
-        if not user:
+        if user is None:
             # Not logged in, redirect to login path
-            url = login + '?redir=' + redir
+            url = LOGIN_PATH + '?redir=' + redir
             redirect(url, 301)
-        if (role and role in user.role) or (allow_super and user.superuser):
+        role_allowed = role in user.role if role else True
+        if role_allowed or (allow_super and user.superuser):
             # Appropriate role or superuser status, return response
             return f(*args, **kwargs)
         # Not allowed
         return template(tpl, path=request.path)
-
     return wrapped
-
-
-def safe_redirect(url, code=302):
-    """ Perform redirect without using bottle's built-in ``redirect()`` call
-
-    This function modifies the default response object instead of creating a
-    new one. It's expected that the default response is returned directly from
-    the handler instead of returning dicts and strings.
-
-    :param url:     URL to which to redirect
-    """
-    response.body = ""
-    response.status = code
-    response.set_header('Location', urljoin(request.url, url))
-    return response
 
 
 def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
                 login_view='login'):
     LOGIN_PATH = login_path
-
 
     # GET /login/
     @bottle.get(login_path)
@@ -233,7 +232,6 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
             return safe_redirect(redir)  # already logged in
         return {'vals': {'redir': request.query.get('redir', redir_path)}}
 
-
     # POST /logout/
     @bottle.route(logout_path)
     def logout():
@@ -241,7 +239,6 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
         request.session_store.delete(request.session)
         request.session = None
         return safe_redirect(redir)
-
 
     # POST /login/
     @bottle.post(login_path)
