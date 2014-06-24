@@ -20,10 +20,11 @@ from . import __version__ as _version, __author__ as _author
 
 __version__ = _version
 __author__ = _author
-__all__ = ('Session', 'MongoSessionStore', 'session',)
+__all__ = ('Session', 'MongoSessionStore', 'session', 'cycle',)
 
 SES_EXP = 14 # days
 SES_COOKIE = 'cute_panda'
+SES_SECRET = 'notsecret'  # FIXME: Set this using command line args in app.py
 
 
 class Session(mongo.Document):
@@ -53,6 +54,9 @@ class Session(mongo.Document):
     def by_sid(cls, sid):
         """ Retrieve session by session ID """
         return cls.objects.get(sid=sid)
+
+    def __repr__(self):
+        return '<Session: %s>' % self.sid
 
 
 class MongoSessionStore(SessionStore):
@@ -94,7 +98,7 @@ def session(session_store):
     @hook('before_request')
     def session_start():
         Session.cleanup()
-        sid = request.get_cookie(SES_COOKIE)
+        sid = request.get_cookie(SES_COOKIE, secret=SES_SECRET)
         if sid:
             request.session = session_store.get(sid)
         else:
@@ -110,6 +114,9 @@ def session(session_store):
             bottle.add_hook('after_request', session_end)
 
         """
-        if request.session.should_save:
+        if request.session and request.session.should_save:
             session_store.save(request.session)
-            response.set_cookie(SES_COOKIE, request.session.sid)
+            cookie_expiry = datetime.utcnow() + timedelta(days=SES_EXP)
+            response.set_cookie(SES_COOKIE, request.session.sid, path='/',
+                                secret=SES_SECRET, expires=cookie_expiry)
+
