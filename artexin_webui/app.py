@@ -45,6 +45,7 @@ app.config.update({
 
 bottle.BaseTemplate.defaults = {
     'h': helpers,
+    'r': request,
 }
 
 
