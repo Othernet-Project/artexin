@@ -52,6 +52,7 @@ bottle.BaseTemplate.defaults = {
 # GET /collections/
 @bottle.get('/collections/')
 @bottle.view('collection_form', h=helpers)
+@auth.restricted
 def collections_form():
     """ Handles display of page collection queue UI """
     return {}
@@ -59,6 +60,7 @@ def collections_form():
 
 # POST /collections/
 @bottle.post('/collections/')
+@auth.restricted
 def collections_process():
     """ Process URLs that were passed through the collection form """
     urls = request.forms.get('urls')
@@ -75,6 +77,7 @@ def collections_process():
 # GET /collections/<batch_id>
 @bottle.get('/batches/<batch_id>')
 @bottle.view('batch')
+@auth.restricted
 def collection_result(batch_id):
     """ Display pages belonging to a single batch """
     try:
@@ -88,6 +91,7 @@ def collection_result(batch_id):
 # GET /batches/
 @bottle.get('/batches/')
 @bottle.view('batches')
+@auth.restricted
 def batches_list():
     return {'batches': Batch.objects().order_by('-finished')}
 
@@ -95,6 +99,7 @@ def batches_list():
 # GET /pages/
 @bottle.get('/pages/')
 @bottle.view('pages')
+@auth.restricted
 def pages_list():
     return {'pages': Page.objects.order_by('-timestamp')}
 
