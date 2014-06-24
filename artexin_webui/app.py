@@ -9,6 +9,7 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
 import time
+import getpass
 import tempfile
 from os.path import abspath, dirname, join
 
@@ -19,6 +20,9 @@ from werkzeug.debug import DebuggedApplication
 import artexin_webui
 from artexin_webui.schema import *
 from artexin_webui import helpers
+from artexin_webui import sessions
+from artexin_webui import auth
+from artexin_webui import cli
 
 
 __version__ = artexin_webui.__version__
@@ -41,6 +45,7 @@ app.config.update({
 
 bottle.BaseTemplate.defaults = {
     'h': helpers,
+    'r': request,
 }
 
 
@@ -94,6 +99,8 @@ def pages_list():
     return {'pages': Page.objects.order_by('-timestamp')}
 
 
+# Set up authentication views
+auth.auth_routes('/login/')
 
 
 bottle.TEMPLATE_PATH.insert(0, TPLPATH)
@@ -128,14 +135,21 @@ if __name__ == '__main__':
     parser.add_argument('--db', help='name of the MongoDB database to use '
                         '(default: %s)' % DEFAULT_DB,
                         default=DEFAULT_DB, metavar='DB')
+    parser.add_argument('--su', action='store_true',
+                        help='create superuser and exit')
     args = parser.parse_args(sys.argv[1:])
 
     bottle.TEMPLATE_PATH[0] = args.views
     app.config['collection_dir'] = args.cdir
-    app.config['collection_procs'] = args.cproc
     app.config['mongodb'] = args.db
 
     mongoengine.connect(args.db)
+
+    if args.su:
+        cli.create_superuser(args)
+
+    # Add session-related hooks
+    sessions.session(sessions.MongoSessionStore())
 
     print("Collection directory: %s" % args.cdir)
     print("Collection processes: %s" % args.cproc)
