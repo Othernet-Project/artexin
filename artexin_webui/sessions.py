@@ -120,3 +120,18 @@ def session(session_store):
             response.set_cookie(SES_COOKIE, request.session.sid, path='/',
                                 secret=SES_SECRET, expires=cookie_expiry)
 
+
+def cycle():
+    """ Cycle the session: copy data into a brand new session
+
+    This function should be called whenever user's authorization level changes
+    (e.g., when user logs in) to prevent session fixation attacks. It
+    effectively changes the session ID without changing the session data.
+
+    :param session: session object
+    """
+    sessdata = dict(request.session)
+    request.session = request.session_store.new()
+    request.session.update(sessdata)
+
+
