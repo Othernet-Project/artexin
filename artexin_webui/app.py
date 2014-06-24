@@ -21,6 +21,7 @@ import artexin_webui
 from artexin_webui.schema import *
 from artexin_webui import helpers
 from artexin_webui import sessions
+from artexin_webui import auth
 from artexin_webui import cli
 
 
@@ -97,6 +98,8 @@ def pages_list():
     return {'pages': Page.objects.order_by('-timestamp')}
 
 
+# Set up authentication views
+auth.auth_routes('/login/')
 
 
 bottle.TEMPLATE_PATH.insert(0, TPLPATH)
