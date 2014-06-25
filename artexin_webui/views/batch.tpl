@@ -1,23 +1,41 @@
 % rebase('base.tpl', title='Batch job %s' % batch.id)
-<h1>Results of batch job {{ batch.id }}</h1>
+<h1>Batch #{{ batch.id }}</h1>
 
-<div class="summary">
-    % npages = len(batch.pages)
-    <p>Job was initiated on {{ batch.started.strftime('%d %b %Y at %H:%M UTC') }}</p>
-    <p>Job took {{ '%.2d' % batch.duration.seconds }} {{ h.plur('second', batch.duration.seconds) }}.</p>
-    <p>{{ npages }} {{ h.plur('page', npages) }} collected.</p>
-</div>
+<div class="batch-data">
+    <div class="summary">
+        % npages = len(batch.pages)
+        <table>
+        <tr>
+        <th>initiated:</th>
+        <td>{{ batch.started.strftime('%d %b %Y at %H:%M UTC') }}</td>
+        </tr>
+        <tr>
+        <th>duration:</th>
+        <td>{{ '%.2d' % batch.duration.seconds }}s</td>
+        </tr>
+        <tr>
+        <th>pages:</th>
+        <td>{{ npages }}</td>
+        </tr>
+        </table>
+    </div>
 
-<div class="pages">
-    <ul>
-    % for p in batch.pages:
-        <li>
-        <h2>{{ p.title }}</h2>
-        <p><strong>original:</strong> <a href="{{ p.url }}">{{ p.url }}</a></p>
-        <p><strong>file:</strong> {{ p.md5 }}.zip</p>
-        <p><strong>size:</strong> {{ h.hsize(p.size) }}</p>
-        <p><strong>images:</strong> {{ p.images }}</p>
-        </li>
-    % end 
-    </ul>
+    <div class="pages">
+        <table>
+            <thead>
+            <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Time</th>
+            <th>Size</th>
+            <th>Images</th>
+            </tr>
+            </thead>
+            <tbody>
+            % for p in batch.pages:
+                % include('_page_details.tpl', p=p)
+            % end 
+            </tbody>
+        </table>
+    </div>
 </div>
