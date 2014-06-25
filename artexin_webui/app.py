@@ -11,7 +11,7 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 import time
 import getpass
 import tempfile
-from os.path import abspath, dirname, join
+from os.path import abspath, dirname, join, exists
 
 import bottle
 from bottle import request
@@ -102,6 +102,20 @@ def batches_list():
 @auth.restricted
 def pages_list():
     return {'pages': Page.objects.order_by('-timestamp')}
+
+
+# GET /pages/<page_id>
+@bottle.get('/pages/<page_id>')
+@bottle.view('page')
+@auth.restricted
+def page(page_id):
+    try:
+        page = Page.objects.get(md5=page_id)
+    except Page.DoesNotExist:
+        bottle.abort(404)
+    md5 = page.md5
+    file_exists = exists(join(CDIR, '%s.zip' % md5))
+    return {'page': page, 'exists': file_exists}
 
 
 # Set up authentication views
