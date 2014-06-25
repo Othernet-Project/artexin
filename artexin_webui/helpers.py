@@ -18,7 +18,7 @@ __version__ = _version
 __author__ = _author
 __all__ = ('plur', 'hsize', 'attr', 'tag', 'SPAN', 'UL', 'LI', 'P', 'A',
            'INPUT', 'BUTTON', 'SUBMIT', 'HIDDEN', 'vinput', 'link_other',
-           'field_error', 'form_errors', 'quote')
+           'field_error', 'form_errors', 'quote', 'trunc', 'yesno')
 
 SIZES = 'KMGTP'
 FERR_CLS = 'form-errors'
@@ -208,3 +208,13 @@ def form_errors(errors_dict):
         return ''
     except TypeError:
         return P(SPAN(errors_dict['_'], _class=FERR_ONE_CLS), _class=FERR_CLS)
+
+
+def trunc(s, n):
+    """ Trucante string at ``n`` characters """
+    return s[:n] + '...'
+
+
+def yesno(val, yes='yes', no='no'):
+    """ Return ``yes`` or ``no`` depending on whether ``val`` is ``True`` """
+    return yes if val else no
