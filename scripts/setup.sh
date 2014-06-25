@@ -19,6 +19,7 @@ EI="easy_install3 -q"
 PY="python3"
 PIP="pip"
 SRCDIR=/vagrant
+STATICDIR=/srv/static
 BINDIR=/usr/local/bin
 ARFILE=/var/artexin
 MONGOSRC=/etc/apt/sources.list.d/mongodb.list
@@ -28,6 +29,11 @@ linkscript() {
         ln -s "$SRCDIR/scripts/${1}.sh" "$BINDIR/$1"
     fi
 }
+
+# Prepare directories
+if [[ ! -d "$STATICDIR" ]]; then
+    ln -s "$SRCDIR/artexin_webui/static" "$STATICDIR"
+fi
 
 # Set up MongoDB repo from 10gen
 if [[ ! -f "$MONGOSRC" ]]; then

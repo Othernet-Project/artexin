@@ -1,0 +1,230 @@
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+
+@import "compass/reset";
+@import "compass/typography/text/replacement";
+@import "compass/css3";
+
+$base-font: "Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+$base-size: 16px;
+
+$white: #eee;
+$grey: #ddd;
+$black: #555;
+$violet: #632aea;
+$outernet-blue: #298bec;
+$outernet-red: #c12418;
+$outernet-yellow: #fbdf2c;
+$outernet-green: #97A834;
+
+@mixin button($color: $outernet-blue) {
+  font-family: $base-font;
+  font-size: $base-size;
+  display: inline-block;
+  vertical-align: middle;
+  color: $white;
+  text-decoration: none;
+  padding: 0.2em 1em;
+  border: 0 solid transparent;
+  @include border-radius(2px);
+  text-transform: uppercase;
+  font-size: 80%;
+
+  &:hover {
+    position: relative;
+    top: -1px;
+  }
+}
+
+@mixin button-color($color: $outernet-blue) {
+  background: $color;
+  border-bottom: 2px solid darken($color, 20);
+}
+
+html, body {
+  font-family: $base-font;
+  font-size: $base-size;
+  line-height: 150%;
+  background: $white;
+  color: $black;
+}
+
+#nav {
+  background: $black;
+  color: $white;
+  padding: 0.5em 1em;
+  text-align: right;
+
+  a {
+    @include button;
+    @include button-color;
+    margin-left: 0.5em;
+
+    &:hover {
+      color: white;
+    }
+
+    &.red {
+      @include button-color($outernet-red);
+    }
+
+    &.green {
+      @include button-color($outernet-green);
+    }
+  }
+
+  h1 {
+    position: absolute;
+    top: 0.5em;
+    left: 1em;
+
+    a {
+      padding: 0;
+      margin: 0;
+      display: inline-block;
+      background: transparent;
+      border: 0 solid transparent;
+      @include border-radius(0);
+      @include replace-text-with-dimensions('artexin.png');
+    }
+  }
+}
+
+#content {
+  padding: 1em;
+
+  p {
+    margin-bottom: 1em;
+  }
+
+  h1 {
+    font-size: 150%;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-bottom: 1px solid $grey;
+    padding-bottom: 0.5em;
+    margin: 1em 0 1em;
+    color: lighten($black, 30);
+  }
+
+  .form-notes {
+    padding: 0.5em;
+    color: $outernet-green;
+    border: 1px solid darken($outernet-green, 0.2);
+  }
+
+  a {
+    display: inline-block;
+    color: $outernet-blue;
+    text-decoration: none;
+
+    &:hover {
+      @include border-radius(1000px);
+      background: $grey;
+    }
+
+    &:visited {
+      color: desaturate($outernet-blue, 50);
+    }
+  }
+}
+
+#footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: right;
+  padding: 0.5em 1em;
+  background: $black;
+  color: $white;
+}
+
+input, textarea {
+  border: 0 solid transparent;
+  font-family: $base-font;
+  font-size: $base-size;
+  background: $grey;
+  padding: 0.5em;
+}
+
+textarea {
+  width: 100%;
+  height: 200px;
+}
+
+button, a.button {
+  @include button;
+}
+
+button[type=submit] {
+  background: $outernet-green;
+}
+
+.buttons {
+  border-top: 1px solid $grey;
+  margin-top: 1em;
+  padding-top: 1em;
+  text-align: right;
+}
+
+label {
+  display: inline-block;
+  font-weight: bold;
+  width: 180px;
+  text-align: right;
+}
+
+table {
+  width: auto;
+
+  th {
+    background: $outernet-blue;
+    color: $white;
+    font-weight: bold;
+  }
+
+  td, th {
+    padding: 0.5em 1em 0.5em 0.5em;
+    border-bottom: 1px solid $grey;
+    vertical-align: middle;
+  }
+
+  tr:hover td {
+    background: white;
+  }
+}
+
+code {
+  font-family: monospace;
+}
+
+ul.form-errors {
+  margin-bottom: 1em;
+  padding: 0.5em;
+  color: $outernet-red;
+  background: lighten($outernet-red, 40);
+
+  li {
+    list-style: square;
+    margin: 0.5em 0 0.5em 1.5em;
+  }
+}
+
+.batch-data {
+  .summary {
+    float: left;
+    width: 30%;
+    margin-right: 1em;
+  }
+
+  .pages {
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+  }
+}

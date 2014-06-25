@@ -1,0 +1,322 @@
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+/* line 17, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  font-size: 100%;
+  vertical-align: baseline;
+}
+
+/* line 22, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+html {
+  line-height: 1;
+}
+
+/* line 24, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+ol, ul {
+  list-style: none;
+}
+
+/* line 26, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 28, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+/* line 30, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+q, blockquote {
+  quotes: none;
+}
+/* line 103, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+q:before, q:after, blockquote:before, blockquote:after {
+  content: "";
+  content: none;
+}
+
+/* line 32, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+a img {
+  border: none;
+}
+
+/* line 116, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
+  display: block;
+}
+
+/* line 46, ../scss/screen.scss */
+html, body {
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+  background: #eeeeee;
+  color: #555555;
+}
+
+/* line 54, ../scss/screen.scss */
+#nav {
+  background: #555555;
+  color: #eeeeee;
+  padding: 0.5em 1em;
+  text-align: right;
+}
+/* line 60, ../scss/screen.scss */
+#nav a {
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  display: inline-block;
+  vertical-align: middle;
+  color: #eeeeee;
+  text-decoration: none;
+  padding: 0.2em 1em;
+  border: 0 solid transparent;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -o-border-radius: 2px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  font-size: 80%;
+  background: #298bec;
+  border-bottom: 2px solid #0e58a1;
+  margin-left: 0.5em;
+}
+/* line 35, ../scss/screen.scss */
+#nav a:hover {
+  position: relative;
+  top: -1px;
+}
+/* line 65, ../scss/screen.scss */
+#nav a:hover {
+  color: white;
+}
+/* line 69, ../scss/screen.scss */
+#nav a.red {
+  background: #c12418;
+  border-bottom: 2px solid #66130d;
+}
+/* line 73, ../scss/screen.scss */
+#nav a.green {
+  background: #97a834;
+  border-bottom: 2px solid #515a1c;
+}
+/* line 78, ../scss/screen.scss */
+#nav h1 {
+  position: absolute;
+  top: 0.5em;
+  left: 1em;
+}
+/* line 83, ../scss/screen.scss */
+#nav h1 a {
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+  background: transparent;
+  border: 0 solid transparent;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+  text-indent: -119988px;
+  overflow: hidden;
+  text-align: left;
+  background-image: url('../img/artexin.png?1403715593');
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  width: 126px;
+  height: 24px;
+}
+
+/* line 95, ../scss/screen.scss */
+#content {
+  padding: 1em;
+}
+/* line 98, ../scss/screen.scss */
+#content p {
+  margin-bottom: 1em;
+}
+/* line 102, ../scss/screen.scss */
+#content h1 {
+  font-size: 150%;
+  text-transform: uppercase;
+  font-weight: bold;
+  border-bottom: 1px solid #dddddd;
+  padding-bottom: 0.5em;
+  margin: 1em 0 1em;
+  color: #a2a2a2;
+}
+/* line 112, ../scss/screen.scss */
+#content .form-notes {
+  padding: 0.5em;
+  color: #97a834;
+  border: 1px solid #96a734;
+}
+/* line 118, ../scss/screen.scss */
+#content a {
+  display: inline-block;
+  color: #298bec;
+  text-decoration: none;
+}
+/* line 123, ../scss/screen.scss */
+#content a:hover {
+  -webkit-border-radius: 1000px;
+  -moz-border-radius: 1000px;
+  -ms-border-radius: 1000px;
+  -o-border-radius: 1000px;
+  border-radius: 1000px;
+  background: #dddddd;
+}
+/* line 128, ../scss/screen.scss */
+#content a:visited {
+  color: #638bb2;
+}
+
+/* line 134, ../scss/screen.scss */
+#footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: right;
+  padding: 0.5em 1em;
+  background: #555555;
+  color: #eeeeee;
+}
+
+/* line 145, ../scss/screen.scss */
+input, textarea {
+  border: 0 solid transparent;
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  background: #dddddd;
+  padding: 0.5em;
+}
+
+/* line 153, ../scss/screen.scss */
+textarea {
+  width: 100%;
+  height: 200px;
+}
+
+/* line 158, ../scss/screen.scss */
+button, a.button {
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  display: inline-block;
+  vertical-align: middle;
+  color: #eeeeee;
+  text-decoration: none;
+  padding: 0.2em 1em;
+  border: 0 solid transparent;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -o-border-radius: 2px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  font-size: 80%;
+}
+/* line 35, ../scss/screen.scss */
+button:hover, a.button:hover {
+  position: relative;
+  top: -1px;
+}
+
+/* line 162, ../scss/screen.scss */
+button[type=submit] {
+  background: #97a834;
+}
+
+/* line 166, ../scss/screen.scss */
+.buttons {
+  border-top: 1px solid #dddddd;
+  margin-top: 1em;
+  padding-top: 1em;
+  text-align: right;
+}
+
+/* line 173, ../scss/screen.scss */
+label {
+  display: inline-block;
+  font-weight: bold;
+  width: 180px;
+  text-align: right;
+}
+
+/* line 180, ../scss/screen.scss */
+table {
+  width: auto;
+}
+/* line 183, ../scss/screen.scss */
+table th {
+  background: #298bec;
+  color: #eeeeee;
+  font-weight: bold;
+}
+/* line 189, ../scss/screen.scss */
+table td, table th {
+  padding: 0.5em 1em 0.5em 0.5em;
+  border-bottom: 1px solid #dddddd;
+  vertical-align: middle;
+}
+/* line 195, ../scss/screen.scss */
+table tr:hover td {
+  background: white;
+}
+
+/* line 200, ../scss/screen.scss */
+code {
+  font-family: monospace;
+}
+
+/* line 204, ../scss/screen.scss */
+ul.form-errors {
+  margin-bottom: 1em;
+  padding: 0.5em;
+  color: #c12418;
+  background: #f5b5b0;
+}
+/* line 210, ../scss/screen.scss */
+ul.form-errors li {
+  list-style: square;
+  margin: 0.5em 0 0.5em 1.5em;
+}
+
+/* line 217, ../scss/screen.scss */
+.batch-data .summary {
+  float: left;
+  width: 30%;
+  margin-right: 1em;
+}
+/* line 223, ../scss/screen.scss */
+.batch-data .pages {
+  overflow: hidden;
+}
+/* line 227, ../scss/screen.scss */
+.batch-data table {
+  width: 100%;
+}
