@@ -148,6 +148,7 @@ input, textarea {
   font-size: $base-size;
   background: $grey;
   padding: 0.5em;
+  @include box-sizing(border-box);
 }
 
 textarea {
