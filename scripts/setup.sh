@@ -44,12 +44,12 @@ fi
 
 # Update local package DB and upgrade installed packages
 apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
+DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes upgrade
 
 # Install build requirements
-DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential python3 \
-  python3-setuptools python3-dev python3-lxml python3-tk python3-imaging \
-  phantomjs nginx mongodb-org=2.6.1
+DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install build-essential \
+    python3 python3-setuptools python3-dev python3-lxml python3-tk \
+    python3-imaging phantomjs nginx mongodb-org=2.6.1
 
 # Set up MongoDB from 10gen
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
