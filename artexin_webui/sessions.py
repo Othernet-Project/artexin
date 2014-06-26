@@ -23,6 +23,7 @@ __author__ = _author
 __all__ = ('Session', 'MongoSessionStore', 'session', 'cycle',)
 
 SES_EXP = 14 * 24 * 60 * 60  # 14 days in seconds
+SES_SHORT = 30 * 60  # 30 minutes in seconds
 SES_COOKIE = 'cute_panda'
 SES_SECRET = 'notsecret'  # FIXME: Set this using command line args in app.py
 
@@ -36,19 +37,14 @@ class Session(mongo.Document):
     data = mongo.BinaryField(
         required=True,
         help_text='pickled data')
-    timestamp = mongo.DateTimeField(
+    expiry = mongo.DateTimeField(
         required=True,
-        default=datetime.utcnow,
         help_text='session timestamp')
-    permanent = mongo.BooleanField(
-        default=False,
-        help_text='wehether session does not expire')
 
     @classmethod
     def cleanup(cls):
         """ Remove obsolete sessions that are not permanent """
-        exp_time = datetime.utcnow() - timedelta(seconds=SES_EXP)
-        cls.objects(timestamp__lte=exp_time, permanent=False).delete()
+        cls.objects(expiry__lte=datetime.utcnow()).delete()
 
     @classmethod
     def by_sid(cls, sid):
@@ -64,8 +60,11 @@ class MongoSessionStore(SessionStore):
 
     def save(self, session):
         """ Pickles and stores session data """
+        extended = getattr(session, 'extended_session', False)
+        expiry_time = SES_EXP if extended else SES_SHORT
+        expiry = datetime.utcnow() + timedelta(seconds=expiry_time)
         binary = pickle.dumps(dict(session))
-        sessdoc = Session(sid=session.sid, data=binary)
+        sessdoc = Session(sid=session.sid, data=binary, expiry=expiry)
         sessdoc.save()
 
     def delete(self, session):
@@ -115,12 +114,14 @@ def session(session_store):
 
         """
         if request.session and request.session.should_save:
-            cookie_args = {}
-            if getattr(request.session, 'extended_session', False):
-                cookie_args['max_age'] = SES_EXP
+            extended = getattr(request.session, 'extended_session', False)
+            # Instead of omitting max_age, we use a very short max_age for
+            # 'session cookies'. The real 'session cookies' don't actually work
+            # as expected in major browsers like Chrome and Firefox.
+            max_age = SES_EXP if extended else SES_SHORT
             session_store.save(request.session)
             response.set_cookie(SES_COOKIE, request.session.sid, path='/',
-                                secret=SES_SECRET, **cookie_args)
+                                secret=SES_SECRET, max_age=max_age)
 
 
 def cycle():
