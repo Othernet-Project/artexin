@@ -184,10 +184,12 @@ textarea {
 button, a.button {
   @include button;
   @include button-color;
+  @include box-sizing(border-box);
+  height: 2.5em;
 }
 
 button[type=submit] {
-  background: $outernet-green;
+  @include button-color($outernet-green);
 }
 
 .buttons {
