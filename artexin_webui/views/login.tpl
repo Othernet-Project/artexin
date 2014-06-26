@@ -17,8 +17,8 @@
     </p>
     <p>
     <label for="remember">Remember me:</label>
-    {{!h.vselect('remember', (('s', 'disabled'), ('r', 'for 14 days')), vals)}}
-    <span class="help">Leave this disabled on public and multi-user computers</span>
+    {{!h.vselect('remember', (('s', 'for 30 minutes'), ('r', 'for 14 days')), vals)}}
+    <span class="help">Use 30-minute session on public and multi-user computers</span>
     </p>
     <p class="buttons">
     <button type="submit">Continue</button>
