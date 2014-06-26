@@ -150,7 +150,7 @@ def start(port=8080, bind='127.0.0.1', debug=False, views_dir=TPLPATH,
         'user': email_user,
         'pass': email_pwd,
         'host': email_host,
-        'port': int(email_port),
+        'port': email_port and int(email_port),
         'ssl': email_ssl,
         'sender': email_sender,
     }
