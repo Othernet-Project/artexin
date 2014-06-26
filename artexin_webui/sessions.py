@@ -37,19 +37,14 @@ class Session(mongo.Document):
     data = mongo.BinaryField(
         required=True,
         help_text='pickled data')
-    timestamp = mongo.DateTimeField(
+    expiry = mongo.DateTimeField(
         required=True,
-        default=datetime.utcnow,
         help_text='session timestamp')
-    permanent = mongo.BooleanField(
-        default=False,
-        help_text='wehether session does not expire')
 
     @classmethod
     def cleanup(cls):
         """ Remove obsolete sessions that are not permanent """
-        exp_time = datetime.utcnow() - timedelta(seconds=SES_EXP)
-        cls.objects(timestamp__lte=exp_time, permanent=False).delete()
+        cls.objects(expiry__lte=datetime.utcnow()).delete()
 
     @classmethod
     def by_sid(cls, sid):
@@ -65,8 +60,11 @@ class MongoSessionStore(SessionStore):
 
     def save(self, session):
         """ Pickles and stores session data """
+        extended = getattr(session, 'extended_session', False)
+        expiry_time = SES_EXP if extended else SES_SHORT
+        expiry = datetime.utcnow() + timedelta(seconds=expiry_time)
         binary = pickle.dumps(dict(session))
-        sessdoc = Session(sid=session.sid, data=binary)
+        sessdoc = Session(sid=session.sid, data=binary, expiry=expiry)
         sessdoc.save()
 
     def delete(self, session):
