@@ -1,5 +1,5 @@
 % rebase('base.tpl', title='Collect webpages')
-<h1>Collect webpages</h1>
+<h1>Add new pages</h1>
 <p class="form-notes">
 Paste URLs one per line and submit. Please give it some time before the request 
 is completed. It may take several minutes or more depending on the number of 
