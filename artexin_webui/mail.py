@@ -47,7 +47,7 @@ def send(view, data, subject, to, sender=None, settings={}, conn=None,
     data['subject'] = subject
     data['to'] = to
     data['sender'] = sender
-    data['timestmap'] = datetime.utcnow()
+    data['timestamp'] = datetime.utcnow()
 
     # Prepare the message
     msg = MIMEText(template(view, **data))
