@@ -2,7 +2,6 @@
 <h1>Log in</h1>
 
 <form action="/login/" method="POST">
-    {{!h.tag('foo')}}
     {{!h.vinput('redir', vals, _type='hidden')}}
     {{!h.form_errors(errors)}}
     <p>
