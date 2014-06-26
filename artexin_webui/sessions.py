@@ -22,7 +22,7 @@ __version__ = _version
 __author__ = _author
 __all__ = ('Session', 'MongoSessionStore', 'session', 'cycle',)
 
-SES_EXP = 14 # days
+SES_EXP = 14 * 24 * 60 * 60  # 14 days in seconds
 SES_COOKIE = 'cute_panda'
 SES_SECRET = 'notsecret'  # FIXME: Set this using command line args in app.py
 
@@ -47,7 +47,7 @@ class Session(mongo.Document):
     @classmethod
     def cleanup(cls):
         """ Remove obsolete sessions that are not permanent """
-        exp_time = datetime.utcnow() - timedelta(days=SES_EXP)
+        exp_time = datetime.utcnow() - timedelta(seconds=SES_EXP)
         cls.objects(timestamp__lte=exp_time, permanent=False).delete()
 
     @classmethod
@@ -115,10 +115,12 @@ def session(session_store):
 
         """
         if request.session and request.session.should_save:
+            cookie_args = {}
+            if getattr(request.session, 'extended_session', False):
+                cookie_args['max_age'] = SES_EXP
             session_store.save(request.session)
-            cookie_expiry = datetime.utcnow() + timedelta(days=SES_EXP)
             response.set_cookie(SES_COOKIE, request.session.sid, path='/',
-                                secret=SES_SECRET, expires=cookie_expiry)
+                                secret=SES_SECRET, **cookie_args)
 
 
 def cycle():
