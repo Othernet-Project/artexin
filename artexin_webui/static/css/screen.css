@@ -297,43 +297,44 @@ label {
 /* line 208, ../scss/screen.scss */
 table {
   width: auto;
+  margin-bottom: 1em;
 }
-/* line 211, ../scss/screen.scss */
+/* line 212, ../scss/screen.scss */
 table th {
   background: #298bec;
   color: #eeeeee;
   font-weight: bold;
 }
-/* line 217, ../scss/screen.scss */
+/* line 218, ../scss/screen.scss */
 table td, table th {
   padding: 0.5em 1em 0.5em 0.5em;
   border-bottom: 1px solid #dddddd;
   vertical-align: top;
 }
-/* line 223, ../scss/screen.scss */
+/* line 224, ../scss/screen.scss */
 table tr:hover td {
   background: white;
 }
 
-/* line 228, ../scss/screen.scss */
+/* line 229, ../scss/screen.scss */
 code {
   font-family: monospace;
 }
 
-/* line 232, ../scss/screen.scss */
+/* line 233, ../scss/screen.scss */
 ul.form-errors {
   margin-bottom: 1em;
   padding: 0.5em;
   color: #c12418;
   background: #f5b5b0;
 }
-/* line 238, ../scss/screen.scss */
+/* line 239, ../scss/screen.scss */
 ul.form-errors li {
   list-style: square;
   margin: 0.5em 0 0.5em 1.5em;
 }
 
-/* line 244, ../scss/screen.scss */
+/* line 245, ../scss/screen.scss */
 .field-error {
   display: block;
   margin-left: 200px;
@@ -343,22 +344,22 @@ ul.form-errors li {
   font-size: 90%;
 }
 
-/* line 254, ../scss/screen.scss */
+/* line 255, ../scss/screen.scss */
 .batch-data .summary {
   float: left;
   width: 30%;
   margin-right: 1em;
 }
-/* line 260, ../scss/screen.scss */
+/* line 261, ../scss/screen.scss */
 .batch-data .pages {
   overflow: hidden;
 }
-/* line 264, ../scss/screen.scss */
+/* line 265, ../scss/screen.scss */
 .batch-data table {
   width: 100%;
 }
 
-/* line 270, ../scss/screen.scss */
+/* line 271, ../scss/screen.scss */
 #content .home-menu li {
   display: inline-block;
   width: 200px;
@@ -366,7 +367,7 @@ ul.form-errors li {
   vertical-align: bottom;
   margin: 0 1em 1em 0;
 }
-/* line 278, ../scss/screen.scss */
+/* line 279, ../scss/screen.scss */
 #content .home-menu a {
   display: inline-block;
   width: 100%;
@@ -381,7 +382,7 @@ ul.form-errors li {
   padding: 0.2em;
   border-bottom-left-radius: 2000px;
 }
-/* line 292, ../scss/screen.scss */
+/* line 293, ../scss/screen.scss */
 #content .home-menu a:hover {
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
@@ -389,30 +390,30 @@ ul.form-errors li {
   -o-border-radius: 0;
   border-radius: 0;
 }
-/* line 296, ../scss/screen.scss */
+/* line 297, ../scss/screen.scss */
 #content .home-menu a.green {
   background: #97a834;
 }
-/* line 300, ../scss/screen.scss */
+/* line 301, ../scss/screen.scss */
 #content .home-menu a.orange {
   background: #fba72c;
 }
-/* line 304, ../scss/screen.scss */
+/* line 305, ../scss/screen.scss */
 #content .home-menu a.red {
   background: #c12418;
 }
 
-/* line 310, ../scss/screen.scss */
+/* line 311, ../scss/screen.scss */
 b, strong {
   font-weight: bold;
 }
 
-/* line 314, ../scss/screen.scss */
+/* line 315, ../scss/screen.scss */
 i, em {
   font-style: italic;
 }
 
-/* line 319, ../scss/screen.scss */
+/* line 320, ../scss/screen.scss */
 form span.help {
   display: block;
   margin-left: 200px;
