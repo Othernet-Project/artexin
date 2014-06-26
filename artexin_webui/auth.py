@@ -314,6 +314,9 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
         if action != 'verify':
             return {}  # Wrong action
 
+        user.verified = True
+        user.save()
+
         # Log the user in
         request.session['user'] = user
         cycle()
