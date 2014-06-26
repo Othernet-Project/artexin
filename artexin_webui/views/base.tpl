@@ -8,9 +8,8 @@
     <body>
         <div id="nav">
         <h1><a href="/">ArtExIn Web UI</a></h1>
-        <a href="/">home</a>
         <a class="green" href="/collections/">add pages</a>
-        <a href="/pages/">pages</a>
+        <a class="orange" href="/pages/">pages</a>
         <a href="/batches/">batches</a>
         % user=r.session.get('user')
         % if user:
