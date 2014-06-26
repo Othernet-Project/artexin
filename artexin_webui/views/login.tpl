@@ -20,6 +20,7 @@
     <span class="help">Use 30-minute session on public and multi-user computers</span>
     </p>
     <p class="buttons">
+    <a class="button" href="/reset/">Reset your password</a>
     <button type="submit">Continue</button>
     </p>
 </form>
