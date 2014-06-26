@@ -5,6 +5,7 @@
     <thead>
     <tr>
     <th>ID</th>
+    <th>Pages</th>
     <th>Time</th>
     </tr>
     </thead>
@@ -13,6 +14,7 @@
         % for batch in batches:
             <tr>
             <td><code><a href="/batches/{{ batch.id }}">{{ batch.id }}</a></code></td>
+            <td>{{ len(batch.pages) }}</td>
             <td>{{ batch.finished.strftime('%Y-%m-%d %H:%M UTC') }}</td>
             </tr>
         % end
