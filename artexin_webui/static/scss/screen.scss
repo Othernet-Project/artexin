@@ -155,12 +155,13 @@ html, body {
   color: $white;
 }
 
-input, textarea {
+input, textarea, select {
   border: 0 solid transparent;
   font-family: $base-font;
   font-size: $base-size;
   background: $grey;
   padding: 0.5em;
+  width: 200px;
   @include box-sizing(border-box);
 }
 
@@ -189,6 +190,7 @@ label {
   font-weight: bold;
   width: 180px;
   text-align: right;
+  margin-right: 1em;
 }
 
 table {
@@ -290,4 +292,14 @@ b, strong {
 
 i, em {
   font-style: italic;
+}
+
+form {
+  span.help {
+    display: block;
+    margin-left: 200px;
+    margin-top: 0.5em;
+    font-size: 90%;
+    color: $outernet-green;
+  }
 }
