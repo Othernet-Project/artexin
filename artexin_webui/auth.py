@@ -9,9 +9,12 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
 import os
+import re
+import time
 import random
 import hashlib
 from functools import wraps
+from email.utils import parseaddr
 from datetime import datetime, timedelta
 from urllib.parse import quote, urljoin
 
@@ -34,9 +37,12 @@ RNDPWLEN = 10
 PWITERS = 1000
 LOGIN_PATH = '/login/'
 VERIFY_SUBJECT = 'ArtExIn access URL (%s)'
+RESET_SUBJECT = 'ArtExIn password reset (%s)'
 TIMESTAMP = '%a %d %b at %H:%M:%S UTC'
 TOKEN_FORMAT = '[0-9a-f]{10}'
 ACTION_EXPIRY = 3 * 60  # 3 minutes in seconds
+RESET_EXPIRY = 24 * 60 * 60  # 1 day in seconds
+SES_USER_KEY = 'user'
 
 
 class LoginDetails(mongo.EmbeddedDocument):
@@ -90,6 +96,11 @@ class User(mongo.Document):
         """
         return ''.join([random.choice(RNDPWCHARS) for i in range(length)])
 
+    @staticmethod
+    def encrypt_password(password):
+        """ Encrypts the password using PBKDF2 """
+        return pbkdf2.crypt(password, iterations=PWITERS)
+
     def set_password(self, password=None):
         """ Set a new password
 
@@ -101,7 +112,7 @@ class User(mongo.Document):
         """
         if password is None:
             password = self.generate_password(RNDPWLEN)
-        self.password = pbkdf2.crypt(password, iterations=PWITERS)
+        self.password = self.encrypt_password(password)
         return password
 
     def add_action(self, action, data=None, expiry=ACTION_EXPIRY):
@@ -237,9 +248,9 @@ def restricted(f, role=None, allow_super=True, login=LOGIN_PATH, tpl='403'):
     """ Decorator for restricting access to routes
 
     The decorator expects that ``request`` object has ``session`` attribute,
-    which has a dict-like interface. It will look for 'user' key within the
-    ``session`` object, and if it finds none, it will assume that user is not
-    loggged in.
+    which has a dict-like interface. It will look for ``SES_USER_KEY`` key
+    within the ``session`` object, and if it finds none, it will assume that
+    user is not loggged in.
 
     :param f:               decorated function
     :param role:            optionally restrict access to only certain roles
@@ -250,7 +261,7 @@ def restricted(f, role=None, allow_super=True, login=LOGIN_PATH, tpl='403'):
     @wraps(f)
     def wrapped(*args, **kwargs):
         redir = quote('?'.join([request.path, request.query_string]))
-        user = request.session.get('user')
+        user = request.session.get(SES_USER_KEY)
         if user is None:
             # Not logged in, redirect to login path
             url = LOGIN_PATH + '?redir=' + redir
@@ -265,15 +276,19 @@ def restricted(f, role=None, allow_super=True, login=LOGIN_PATH, tpl='403'):
 
 
 def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
-                login_view='login'):
+                login_view='login', login_failed_view='login_failed',
+                check_view='check', reset_path='/reset/', reset_view='reset',
+                reset_check_view='reset_check',
+                reset_failed_view='reset_failed'):
     LOGIN_PATH = login_path
+    token_path_fragment = '<token:re:%s>' % TOKEN_FORMAT
 
     # GET /login/
     @bottle.get(login_path)
     @bottle.view(login_view, vals={'redir': redir_path}, errors={})
     def login_form():
         """ Render the login form """
-        user = request.session.get('user')
+        user = request.session.get(SES_USER_KEY)
         redir = request.query.get('redir', redir_path)
         if user:
             return safe_redirect(redir)  # already logged in
@@ -310,17 +325,18 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
         subject = VERIFY_SUBJECT % datetime.utcnow().strftime(TIMESTAMP)
         data = {'token': action.token, 'expiry': action.expiry}
         send('email/verify', data, subject, user.email)
-        return safe_redirect('/login/check')
+        return safe_redirect(login_path + 'check')
 
     # GET /login/check
     @bottle.get(login_path + 'check')
-    @bottle.view('check')
+    @bottle.view(check_view)
     def login_check():
+        """ Show check email page for two-step verfication """
         return {}
 
     # GET /login/<token>
-    @bottle.get(login_path + '<token:re:%s>' % TOKEN_FORMAT)
-    @bottle.view('login_failed')
+    @bottle.get(login_path + token_path_fragment)
+    @bottle.view(login_failed_view)
     def login_verify(token):
         try:
             user, action, data = UserAction.get_action(token)
@@ -338,7 +354,91 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
         user.save()
 
         # Log the user in
-        request.session['user'] = user
+        request.session[SES_USER_KEY] = user
         cycle()
         request.session.extended_session = data['rem'] == 'r'
         return safe_redirect(data.get('redir', redir_path))
+
+    # GET /reset/
+    @bottle.get(reset_path)
+    @bottle.view(reset_view, vals={}, errors={})
+    def reset_form():
+        """ Show reset password form """
+        return {}
+
+    # POST /reset/
+    @bottle.post(reset_path)
+    @bottle.view(reset_view)
+    def reset():
+        """ Handle reset request """
+        errors = {}
+
+        # Get form data
+        forms = request.forms
+        email = forms.get('email', '').strip().lower()
+        password = forms.get('password', '').strip()
+        confirm = forms.get('confirm', '').strip()
+        user = request.session.get('user')
+
+        # Validate
+        if not user:
+            _, email = parseaddr(email)
+            if '@' not in email:
+                errors['email'] = 'Please type in a valid email address'
+        else:
+            email = user.email
+        if password == '':
+            errors['password'] = 'Password cannot be empty'
+        if confirm == '':
+            errors['confirm'] = 'Please retype the password'
+        if password != confirm:
+            errors['_'] = 'Passwords do not match'
+
+        if errors:
+            return {'vals': forms, 'errors': errors}
+
+        if not user:
+            # Find user with that email
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                # Pretend to be sending an email
+                time.sleep(random.randrange(5, 20))
+                return safe_redirect(reset_path + 'check')
+
+        encrypted = User.encrypt_password(password)
+
+        # Generate action
+        action = user.add_action('reset', {'pw': encrypted},
+                                 expiry=RESET_EXPIRY)
+        subject = RESET_SUBJECT % datetime.utcnow().strftime(TIMESTAMP)
+        data = {'token': action.token, 'expiry': action.expiry}
+        send('email/reset', data, subject, user.email)
+        return safe_redirect(reset_path + 'check')
+
+    @bottle.get(reset_path + 'check')
+    @bottle.view(reset_check_view)
+    def reset_check():
+        """ Show check email page for password reset """
+        return {}
+
+
+    @bottle.get(reset_path + token_path_fragment)
+    @bottle.view(reset_failed_view)
+    def reset_done(token):
+        try:
+            user, action, data = UserAction.get_action(token)
+        except UserAction.DoesNotExist:
+            return {}
+
+        if action != 'reset':
+            return {}
+
+        # Set the password for real
+        user.password = data['pw']
+        user.save()
+
+        # Force log-out
+        logout()
+
+        return safe_redirect(login_path)
