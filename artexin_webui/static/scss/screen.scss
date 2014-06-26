@@ -114,6 +114,14 @@ html, body {
     color: lighten($black, 30);
   }
 
+  h2 {
+    color: $black;
+    font-size: 120%;
+    font-weight: bold;
+    margin: 2em 0 1em;
+    text-transform: uppercase;
+  }
+
   .form-notes {
     padding: 0.5em;
     color: $outernet-green;

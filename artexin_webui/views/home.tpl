@@ -7,3 +7,31 @@
     <li><a href="/batches/">Completed batches</a></li>
     <li><a class="red" href="/logout/">Log out</a></li>
 </ul>
+
+<h2>Previous logins</h2>
+
+<p>Your current IP is: {{ r.remote_addr }}</p>
+
+<table>
+    <thead>
+        <tr>
+        <th>IP address</th>
+        <th>Time</th>
+        </tr>
+    </thead>
+    <tbody>
+    % if user.logins:
+        % for login in reversed(user.logins):
+            <tr>
+            <td>{{ login.ip_address }}</td>
+            <td>{{ login.timestamp.strftime('%d %b at %H:%M UTC') }}</td>
+            </tr>
+        % end
+    % else:
+        <tr>
+        <td colspan="2">No previous logins</td>
+        </tr>
+    % end
+    </tbody>
+</table>
+
