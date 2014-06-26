@@ -12,6 +12,8 @@
 
 <p>Your current IP is: {{ r.remote_addr }}</p>
 
+<p>The table below show last 5 logins.</p>
+
 <table>
     <thead>
         <tr>
@@ -21,7 +23,7 @@
     </thead>
     <tbody>
     % if user.logins:
-        % for login in reversed(user.logins):
+        % for login in reversed(user.logins[-5:]):
             <tr>
             <td>{{ login.ip_address }}</td>
             <td>{{ login.timestamp.strftime('%d %b at %H:%M UTC') }}</td>
