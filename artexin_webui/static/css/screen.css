@@ -196,19 +196,26 @@ html, body {
 }
 /* line 136, ../scss/screen.scss */
 #content a:hover {
-  -webkit-border-radius: 1000px;
-  -moz-border-radius: 1000px;
-  -ms-border-radius: 1000px;
-  -o-border-radius: 1000px;
-  border-radius: 1000px;
-  background: #dddddd;
+  text-decoration: underline;
 }
-/* line 141, ../scss/screen.scss */
+/* line 140, ../scss/screen.scss */
 #content a:visited {
   color: #638bb2;
 }
+/* line 144, ../scss/screen.scss */
+#content a.button {
+  color: #eeeeee;
+}
+/* line 148, ../scss/screen.scss */
+#content a.button:visited {
+  color: #eeeeee;
+}
+/* line 152, ../scss/screen.scss */
+#content a.button:hover {
+  text-decoration: none;
+}
 
-/* line 147, ../scss/screen.scss */
+/* line 158, ../scss/screen.scss */
 #footer {
   position: fixed;
   bottom: 0;
@@ -220,7 +227,7 @@ html, body {
   color: #eeeeee;
 }
 
-/* line 158, ../scss/screen.scss */
+/* line 169, ../scss/screen.scss */
 input, textarea, select {
   border: 0 solid transparent;
   font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -233,13 +240,13 @@ input, textarea, select {
   box-sizing: border-box;
 }
 
-/* line 168, ../scss/screen.scss */
+/* line 179, ../scss/screen.scss */
 textarea {
   width: 100%;
   height: 200px;
 }
 
-/* line 173, ../scss/screen.scss */
+/* line 184, ../scss/screen.scss */
 button, a.button {
   font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -256,6 +263,12 @@ button, a.button {
   border-radius: 2px;
   text-transform: uppercase;
   font-size: 80%;
+  background: #298bec;
+  border-bottom: 2px solid #0e58a1;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 2.5em;
 }
 /* line 36, ../scss/screen.scss */
 button:hover, a.button:hover {
@@ -263,12 +276,13 @@ button:hover, a.button:hover {
   top: -1px;
 }
 
-/* line 177, ../scss/screen.scss */
+/* line 191, ../scss/screen.scss */
 button[type=submit] {
   background: #97a834;
+  border-bottom: 2px solid #515a1c;
 }
 
-/* line 181, ../scss/screen.scss */
+/* line 195, ../scss/screen.scss */
 .buttons {
   border-top: 1px solid #dddddd;
   margin-top: 1em;
@@ -276,7 +290,7 @@ button[type=submit] {
   text-align: right;
 }
 
-/* line 188, ../scss/screen.scss */
+/* line 202, ../scss/screen.scss */
 label {
   display: inline-block;
   font-weight: bold;
@@ -285,61 +299,72 @@ label {
   margin-right: 1em;
 }
 
-/* line 196, ../scss/screen.scss */
+/* line 210, ../scss/screen.scss */
 table {
   width: auto;
+  margin-bottom: 1em;
 }
-/* line 199, ../scss/screen.scss */
+/* line 214, ../scss/screen.scss */
 table th {
   background: #298bec;
   color: #eeeeee;
   font-weight: bold;
 }
-/* line 205, ../scss/screen.scss */
+/* line 220, ../scss/screen.scss */
 table td, table th {
   padding: 0.5em 1em 0.5em 0.5em;
   border-bottom: 1px solid #dddddd;
   vertical-align: top;
 }
-/* line 211, ../scss/screen.scss */
+/* line 226, ../scss/screen.scss */
 table tr:hover td {
   background: white;
 }
 
-/* line 216, ../scss/screen.scss */
+/* line 231, ../scss/screen.scss */
 code {
   font-family: monospace;
 }
 
-/* line 220, ../scss/screen.scss */
+/* line 235, ../scss/screen.scss */
 ul.form-errors {
   margin-bottom: 1em;
   padding: 0.5em;
   color: #c12418;
   background: #f5b5b0;
 }
-/* line 226, ../scss/screen.scss */
+/* line 241, ../scss/screen.scss */
 ul.form-errors li {
   list-style: square;
   margin: 0.5em 0 0.5em 1.5em;
 }
 
-/* line 233, ../scss/screen.scss */
+/* line 247, ../scss/screen.scss */
+.field-error {
+  display: block;
+  margin-left: 200px;
+  margin-top: 0.5em;
+  color: #c12418;
+  font-weight: bold;
+  font-size: 90%;
+}
+
+/* line 257, ../scss/screen.scss */
 .batch-data .summary {
   float: left;
   width: 30%;
   margin-right: 1em;
 }
-/* line 239, ../scss/screen.scss */
+/* line 263, ../scss/screen.scss */
 .batch-data .pages {
   overflow: hidden;
 }
-/* line 243, ../scss/screen.scss */
+/* line 267, ../scss/screen.scss */
 .batch-data table {
   width: 100%;
 }
 
-/* line 249, ../scss/screen.scss */
+/* line 273, ../scss/screen.scss */
 #content .home-menu li {
   display: inline-block;
   width: 200px;
@@ -347,7 +372,7 @@ ul.form-errors li {
   vertical-align: bottom;
   margin: 0 1em 1em 0;
 }
-/* line 257, ../scss/screen.scss */
+/* line 281, ../scss/screen.scss */
 #content .home-menu a {
   display: inline-block;
   width: 100%;
@@ -362,7 +387,7 @@ ul.form-errors li {
   padding: 0.2em;
   border-bottom-left-radius: 2000px;
 }
-/* line 271, ../scss/screen.scss */
+/* line 295, ../scss/screen.scss */
 #content .home-menu a:hover {
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
@@ -370,30 +395,30 @@ ul.form-errors li {
   -o-border-radius: 0;
   border-radius: 0;
 }
-/* line 275, ../scss/screen.scss */
+/* line 299, ../scss/screen.scss */
 #content .home-menu a.green {
   background: #97a834;
 }
-/* line 279, ../scss/screen.scss */
+/* line 303, ../scss/screen.scss */
 #content .home-menu a.orange {
   background: #fba72c;
 }
-/* line 283, ../scss/screen.scss */
+/* line 307, ../scss/screen.scss */
 #content .home-menu a.red {
   background: #c12418;
 }
 
-/* line 289, ../scss/screen.scss */
+/* line 313, ../scss/screen.scss */
 b, strong {
   font-weight: bold;
 }
 
-/* line 293, ../scss/screen.scss */
+/* line 317, ../scss/screen.scss */
 i, em {
   font-style: italic;
 }
 
-/* line 298, ../scss/screen.scss */
+/* line 322, ../scss/screen.scss */
 form span.help {
   display: block;
   margin-left: 200px;

@@ -134,12 +134,23 @@ html, body {
     text-decoration: none;
 
     &:hover {
-      @include border-radius(1000px);
-      background: $grey;
+      text-decoration: underline;
     }
 
     &:visited {
       color: desaturate($outernet-blue, 50);
+    }
+
+    &.button {
+      color: $white;
+    }
+
+    &.button:visited {
+      color: $white;     
+    }
+
+    &.button:hover {
+      text-decoration: none;
     }
   }
 }
@@ -172,10 +183,13 @@ textarea {
 
 button, a.button {
   @include button;
+  @include button-color;
+  @include box-sizing(border-box);
+  height: 2.5em;
 }
 
 button[type=submit] {
-  background: $outernet-green;
+  @include button-color($outernet-green);
 }
 
 .buttons {
@@ -195,6 +209,7 @@ label {
 
 table {
   width: auto;
+  margin-bottom: 1em;
 
   th {
     background: $outernet-blue;
@@ -227,6 +242,15 @@ ul.form-errors {
     list-style: square;
     margin: 0.5em 0 0.5em 1.5em;
   }
+}
+
+.field-error {
+  display: block;
+  margin-left: 200px;
+  margin-top: 0.5em;
+  color: $outernet-red;
+  font-weight: bold;
+  font-size: 90%;
 }
 
 .batch-data {

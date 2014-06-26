@@ -10,9 +10,9 @@
 
 <h2>Previous logins</h2>
 
-<p>Your current IP is: {{ r.remote_addr }}</p>
-
-<p>The table below show last 5 logins.</p>
+<p>
+<a class="button" href="/reset/">Change your password</a>
+</p>
 
 <table>
     <thead>
@@ -36,4 +36,8 @@
     % end
     </tbody>
 </table>
+
+<p>
+Your current IP is: {{ r.remote_addr }}
+</p>
 
