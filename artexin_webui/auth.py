@@ -39,6 +39,18 @@ TOKEN_FORMAT = '[0-9a-f]{10}'
 ACTION_EXPIRY = 3 * 60  # 3 minutes in seconds
 
 
+class LoginDetails(mongo.EmbeddedDocument):
+    timestamp = mongo.DateTimeField(
+        default=datetime.utcnow(),
+        help_text='login timestamp')
+    ip_address = mongo.StringField(
+        required=True,
+        help_text='IP address')
+
+    def __repr__(self):
+        return '<LoginDetails %s from %s>' % (self.timestamp, self.ip_address)
+
+
 class User(mongo.Document):
     """ User document """
     is_anonymous = False
@@ -63,6 +75,9 @@ class User(mongo.Document):
     verified = mongo.BooleanField(
         default=False,
         help_text='whether user email is verified')
+    logins = mongo.ListField(
+        mongo.EmbeddedDocumentField(LoginDetails),
+        help_text='login history')
 
     def generate_password(self, length):
         """ Generate random password of specified ``length``
@@ -314,7 +329,13 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
         if action != 'verify':
             return {}  # Wrong action
 
-        user.verified = True
+        print(request.remote_addr)
+        print(request.remote_route)
+        login_details = LoginDetails(timestamp=datetime.utcnow(),
+                                     ip_address=request.remote_addr)
+        user.logins.append(login_details)
+        if not user.verified:
+            user.verified = True
         user.save()
 
         # Log the user in
