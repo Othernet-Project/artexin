@@ -298,6 +298,7 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
         forms = request.forms
         redir = forms.get('redir', redir_path)
         email = forms.get('email', '')
+        remember = forms.get('remember', 's')
         password = forms.get('password', '')
 
         # Process authentication request
@@ -305,7 +306,7 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
         if user is None:
             errors = {'_': 'Invalid email or password'}
             return {'errors': errors, 'vals': forms}
-        action = user.add_action('verify', {'redir': redir})
+        action = user.add_action('verify', {'redir': redir, 'rem': remember})
         subject = VERIFY_SUBJECT % datetime.utcnow().strftime(TIMESTAMP)
         data = {'token': action.token, 'expiry': action.expiry}
         send('email/verify', data, subject, user.email)
@@ -339,4 +340,5 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
         # Log the user in
         request.session['user'] = user
         cycle()
+        request.session.extended_session = data['rem'] == 'r'
         return safe_redirect(data.get('redir', redir_path))

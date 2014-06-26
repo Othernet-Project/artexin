@@ -15,8 +15,13 @@
     {{!h.vinput('password', vals, _type='password')}}
     {{!h.field_error(errors, 'password')}}
     </p>
+    <p>
+    <label for="remember">Remember me:</label>
+    {{!h.vselect('remember', (('s', 'disabled'), ('r', 'for 14 days')), vals)}}
+    <span class="help">Leave this disabled on public and multi-user computers</span>
+    </p>
     <p class="buttons">
-    <button type="submit">Log in</button>
+    <button type="submit">Continue</button>
     </p>
 </form>
     
