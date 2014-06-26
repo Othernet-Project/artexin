@@ -329,8 +329,6 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
         if action != 'verify':
             return {}  # Wrong action
 
-        print(request.remote_addr)
-        print(request.remote_route)
         login_details = LoginDetails(timestamp=datetime.utcnow(),
                                      ip_address=request.remote_addr)
         user.logins.append(login_details)
