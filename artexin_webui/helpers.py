@@ -152,6 +152,8 @@ INPUT = functools.partial(tag, 'input', nonclosing=True)
 BUTTON = functools.partial(tag, 'button')
 SUBMIT = functools.partial(BUTTON, _type='submit')
 HIDDEN = lambda n, v: INPUT(_name=n, value=v, _type='hidden')
+OPTION = functools.partial(tag, 'option')
+SELECT = functools.partial(tag, 'select')
 
 
 def vinput(name, values, **attrs):
@@ -160,6 +162,18 @@ def vinput(name, values, **attrs):
     if value is None:
         return INPUT(_id=name, _name=name, **attrs)
     return INPUT(_id=name, _name=name, value=value, **attrs)
+
+
+def vselect(name, choices, values, **attrs):
+    """ Render select list with value preselected """
+    value = values.get(name)
+    options = []
+    for val, label in choices:
+        if val == value:
+            options.append(OPTION(label, value=val, selected=None))
+        else:
+            options.append(OPTION(label, value=val))
+    return SELECT(''.join(options), _id=name, _name=name, **attrs)
 
 
 def link_other(label, url, path, wrapper=None):
