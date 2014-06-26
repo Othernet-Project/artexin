@@ -12,6 +12,7 @@ import os
 import random
 import hashlib
 from functools import wraps
+from datetime import datetime, timedelta
 from urllib.parse import quote, urljoin
 
 import pbkdf2
@@ -21,6 +22,7 @@ from bottle import request, response, redirect, template
 
 from . import __version__ as _version, __author__ as _author
 from .sessions import cycle
+from .mail import send
 
 __version__ = _version
 __author__ = _author
@@ -31,26 +33,22 @@ RNDPWCHARS = 'acdefhjkmnrtuvwxyABCDEFGJKMNPQRTUVWXY3478#@'
 RNDPWLEN = 10
 PWITERS = 1000
 LOGIN_PATH = '/login/'
+VERIFY_SUBJECT = 'ArtExIn access URL (%s)'
+TIMESTAMP = '%a %d %b at %H:%M:%S UTC'
+TOKEN_FORMAT = '[0-9a-f]{10}'
+ACTION_EXPIRY = 3 * 60  # 3 minutes in seconds
 
 
-class UserAction(mongo.EmbeddedDocument):
-    """ Document storing user actions """
-    token = mongo.StringField(
+class LoginDetails(mongo.EmbeddedDocument):
+    timestamp = mongo.DateTimeField(
+        default=datetime.utcnow(),
+        help_text='login timestamp')
+    ip_address = mongo.StringField(
         required=True,
-        regex=r'[a-z][0-9]{10}')
-    action = mongo.StringField(
-        required=True,
-        help_text='action type')
-    data = mongo.StringField(
-        help_text='action data')
+        help_text='IP address')
 
-    @staticmethod
-    def generate_token():
-        """ Generate action token """
-        bstr = os.urandom(8)
-        sha1 = hashlib.sha1()
-        sha1.update(bstr)
-        return sha1.hexdigest()[:10]
+    def __repr__(self):
+        return '<LoginDetails %s from %s>' % (self.timestamp, self.ip_address)
 
 
 class User(mongo.Document):
@@ -77,7 +75,9 @@ class User(mongo.Document):
     verified = mongo.BooleanField(
         default=False,
         help_text='whether user email is verified')
-    pending = mongo.ListField(mongo.EmbeddedDocumentField(UserAction))
+    logins = mongo.ListField(
+        mongo.EmbeddedDocumentField(LoginDetails),
+        help_text='login history')
 
     def generate_password(self, length):
         """ Generate random password of specified ``length``
@@ -104,6 +104,18 @@ class User(mongo.Document):
         self.password = pbkdf2.crypt(password, iterations=PWITERS)
         return password
 
+    def add_action(self, action, data=None, expiry=ACTION_EXPIRY):
+        """ Add a new action to the user document """
+        expiry = datetime.utcnow() + timedelta(seconds=expiry)
+        action = UserAction(
+            user=self,
+            token=UserAction.generate_token(),
+            action=action,
+            expiry=expiry,
+            data=data)
+        action.save()
+        return action
+
     @classmethod
     def create_user(cls, email, password=None, **kwargs):
         """ Create a new user record
@@ -128,27 +140,6 @@ class User(mongo.Document):
         assert user.superuser, 'User must be superuser'
         return user, password
 
-    def add_action(self, action, data=None):
-        """ Add a new action to the user document """
-        action = UserAction(token=UserAction.generate_token(), action=action,
-                            data=data)
-        self.pending.push(action)
-
-    def get_action(self, token):
-        """ Find action object by email md5 and action token
-
-        This function will return a tuple of action name and action data. If
-        the action is not found, ``None`` is returned instead of action name.
-
-        :param md5:     MD5 hexdigest of the email
-        :param token:   action token
-        :returns:       tuple of action name and action data
-        """
-        for action in self.pending:
-            if action.token == token:
-                return action.action, action.data
-        return None, None
-
     @classmethod
     def authenticate(cls, email, password):
         """ Check if email-password combination match a user
@@ -169,6 +160,62 @@ class User(mongo.Document):
 
     def __repr__(self):
         return '<User: %s>' % self.email
+
+
+class UserAction(mongo.Document):
+    """ Document storing user actions """
+    user = mongo.ReferenceField(
+        User,
+        help_text='user to which this action belongs')
+    token = mongo.StringField(
+        required=True,
+        regex=TOKEN_FORMAT)
+    action = mongo.StringField(
+        required=True,
+        help_text='action type')
+    expiry = mongo.DateTimeField(
+        required=True,
+        help_text='expiry timestamp')
+    data = mongo.DictField(
+        help_text='action data')
+    timestamp = mongo.DateTimeField(
+        default=datetime.utcnow(),
+        help_text='creation timestamp')
+
+    @staticmethod
+    def generate_token():
+        """ Generate action token """
+        bstr = os.urandom(8)
+        sha1 = hashlib.sha1()
+        sha1.update(bstr)
+        return sha1.hexdigest()[:10]
+
+    @classmethod
+    def get_action(cls, token):
+        """ Find action related to token and return user and action data
+
+        The ``DoesNotExist`` exception will be raised if there is no matching
+        token.
+
+        :param token:   token
+        :returns:       tuple containing user document, action name, and data
+        """
+        cls.cleanup()
+        action_obj = cls.objects.get(token=token)
+        user = action_obj.user
+        action = action_obj.action
+        data = action_obj.data
+        action_obj.delete()
+        return user, action, data
+
+    @classmethod
+    def cleanup(cls):
+        """ Removes all expired action tokens """
+        cls.objects(expiry__lt=datetime.utcnow()).delete()
+
+    def __repr__(self):
+        return '<UserAction %s>' % self.token
+
 
 
 def safe_redirect(url, code=302):
@@ -254,9 +301,44 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
         password = forms.get('password', '')
 
         # Process authentication request
-        request.session['user'] = user = User.authenticate(email, password)
+        user = User.authenticate(email, password)
         if user is None:
             errors = {'_': 'Invalid email or password'}
             return {'errors': errors, 'vals': forms}
-        cycle()  # changes session ID for current session
-        return safe_redirect(redir)
+        action = user.add_action('verify', {'redir': redir})
+        subject = VERIFY_SUBJECT % datetime.utcnow().strftime(TIMESTAMP)
+        data = {'token': action.token, 'expiry': action.expiry}
+        send('email/verify', data, subject, user.email)
+        return safe_redirect('/login/check')
+
+    # GET /login/check
+    @bottle.get(login_path + 'check')
+    @bottle.view('check')
+    def login_check():
+        return {}
+
+    # GET /login/<token>
+    @bottle.get(login_path + '<token:re:%s>' % TOKEN_FORMAT)
+    @bottle.view('login_failed')
+    def login_verify(token):
+        try:
+            user, action, data = UserAction.get_action(token)
+        except UserAction.DoesNotExist:
+            return {}
+
+        if action != 'verify':
+            return {}  # Wrong action
+
+        print(request.remote_addr)
+        print(request.remote_route)
+        login_details = LoginDetails(timestamp=datetime.utcnow(),
+                                     ip_address=request.remote_addr)
+        user.logins.append(login_details)
+        if not user.verified:
+            user.verified = True
+        user.save()
+
+        # Log the user in
+        request.session['user'] = user
+        cycle()
+        return safe_redirect(data.get('redir', redir_path))
