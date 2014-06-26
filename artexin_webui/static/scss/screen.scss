@@ -18,6 +18,7 @@ $outernet-blue: #298bec;
 $outernet-red: #c12418;
 $outernet-yellow: #fbdf2c;
 $outernet-green: #97A834;
+$outernet-orange: #fba72c;
 
 @mixin button($color: $outernet-blue) {
   font-family: $base-font;
@@ -68,6 +69,10 @@ html, body {
 
     &.red {
       @include button-color($outernet-red);
+    }
+
+    &.orange {
+      @include button-color($outernet-orange);
     }
 
     &.green {
@@ -190,7 +195,7 @@ table {
   td, th {
     padding: 0.5em 1em 0.5em 0.5em;
     border-bottom: 1px solid $grey;
-    vertical-align: middle;
+    vertical-align: top;
   }
 
   tr:hover td {
@@ -228,4 +233,53 @@ ul.form-errors {
   table {
     width: 100%;
   }
+}
+
+#content .home-menu {
+  li {
+    display: inline-block;
+    width: 200px;
+    height: 200px;
+    vertical-align: bottom;
+    margin: 0 1em 1em 0;
+  }
+
+  a {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    background: $outernet-blue;
+    font-size: 200%;
+    vertical-align: middle;
+    color: $white;
+    line-height: 100%;
+    text-transform: uppercase;
+    text-align: right;
+    padding: 0.2em;
+    border-bottom-left-radius: 2000px;
+
+    &:hover {
+      @include border-radius(0);
+    }
+
+    &.green {
+      background: $outernet-green;
+    }
+
+    &.orange {
+      background: $outernet-orange;
+    }
+
+    &.red {
+      background: $outernet-red;
+    }
+  }
+}
+
+b, strong {
+  font-weight: bold;
+}
+
+i, em {
+  font-style: italic;
 }

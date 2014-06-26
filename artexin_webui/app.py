@@ -49,6 +49,14 @@ bottle.BaseTemplate.defaults = {
 }
 
 
+# GET /
+@bottle.get('/')
+@bottle.view('home')
+@auth.restricted
+def home():
+    return {}
+
+
 # GET /collections/
 @bottle.get('/collections/')
 @bottle.view('collection_form', h=helpers)
@@ -114,8 +122,9 @@ def page(page_id):
     except Page.DoesNotExist:
         bottle.abort(404)
     md5 = page.md5
-    file_exists = exists(join(CDIR, '%s.zip' % md5))
-    return {'page': page, 'exists': file_exists}
+    file_path = join(request.app.config['collection_dir'], '%s.zip' % md5)
+    file_exists = exists(file_path)
+    return {'page': page, 'file_path': file_path, 'exists': file_exists}
 
 
 # Set up authentication views
