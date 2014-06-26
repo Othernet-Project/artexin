@@ -29,6 +29,11 @@
     </tr>
     <tr>
         <th>file:</th>
-        <td>{{ page.md5 }}.zip {{ h.yesno(exists, 'available', 'removed') }}</td>
+        <td>{{ page.md5 }}.zip</td>
+    </tr>
+    <tr>
+        <th>available:</th>
+        <td>{{ h.yesno(exists) }}</td>
+    </tr>
     </tbody>
 </table>
