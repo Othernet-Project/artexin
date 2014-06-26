@@ -12,8 +12,10 @@ import sys
 import getpass
 
 import mongoengine as mongo
+from bottle import default_app
 
 from .auth import User
+from .mail import send
 
 from . import __version__ as _version, __author__ as _author
 
@@ -41,3 +43,19 @@ def create_superuser(args):
         create_superuser(args) # Loop until we have a user
     sys.exit(0)
 
+
+def test_email(args):
+    app = default_app()
+    app.config['email'] = {
+        'user': args.email_user,
+        'pass': args.email_pass,
+        'host': args.email_host,
+        'port': int(args.email_port),
+        'ssl': args.email_ssl,
+        'sender': args.email_sender,
+    }
+    print("Sending message")
+    conn, msg = send('email/test', {}, 'Test email', args.email_test)
+    print("Sent using connection %s" % conn)
+    print("Sent message %s" % msg)
+    sys.exit(0)
