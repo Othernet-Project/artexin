@@ -25,6 +25,9 @@ SRCDIR=/vagrant
 CONFPATH="$SRCDIR/conf/artexin.ini"
 SCRIPTDIR="$( cd "$( dirname "$0" )" && pwd )"
 STATICDIR=/srv/static
+ZIPDIR=/srv/zipballs
+APPUSER=artexin
+NGINXUSER=www-data
 NLTKDIR=/usr/share/nltk_data
 BINDIR=/usr/local/bin
 BINPROF=/etc/profile.d/local_exec.sh
@@ -97,6 +100,12 @@ done
 
 
 ###############################################################################
+# USERS
+###############################################################################
+
+id "$APPUSER" > /dev/null || useradd "$APPUSER"
+
+###############################################################################
 # FILESYSTEM
 ###############################################################################
 
@@ -104,6 +113,12 @@ done
 if [[ ! -d "$STATICDIR" ]]; then
     ln -s "$SRCDIR/artexin_webui/static" "$STATICDIR"
 fi
+
+if [[ ! -d "$ZIPDIR" ]]; then
+    mkdir -p "$ZIPDIR"
+fi
+chown -R "$NGINXUSER":"$NGINXUSER" "$ZIPDIR"
+chmod 775 "$ZIPDIR"
 
 # Set up the runtest script
 echo "Set up scripts"
