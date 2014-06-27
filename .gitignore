@@ -6,3 +6,4 @@
 *.gif
 /.vagrant
 /artexin_webui/static/.sass-cache
+/tmp
