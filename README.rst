@@ -54,6 +54,53 @@ a symlink).
 You cannot run tests for individual modules because they may use relative
 imports from different modules in the same package.
 
+Starting the ArtExIn Web UI application
+=======================================
+
+The application can be started using the ``startapp`` script from your Vagrant
+box. To do this, simply ssh into Vagrant box and type::
+
+    sartapp
+
+The configuration settings for the application are located in
+``conf/artexin.ini``. These settings are not quite useful generally, so you
+will need to modify it. Instead of modifying the configuration in-place, you
+should consider creating your own copy. If you create a ``tmp`` directory
+within the source tree, it will be ignored by git, so it's a good place to
+store your own configuration without complicating source code management.
+
+Copy ``conf/artexin.ini`` to ``tmp/dev.ini`` (or some other file name you want)
+and edit anything you wish. Then run the application like so::
+
+    starapp -c /vagrant/tmp/dev.ini
+
+If you want to know what configuration settings are being used, you can do so
+by using the ``--debug-conf`` switch::
+
+    starapp -c /vagrant/tmp/dev.ini --debug-conf
+
+This prints out a listing that looks like this::
+
+    {   'artex.directory': '/vagrant',
+        'artex.processes': '4',
+        'artexin.bind': '127.0.0.1',
+        'artexin.database': 'artexinweb',
+        'artexin.debug': 'yes',
+        'artexin.port': '8080',
+        'artexin.server': 'cherrypy',
+        'artexin.views': '/vagrant/artexin_webui/views',
+        'autojson': True,
+        'catchall': True,
+        'email.host': 'localhost',
+        'email.pass': 'root',
+        'email.port': '25',
+        'email.sender': 'joe@example.com',
+        'email.ssl': 'yes',
+        'email.user': 'root'}
+
+Once the application is started, it can be accessed as `on port 8080`_ on the
+host machine.
+
 Known issues
 ============
 
@@ -78,3 +125,4 @@ Please report all bugs to our `issue tracker`_.
 .. _virtualenv: http://virtualenv.readthedocs.org/en/latest/
 .. _NLTK: http://www.nltk.org/
 .. _issue tracker: https://github.com/Outernet-Project/artexin/issues
+.. _on port 8080: http://localhost:8080/
