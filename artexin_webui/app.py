@@ -28,10 +28,10 @@ from artexin_webui import cli
 
 __version__ = artexin_webui.__version__
 __author__ = artexin_webui.__author__
-__all__ = ('collections_form', 'collections_process',)
 
 MODPATH = dirname(abspath(__file__))
 TPLPATH = join(MODPATH, 'views')
+CONFPATH = join(dirname(MODPATH), 'conf', 'artexin.ini')
 CDIR = tempfile.gettempdir()
 CPROC = 4
 DEFAULT_DB = 'artexinweb'
@@ -40,6 +40,8 @@ bottle.BaseTemplate.defaults = {
     'h': helpers,
     'r': request,
 }
+
+app = bottle.default_app()
 
 
 # GET /
@@ -70,8 +72,8 @@ def collections_process():
     urls = list(set([url.strip() for url in urls.strip().split('\n')]))
     batch = Batch.process_urls(
         urls,
-        base_dir=request.app.config['collection_dir'],
-        max_procs=request.app.config['collection_proc'])
+        base_dir=request.app.config['artex.directory'],
+        max_procs=request.app.config['artex.processes'])
     bottle.redirect('/batches/%s' % batch.id)
 
 
@@ -115,45 +117,18 @@ def page(page_id):
     except Page.DoesNotExist:
         bottle.abort(404)
     md5 = page.md5
-    file_path = join(request.app.config['collection_dir'], '%s.zip' % md5)
+    file_path = join(request.app.config['artex.directory'], '%s.zip' % md5)
     file_exists = exists(file_path)
     return {'page': page, 'file_path': file_path, 'exists': file_exists}
 
 
-def start(port=8080, bind='127.0.0.1', debug=False, views_dir=TPLPATH,
-          server='wsgiref', cdir=CDIR, cproc=CPROC, email_user=None,
-          email_pwd=None, email_host=None, email_port=None, email_ssl=True,
-          email_sender=''):
+def start():
     """ Starts the application
 
-    :param port:            port to listen on
-    :param bind:            address to bind to
-    :param debug:           enable debug mode
-    :param views_dir:       directory containing views
-    :param server:          WSGI server to use
-    :param cdir:            directory in which to collect pages
-    :param cproc:           number of child processes used for collecting pages
-    :param create_sup:      whether to create superuser
-    :param email_user:      user name for sending email
-    :param email_host:      SMTP server host
-    :param email_port:      port on the SMTP server
-    :param email_ssl:       whether to use SSL to connect to SMTP server
-    :param email_sender:    default sender address
+    :param conf_path:   path to configuration file
     """
 
-    app = bottle.default_app()
-
-    bottle.TEMPLATE_PATH[0] = views_dir
-    app.config['collection_dir'] = cdir
-    app.config['collection_proc'] = cproc
-    app.config['email'] = {
-        'user': email_user,
-        'pass': email_pwd,
-        'host': email_host,
-        'port': email_port and int(email_port),
-        'ssl': email_ssl,
-        'sender': email_sender,
-    }
+    bottle.TEMPLATE_PATH[0] = app.config['artexin.views']
 
     # Add session-related hooks
     sessions.session(sessions.MongoSessionStore())
@@ -161,12 +136,11 @@ def start(port=8080, bind='127.0.0.1', debug=False, views_dir=TPLPATH,
     # Set up authentication views
     auth.auth_routes('/login/')
 
-    if debug is True:
-        # Wrap in werkzeug debugger
-        app = DebuggedApplication(app)
-
-    bottle.run(app, args.server, port=args.port, host=args.bind,
-               debug=args.debug, reloader=args.debug)
+    bottle.run(app, server=app.config['artexin.server'],
+               host=app.config['artexin.bind'],
+               port=app.config['artexin.port'],
+               reloader=app.config['artexin.debug'],
+               debug=app.config['artexin.debug'],)
 
 
 bottle.TEMPLATE_PATH.insert(0, TPLPATH)
@@ -176,40 +150,10 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(description='start the ArtExIn Web UI')
-    parser.add_argument('--port', '-p', type=int, help='port at which the '
-                        'WebUI will listen (default: 8080)', default=8080,
-                        metavar='PORT')
-    parser.add_argument('--bind', '-b', help='address to which the Web UI '
-                        'will bind (default: 127.0.0.1', default='127.0.0.1',
-                        metavar='ADDR')
-    parser.add_argument('--debug', '-d', help='start in debug mode',
-                        action='store_true')
-    parser.add_argument('--views', help='view directory (default: '
-                        '%s)' % TPLPATH, default=TPLPATH, metavar='PATH')
-    parser.add_argument('--server', help='WSGI server to use as backend '
-                        '(default: wsgiref)', default='wsgiref',
-                        metavar='SRV')
-    parser.add_argument('--cdir', help='directory in which the processed '
-                        'pages are dumped (default: %s)' % CDIR,
-                        default=CDIR, metavar='PATH')
-    parser.add_argument('--cproc', help='number of processes to use for'
-                        'collecting pages (default: %s)' % CPROC, type=int,
-                        default=CPROC, metavar='N')
-    parser.add_argument('--db', help='name of the MongoDB database to use '
-                        '(default: %s)' % DEFAULT_DB,
-                        default=DEFAULT_DB, metavar='DB')
-    parser.add_argument('--email-user', help='username to use for SMTP server',
-                        default=None, metavar='USER')
-    parser.add_argument('--email-pass', help='password to use for SMTP server',
-                        default=None, metavar='PASS')
-    parser.add_argument('--email-host', help='host name of the SMTP server',
-                        default=None, metavar='HOST')
-    parser.add_argument('--email-port', help='port number of the SMTP server',
-                        default=None, metavar='HOST')
-    parser.add_argument('--email-ssl', action='store_true',
-                        help='use SSL to connect to SMTP server')
-    parser.add_argument('--email-sender', help="default sender address",
-                        default=None, metavar='ADDR')
+    parser.add_argument('--conf', '-c', help='path to configuration file',
+                        metavar='FILE', default=CONFPATH)
+    parser.add_argument('--debug-conf', help='show configuration and exit',
+                         action='store_true')
     parser.add_argument('--su', action='store_true',
                         help='create superuser and exit')
     parser.add_argument('--email-test',
@@ -217,13 +161,16 @@ if __name__ == '__main__':
                         default=None, metavar='ADDR')
 
     args = parser.parse_args(sys.argv[1:])
+    print("Loading configuration from %s" % args.conf)
+    app.config.load_config(args.conf)
 
     # Establish database connection
-    print("Connecting to database '%s' ... " % args.db, end='')
-    mongoengine.connect(args.db)
-    print('CONNECTED')
+    mongoengine.connect(app.config['artexin.database'])
+    print("Connected to database")
 
     # Process any tasks first
+    if args.debug_conf:
+        cli.show_conf(args)
     if args.su:
         cli.create_superuser(args)
     if args.email_test:
@@ -231,9 +178,4 @@ if __name__ == '__main__':
 
     # Start the application
     print('Starting application')
-    start(port=args.port, bind=args.bind, debug=args.debug,
-          views_dir=args.views, server=args.server, cdir=args.cdir,
-          cproc=args.cproc, email_user=args.email_user,
-          email_pwd=args.email_pass, email_host=args.email_host,
-          email_port=args.email_port, email_ssl=args.email_ssl,
-          email_sender=args.email_sender)
+    start()

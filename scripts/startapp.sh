@@ -18,4 +18,4 @@ WEBAPP="$SRCDIR/artexin_webui"
 APPMOD="$WEBAPP/app.py"
 
 cd $SRCDIR
-PYTHONPATH=$SRCDIR $PY $APPMOD --debug --server=cherrypy --cdir=/vagrant "$@"
+PYTHONPATH=$SRCDIR $PY $APPMOD "$@"

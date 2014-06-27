@@ -13,13 +13,31 @@ from smtplib import SMTP, SMTP_SSL
 from email.mime.text import MIMEText
 
 
-from bottle import template, default_app
+from bottle import template, request, default_app
 
 from . import __version__ as _version, __author__ as _author
 
 __version__ = _version
 __author__ = _author
-__all__ = ('UserAction', 'User', 'restricted', 'safe_redirect', 'auth_routes')
+__all__ = ('read_conf', 'send',)
+
+
+def read_conf(app, prefix='email'):
+    """ Read the application configuration, and return a dict
+
+    :param app:     application object from which to read the configuration
+    :param prefix:  the key prefix that can be overridden to read different
+                    settings than the defaults (i.e., using custom prefix)A
+    :returns:       a dict containing keys without prefixes and normalized
+                    values
+    """
+    settings = {}
+    for key in ['user', 'pass', 'host', 'port', 'ssl', 'sender']:
+        val = app.config.get(prefix + '.' + key)
+        if val in ['yes', 'no']:
+            val = val == 'yes'
+        settings[key] = val
+    return settings
 
 
 def send(view, data, subject, to, sender=None, settings={}, conn=None,
@@ -37,9 +55,13 @@ def send(view, data, subject, to, sender=None, settings={}, conn=None,
     :param keep_alive:  whether to close the connection after sending
     :returns:           tuple containing the connection object and message
     """
-    app = default_app()
+    try:
+        app = request.app
+    except RuntimeError:
+        # We are not in a request context, so just use default app
+        app = default_app()
     settings = settings.copy()  # Do not modify original
-    settings.update(app.config['email'])
+    settings.update(read_conf(app))
     sender = sender or settings['sender']
 
     # Prepare data

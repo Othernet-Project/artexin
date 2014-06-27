@@ -9,6 +9,7 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
 import sys
+import pprint
 import getpass
 
 import mongoengine as mongo
@@ -45,17 +46,14 @@ def create_superuser(args):
 
 
 def test_email(args):
-    app = default_app()
-    app.config['email'] = {
-        'user': args.email_user,
-        'pass': args.email_pass,
-        'host': args.email_host,
-        'port': int(args.email_port),
-        'ssl': args.email_ssl,
-        'sender': args.email_sender,
-    }
     print("Sending message")
     conn, msg = send('email/test', {}, 'Test email', args.email_test)
     print("Sent using connection %s" % conn)
     print("Sent message %s" % msg)
+    sys.exit(0)
+
+
+def show_conf(args):
+    app = default_app()
+    pprint.pprint(app.config, indent=4)
     sys.exit(0)
