@@ -177,9 +177,4 @@ if __name__ == '__main__':
 
     # Start the application
     print('Starting application')
-    start(port=args.port, bind=args.bind, debug=args.debug,
-          views_dir=args.views, server=args.server, cdir=args.cdir,
-          cproc=args.cproc, email_user=args.email_user,
-          email_pwd=args.email_pass, email_host=args.email_host,
-          email_port=args.email_port, email_ssl=args.email_ssl,
-          email_sender=args.email_sender)
+    start()
