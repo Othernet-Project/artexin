@@ -161,6 +161,7 @@ if __name__ == '__main__':
                         default=None, metavar='ADDR')
 
     args = parser.parse_args(sys.argv[1:])
+    print("Loading configuration from %s" % args.conf)
     app.config.load_config(args.conf)
 
     # Establish database connection
