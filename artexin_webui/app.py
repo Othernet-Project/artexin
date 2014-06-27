@@ -35,6 +35,7 @@ __author__ = artexin_webui.__author__
 MODPATH = dirname(abspath(__file__))
 TPLPATH = join(MODPATH, 'views')
 CONFPATH = join(dirname(MODPATH), 'conf', 'artexin.ini')
+STATICPATH = join(MODPATH, 'static')
 CDIR = tempfile.gettempdir()
 CPROC = 4
 DEFAULT_DB = 'artexinweb'
@@ -123,6 +124,12 @@ def page(page_id):
     file_path = join(request.app.config['artex.directory'], '%s.zip' % md5)
     file_exists = exists(file_path)
     return {'page': page, 'file_path': file_path, 'exists': file_exists}
+
+
+# GET /static/<path>/
+@bottle.get('/static/<path:path>')
+def static(path):
+    return bottle.static_file(path, STATICPATH)
 
 
 def start():
