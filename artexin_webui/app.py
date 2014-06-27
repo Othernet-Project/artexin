@@ -138,6 +138,7 @@ def start():
     :param conf_path:   path to configuration file
     """
 
+    bottle.TEMPLATE_PATH.insert(0, TPLPATH)
     bottle.TEMPLATE_PATH[0] = app.config['artexin.views']
 
     # Add session-related hooks
@@ -146,6 +147,7 @@ def start():
     # Set up authentication views
     auth.auth_routes('/login/')
 
+    # Start serving
     bottle.run(app, server=app.config['artexin.server'],
                host=app.config['artexin.bind'],
                port=app.config['artexin.port'],
@@ -153,7 +155,6 @@ def start():
                debug=app.config['artexin.debug'],)
 
 
-bottle.TEMPLATE_PATH.insert(0, TPLPATH)
 def set_privileges(user=None, group=None):
     """ Sets this process' privleges to those of specified user and group
 
@@ -225,6 +226,11 @@ if __name__ == '__main__':
         cli.create_superuser(args)
     if args.email_test:
         cli.test_email(args)
+
+    # Drop privileges
+    user = app.config.get('artexin.user')
+    group = app.config.get('artexin.group')
+    set_privileges(user, group)
 
     # Start the application
     print('Starting application')
