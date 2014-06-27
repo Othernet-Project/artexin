@@ -275,11 +275,47 @@ def restricted(f, role=None, allow_super=True, login=LOGIN_PATH, tpl='403'):
     return wrapped
 
 
-def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
-                login_view='login', login_failed_view='login_failed',
-                check_view='check', reset_path='/reset/', reset_view='reset',
-                reset_check_view='reset_check',
-                reset_failed_view='reset_failed'):
+def login_user(user, verify=False, extended_session=False):
+    login_details = LoginDetails(timestamp=datetime.utcnow(),
+                                 ip_address=request.remote_addr)
+    user.logins.append(login_details)
+    if verify and not user.verified:
+        user.verified = True
+    user.save()
+    request.session['user'] = user
+    cycle()
+    request.session.extended_session = extended_session
+
+
+def auth_routes(
+    login_path='/login/',
+    logout_path='/logout/',
+    reset_path='/reset/',
+    redir_path='/',
+    login_view='login',
+    login_failed_view='login_failed',
+    check_view='check',
+    reset_view='reset',
+    reset_check_view='reset_check',
+    reset_failed_view='reset_failed',
+    tsv=False,
+    reset_immediately=True):
+    """ Set up authentication system
+
+    :param login_path:          route for login-related actions
+    :param logout_path:         route for logout-related actions
+    :param reset_path:          route for password-reset actions
+    :param login_view:          template for login form page
+    :param login_failed_view:   template for 2SV failure page
+    :param check_view:          template for 2SV "check email" page
+    :param reset_view:          template for password reset form page
+    :param reset_check_view:    template for reset "check email" page
+    :param reset_failed_view:   template for reeet failure page
+    :param tsv:                 whether to use 2SV
+    :param reset_immediately:   reset password without confirmation for users
+                                that are logged in
+    """
+
     LOGIN_PATH = login_path
     token_path_fragment = '<token:re:%s>' % TOKEN_FORMAT
 
@@ -321,11 +357,17 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
         if user is None:
             errors = {'_': 'Invalid email or password'}
             return {'errors': errors, 'vals': forms}
-        action = user.add_action('verify', {'redir': redir, 'rem': remember})
-        subject = VERIFY_SUBJECT % datetime.utcnow().strftime(TIMESTAMP)
-        data = {'token': action.token, 'expiry': action.expiry}
-        send('email/verify', data, subject, user.email)
-        return safe_redirect(login_path + 'check')
+
+        if tsv:
+            action = user.add_action('verify', {'redir': redir, 'rem': remember})
+            subject = VERIFY_SUBJECT % datetime.utcnow().strftime(TIMESTAMP)
+            data = {'token': action.token, 'expiry': action.expiry}
+            send('email/verify', data, subject, user.email)
+            return safe_redirect(login_path + 'check')
+        else:
+            login_user(user, verify=False, extended_session=remember == 'r')
+            return safe_redirect(redir)
+
 
     # GET /login/check
     @bottle.get(login_path + 'check')
@@ -342,21 +384,9 @@ def auth_routes(login_path='/login/', logout_path='/logout/', redir_path='/',
             user, action, data = UserAction.get_action(token)
         except UserAction.DoesNotExist:
             return {}
-
         if action != 'verify':
             return {}  # Wrong action
-
-        login_details = LoginDetails(timestamp=datetime.utcnow(),
-                                     ip_address=request.remote_addr)
-        user.logins.append(login_details)
-        if not user.verified:
-            user.verified = True
-        user.save()
-
-        # Log the user in
-        request.session[SES_USER_KEY] = user
-        cycle()
-        request.session.extended_session = data['rem'] == 'r'
+        login_user(user, verify=True, extended_session=data['rem'] == 'r')
         return safe_redirect(data.get('redir', redir_path))
 
     # GET /reset/
