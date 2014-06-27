@@ -66,13 +66,12 @@ EOF
 }
 
 linkscript() {
-    if [[ ! -f "$BINDIR/$1" ]]; then
-        ln -s "$SRCDIR/scripts/${1}.sh" "$BINDIR/$1"
-    fi
+    rm "$BINDIR/$1" || true
+    ln -s "$SRCDIR/scripts/${1}.sh" "$BINDIR/$1"
 }
 
 # Parse command line options
-while getopts ":hp" option; do
+while getopts ":hpc:" option; do
     case "$option" in
     h)
         # Show usage and quit
@@ -88,6 +87,10 @@ while getopts ":hp" option; do
     c)
         # Override configuration path
         CONFPATH="$OPTARG"
+        if [[ ! -f "$CONFPATH" ]]; then
+            echo "Configuration file '$CONFPATH' does not exit"
+            exit 1
+        fi
         ;;
     ?)
         echo "ERROR: invalid option: -$OPTARG"
@@ -110,13 +113,10 @@ id "$APPUSER" > /dev/null || useradd "$APPUSER"
 ###############################################################################
 
 # Prepare directories
-if [[ ! -d "$STATICDIR" ]]; then
-    ln -s "$SRCDIR/artexin_webui/static" "$STATICDIR"
-fi
+rm -f "$STATICDIR" || true
+ln -s "$SRCDIR/artexin_webui/static" "$STATICDIR"
 
-if [[ ! -d "$ZIPDIR" ]]; then
-    mkdir -p "$ZIPDIR"
-fi
+mkdir -p "$ZIPDIR"
 chown -R "$NGINXUSER":"$NGINXUSER" "$ZIPDIR"
 chmod 775 "$ZIPDIR"
 
@@ -176,7 +176,7 @@ $PY -m nltk.downloader -d "$NLTKDIR" all
 echo "Set up nginx default site"
 mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.orig
 ln -s "$SRCDIR/conf/default" /etc/nginx/sites-available/default
-service nginx restart
+service nginx restart || echo "Problem restarting nginx"
 
 # Create and start PhantomJS WebDriver service on port 8910
 echo "Set up PhantomJS"
@@ -185,7 +185,7 @@ start on started networking
 stop on shutdown
 exec /usr/bin/phantomjs --webdriver=127.0.0.1:8910
 EOF
-service phantom start
+service phantom restart
 
 if [[ $PRODUCTION == $YES ]]; then
 # Create and start application service
@@ -193,9 +193,10 @@ echo "Set up ArtExIn application"
 cat > /etc/init/artexin.conf <<EOF
 start on started phantom
 stop on stopping phantom
+env PYTHONPATH=$SRCDIR
 exec python3 "$SRCDIR/artexin_webui/app.py" -c "$CONFPATH"
 EOF
-service artexin start
+service artexin restart
 fi
 
 
