@@ -8,34 +8,12 @@ server {
     listen 80 default_server;
     listen [::]:80 default_server ipv6only=on;
 
-    root /srv;
+    root /srv/zipballs;
     index index.html index.htm;
+    autoindex on;
 
     # Make site accessible from http://localhost/
     server_name localhost;
     sendfile off;
-
-    location /static {
-        alias                   /srv/static;
-        charset                 utf-8;
-        charset_types           text/html text/xml text/plain text/vnd.wap.wml 
-                                application/javascript application/rss+xml 
-                                text/css;
-        add_header              Vary Accept-Encoding;
-        access_log              off;
-        expires                 modified +365d;
-        autoindex               on;
-    }
-
-    location / {
-        proxy_buffers           16 4k;
-        proxy_buffer_size       2k;
-        proxy_set_header        Host $http_host;
-        proxy_set_header        X-Real-IP $remote_addr;
-        # http://wiki.nginx.org/NginxHttpProxyModule#proxy_read_timeout
-        proxy_read_timeout      600s;  # 10 minutes
-        proxy_pass              http://127.0.0.1:8080;
-    }
-
 }
 
