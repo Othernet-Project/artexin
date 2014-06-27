@@ -8,6 +8,9 @@ This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
+import os
+import pwd
+import grp
 import time
 import getpass
 import tempfile
@@ -144,6 +147,46 @@ def start():
 
 
 bottle.TEMPLATE_PATH.insert(0, TPLPATH)
+def set_privileges(user=None, group=None):
+    """ Sets this process' privleges to those of specified user and group
+
+    If neither user nor group are specified, privileges are not changed.
+
+    :param user:    user account name
+    :param group:   group name
+    """
+    if os.getuid() != 0:
+        # The app is probably started as a regular non-root user for testing
+        # purposes, so we simply bail without doing anything.
+        print("Non-root user. Privileges retained.")
+        return
+
+    if group:
+        try:
+            gid = grp.getgrnam(group)[2]
+        except KeyError:
+            print("Group '%s' not found on system" % group)
+            sys.exit(1)
+        try:
+            os.setgid(gid)
+            print("Runing as GID %s (%s)" % (gid, group))
+        except OSError as err:
+            print("Could not use GID %s (%s): %s" % (gid, group, err))
+            sys.exit(1)
+
+    if user:
+        try:
+            uid = pwd.getpwnam(user)[2]
+        except KeyError:
+            print("User '%s' not found on system" % user)
+            sys.exit(1)
+        try:
+            os.setuid(uid)
+            print("Runing as UID %s (%s)" % (uid, user))
+        except OSError as err:
+            print("Could not use UID %s (%s): err" % (uid, user, err))
+            sys.exit(1)
+
 
 if __name__ == '__main__':
     import sys
