@@ -1,0 +1,428 @@
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+/* line 17, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  font-size: 100%;
+  vertical-align: baseline;
+}
+
+/* line 22, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+html {
+  line-height: 1;
+}
+
+/* line 24, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+ol, ul {
+  list-style: none;
+}
+
+/* line 26, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 28, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+/* line 30, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+q, blockquote {
+  quotes: none;
+}
+/* line 103, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+q:before, q:after, blockquote:before, blockquote:after {
+  content: "";
+  content: none;
+}
+
+/* line 32, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+a img {
+  border: none;
+}
+
+/* line 116, ../../../../../../Ruby200/lib/ruby/gems/2.0.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
+  display: block;
+}
+
+/* line 47, ../scss/screen.scss */
+html, body {
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+  background: #eeeeee;
+  color: #555555;
+}
+
+/* line 55, ../scss/screen.scss */
+#nav {
+  background: #555555;
+  color: #eeeeee;
+  padding: 0.5em 1em;
+  text-align: right;
+}
+/* line 61, ../scss/screen.scss */
+#nav a {
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  display: inline-block;
+  vertical-align: middle;
+  color: #eeeeee;
+  text-decoration: none;
+  padding: 0.2em 1em;
+  border: 0 solid transparent;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -o-border-radius: 2px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  font-size: 80%;
+  background: #298bec;
+  border-bottom: 2px solid #0e58a1;
+  margin-left: 0.5em;
+}
+/* line 36, ../scss/screen.scss */
+#nav a:hover {
+  position: relative;
+  top: -1px;
+}
+/* line 66, ../scss/screen.scss */
+#nav a:hover {
+  color: white;
+}
+/* line 70, ../scss/screen.scss */
+#nav a.red {
+  background: #c12418;
+  border-bottom: 2px solid #66130d;
+}
+/* line 74, ../scss/screen.scss */
+#nav a.orange {
+  background: #fba72c;
+  border-bottom: 2px solid #bd7204;
+}
+/* line 78, ../scss/screen.scss */
+#nav a.green {
+  background: #97a834;
+  border-bottom: 2px solid #515a1c;
+}
+/* line 83, ../scss/screen.scss */
+#nav h1 {
+  position: absolute;
+  top: 0.5em;
+  left: 1em;
+}
+/* line 88, ../scss/screen.scss */
+#nav h1 a {
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+  background: transparent;
+  border: 0 solid transparent;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+  text-indent: -119988px;
+  overflow: hidden;
+  text-align: left;
+  background-image: url('../img/artexin.png?1403715593');
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  width: 126px;
+  height: 24px;
+}
+
+/* line 100, ../scss/screen.scss */
+#content {
+  padding: 1em;
+}
+/* line 103, ../scss/screen.scss */
+#content p {
+  margin-bottom: 1em;
+}
+/* line 107, ../scss/screen.scss */
+#content h1 {
+  font-size: 150%;
+  text-transform: uppercase;
+  font-weight: bold;
+  border-bottom: 1px solid #dddddd;
+  padding-bottom: 0.5em;
+  margin: 1em 0 1em;
+  color: #a2a2a2;
+}
+/* line 117, ../scss/screen.scss */
+#content h2 {
+  color: #555555;
+  font-size: 120%;
+  font-weight: bold;
+  margin: 2em 0 1em;
+  text-transform: uppercase;
+}
+/* line 125, ../scss/screen.scss */
+#content .form-notes {
+  padding: 0.5em;
+  color: #97a834;
+  border: 1px solid #96a734;
+}
+/* line 131, ../scss/screen.scss */
+#content a {
+  display: inline-block;
+  color: #298bec;
+  text-decoration: none;
+}
+/* line 136, ../scss/screen.scss */
+#content a:hover {
+  text-decoration: underline;
+}
+/* line 140, ../scss/screen.scss */
+#content a:visited {
+  color: #638bb2;
+}
+/* line 144, ../scss/screen.scss */
+#content a.button {
+  color: #eeeeee;
+}
+/* line 148, ../scss/screen.scss */
+#content a.button:visited {
+  color: #eeeeee;
+}
+/* line 152, ../scss/screen.scss */
+#content a.button:hover {
+  text-decoration: none;
+}
+
+/* line 158, ../scss/screen.scss */
+#footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: right;
+  padding: 0.5em 1em;
+  background: #555555;
+  color: #eeeeee;
+}
+
+/* line 169, ../scss/screen.scss */
+input, textarea, select {
+  border: 0 solid transparent;
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  background: #dddddd;
+  padding: 0.5em;
+  width: 200px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* line 179, ../scss/screen.scss */
+textarea {
+  width: 100%;
+  height: 200px;
+}
+
+/* line 184, ../scss/screen.scss */
+button, a.button {
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  display: inline-block;
+  vertical-align: middle;
+  color: #eeeeee;
+  text-decoration: none;
+  padding: 0.2em 1em;
+  border: 0 solid transparent;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -o-border-radius: 2px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  font-size: 80%;
+  background: #298bec;
+  border-bottom: 2px solid #0e58a1;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 2.5em;
+}
+/* line 36, ../scss/screen.scss */
+button:hover, a.button:hover {
+  position: relative;
+  top: -1px;
+}
+
+/* line 191, ../scss/screen.scss */
+button[type=submit] {
+  background: #97a834;
+  border-bottom: 2px solid #515a1c;
+}
+
+/* line 195, ../scss/screen.scss */
+.buttons {
+  border-top: 1px solid #dddddd;
+  margin-top: 1em;
+  padding-top: 1em;
+  text-align: right;
+}
+
+/* line 202, ../scss/screen.scss */
+label {
+  display: inline-block;
+  font-weight: bold;
+  width: 180px;
+  text-align: right;
+  margin-right: 1em;
+}
+
+/* line 210, ../scss/screen.scss */
+table {
+  width: auto;
+  margin-bottom: 1em;
+}
+/* line 214, ../scss/screen.scss */
+table th {
+  background: #298bec;
+  color: #eeeeee;
+  font-weight: bold;
+}
+/* line 220, ../scss/screen.scss */
+table td, table th {
+  padding: 0.5em 1em 0.5em 0.5em;
+  border-bottom: 1px solid #dddddd;
+  vertical-align: top;
+}
+/* line 226, ../scss/screen.scss */
+table tr:hover td {
+  background: white;
+}
+
+/* line 231, ../scss/screen.scss */
+code {
+  font-family: monospace;
+}
+
+/* line 235, ../scss/screen.scss */
+ul.form-errors {
+  margin-bottom: 1em;
+  padding: 0.5em;
+  color: #c12418;
+  background: #f5b5b0;
+}
+/* line 241, ../scss/screen.scss */
+ul.form-errors li {
+  list-style: square;
+  margin: 0.5em 0 0.5em 1.5em;
+}
+
+/* line 247, ../scss/screen.scss */
+.field-error {
+  display: block;
+  margin-left: 200px;
+  margin-top: 0.5em;
+  color: #c12418;
+  font-weight: bold;
+  font-size: 90%;
+}
+
+/* line 257, ../scss/screen.scss */
+.batch-data .summary {
+  float: left;
+  width: 30%;
+  margin-right: 1em;
+}
+/* line 263, ../scss/screen.scss */
+.batch-data .pages {
+  overflow: hidden;
+}
+/* line 267, ../scss/screen.scss */
+.batch-data table {
+  width: 100%;
+}
+
+/* line 273, ../scss/screen.scss */
+#content .home-menu li {
+  display: inline-block;
+  width: 200px;
+  height: 200px;
+  vertical-align: bottom;
+  margin: 0 1em 1em 0;
+}
+/* line 281, ../scss/screen.scss */
+#content .home-menu a {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  background: #298bec;
+  font-size: 200%;
+  vertical-align: middle;
+  color: #eeeeee;
+  line-height: 100%;
+  text-transform: uppercase;
+  text-align: right;
+  padding: 0.2em;
+  border-bottom-left-radius: 2000px;
+}
+/* line 295, ../scss/screen.scss */
+#content .home-menu a:hover {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+}
+/* line 299, ../scss/screen.scss */
+#content .home-menu a.green {
+  background: #97a834;
+}
+/* line 303, ../scss/screen.scss */
+#content .home-menu a.orange {
+  background: #fba72c;
+}
+/* line 307, ../scss/screen.scss */
+#content .home-menu a.red {
+  background: #c12418;
+}
+
+/* line 313, ../scss/screen.scss */
+b, strong {
+  font-weight: bold;
+}
+
+/* line 317, ../scss/screen.scss */
+i, em {
+  font-style: italic;
+}
+
+/* line 322, ../scss/screen.scss */
+form span.help {
+  display: block;
+  margin-left: 200px;
+  margin-top: 0.5em;
+  font-size: 90%;
+  color: #97a834;
+}

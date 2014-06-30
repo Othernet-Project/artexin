@@ -38,7 +38,7 @@ if __name__ == '__main__':
     results = batch(PAGES, base_dir='/vagrant', max_procs=8)
     took = time.time() - start
 
-    for zip_path, html, images, meta in results:
-        print("Created: %s" % zip_path)
+    for meta in results:
+        print("Created: %s (%s bytes)" % (meta['zipfile'], meta['size']))
 
     print("Took %s seconds" % took)
