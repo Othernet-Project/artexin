@@ -117,7 +117,7 @@ rm -f "$STATICDIR" || true
 ln -s "$SRCDIR/artexin_webui/static" "$STATICDIR"
 
 mkdir -p "$ZIPDIR"
-chown -R "$NGINXUSER":"$NGINXUSER" "$ZIPDIR"
+chown -R "$APPUSER":"$NGINXUSER" "$ZIPDIR"
 chmod 775 "$ZIPDIR"
 
 # Set up the runtest script
