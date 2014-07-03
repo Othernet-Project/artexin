@@ -162,7 +162,9 @@ echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' > 
 echo "Installing dependencies"
 $EI pip
 $PIP install -r "$SRCDIR/conf/requirements.txt"
-$PIP install -r "$SRCDIR/conf/dev_requirements.txt"
+if [[ $PRODUCTION == $NO ]]; then
+    $PIP install -r "$SRCDIR/conf/dev_requirements.txt"
+fi
 
 # Install NLTK data files
 echo "Installing NLTK corpus data (please be patient)"
