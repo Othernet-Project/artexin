@@ -117,7 +117,7 @@ rm -f "$STATICDIR" || true
 ln -s "$SRCDIR/artexin_webui/static" "$STATICDIR"
 
 mkdir -p "$ZIPDIR"
-chown -R "$NGINXUSER":"$NGINXUSER" "$ZIPDIR"
+chown -R "$APPUSER":"$NGINXUSER" "$ZIPDIR"
 chmod 775 "$ZIPDIR"
 
 # Set up the runtest script
@@ -162,7 +162,9 @@ echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' > 
 echo "Installing dependencies"
 $EI pip
 $PIP install -r "$SRCDIR/conf/requirements.txt"
-$PIP install -r "$SRCDIR/conf/dev_requirements.txt"
+if [[ $PRODUCTION == $NO ]]; then
+    $PIP install -r "$SRCDIR/conf/dev_requirements.txt"
+fi
 
 # Install NLTK data files
 echo "Installing NLTK corpus data (please be patient)"

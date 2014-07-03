@@ -77,7 +77,7 @@ def collections_process():
     batch = Batch.process_urls(
         urls,
         base_dir=request.app.config['artex.directory'],
-        max_procs=request.app.config['artex.processes'])
+        max_procs=int(request.app.config['artex.processes']))
     bottle.redirect('/batches/%s' % batch.id)
 
 

@@ -119,12 +119,12 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
         'images': len(images),
     })
     # FIXME: Handle failure
-    with open(os.path.join(dest, 'info.json'), 'w') as f:
+    with open(os.path.join(dest, 'info.json'), 'w', encoding='utf-8') as f:
         f.write(json.dumps(meta, indent=2))
 
     # Write the HTML file
     # FIXME: Handle failure
-    with open(os.path.join(dest, 'index.html'), 'w') as f:
+    with open(os.path.join(dest, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html)
 
     # Create a zip file
