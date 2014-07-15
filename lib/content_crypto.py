@@ -51,7 +51,7 @@ def import_key(keypath, keyring):
         raise KeyImportError("Could not import '%s'" % keypath, keypath)
 
 
-def process_content(path, keyring, output_dir, output_ext, action):
+def process_content(path, keyring, output_dir, output_ext, action, **kwargs):
     """ Use keyring to process a file by applying specified action
 
     This function automatically decrypts/encrypts into a new file that has the
@@ -63,6 +63,8 @@ def process_content(path, keyring, output_dir, output_ext, action):
     :param output_dir:  directory in which to write the output file
     :param output_ext:  extension of the output file
     :param action:      `'encrypt'` or `'decrypt'`
+    :param kwargs:      any kwargs are passed to the ``GPG.encrypt()`` or
+                        the ``GPG.decrypt()`` call
     """
     if action not in ['encrypt', 'decrypt']:
         raise CryptoError("Invalid action '%s'" % action, '')
@@ -72,7 +74,7 @@ def process_content(path, keyring, output_dir, output_ext, action):
     method = getattr(gpg, action)
     try:
         with open(path, 'rb') as content:
-            method(content.read(), output=new_path)
+            method(content.read(), output=new_path, **kwargs)
     except OSError as err:
         raise CryptoError("Could not open '%s'" % path, path)
     return new_path
@@ -89,12 +91,14 @@ def extract_content(path, keyring, output_dir, output_ext='zip'):
     return process_content(path, keyring, output_dir, output_ext, 'decrypt')
 
 
-def sign_content(path, keyring, output_dir, output_ext='sig'):
+def sign_content(path, keyring, key, output_dir, output_ext='sig'):
     """ Sign the content at specified path using provided keyring
 
     :param path:        path of the content file
     :param keyring:     keyring path to use
+    :param key:         key to use for sining
     :param output_dir:  directory in which to write the signed file
     :param output_ext:  extension of the signed file
     """
-    return process_content(path, keyring, output_dir, output_ext, 'encrypt')
+    return process_content(path, keyring, output_dir, output_ext, 'encrypt',
+                           recipients=key)
