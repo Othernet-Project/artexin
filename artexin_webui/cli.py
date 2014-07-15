@@ -73,7 +73,7 @@ def show_conf(args):
 
 def import_key_file(args):
     app = default_app()
-    keyring = app.config['artexin.keyring']
+    keyring = app.config['crypto.keyring']
     key = args.key_file
     try:
         import_key(key, keyring)
