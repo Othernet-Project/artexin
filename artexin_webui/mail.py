@@ -60,9 +60,9 @@ def send(view, data, subject, to, sender=None, settings={}, conn=None,
     except RuntimeError:
         # We are not in a request context, so just use default app
         app = default_app()
-    settings = settings.copy()  # Do not modify original
-    settings.update(read_conf(app))
-    sender = sender or settings['sender']
+    mail_settings = read_conf(app).copy()
+    mail_settings.update(settings)
+    sender = sender or mail_settings['sender']
 
     # Prepare data
     data = data.copy()  # Do not modify the original
@@ -79,9 +79,10 @@ def send(view, data, subject, to, sender=None, settings={}, conn=None,
 
     if not conn:
         # Establish connection
-        Connection = SMTP_SSL if settings['ssl'] else SMTP
-        conn = Connection(host=settings['host'], port=settings['port'])
-        conn.login(settings['user'], settings['pass'])
+        Connection = SMTP_SSL if mail_settings['ssl'] else SMTP
+        conn = Connection(host=mail_settings['host'],
+                          port=mail_settings['port'])
+        conn.login(mail_settings['user'], mail_settings['pass'])
     conn.send_message(msg)
 
     if not keep_alive:
