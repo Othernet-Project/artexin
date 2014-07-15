@@ -21,9 +21,15 @@ __all__ = ('get_preps',)
 
 DEFAULT_PREPROCESSORS = [pp_noop]
 
-MAPPINGS = {
-    r'^https?://..\.wikipedia\.org': (pp_wikipedia,),
-}
+# The mappings are contain two-tuples of regexp patterns and iterables
+# containing preprocessors. For every match against URL, preprocessors are
+# applied in order. The last set is rigged to be always applied, so please do
+# not add any preprocessors after the last set unless you know exactly what you
+# are doing. Also, keep the last set minimal.
+MAPPINGS = (
+    (r'^https?://..\.wikipedia\.org', (pp_wikipedia,)),
+    (r'.*', (pp_fixheaders,)),
+)
 
 
 def get_preps(url):
@@ -40,10 +46,11 @@ def get_preps(url):
     :returns:       Returns an interable of preprocessors
     """
 
-    for pattern, preps in MAPPINGS.items():
+    using_preps = ()
+    for pattern, preps in MAPPINGS:
         if re.match(pattern, url, re.IGNORECASE):
-            return preps
-    return DEFAULT_PREPROCESSORS
+            using_preps += preps
+    return using_preps or DEFAULT_PREPROCESSORS
 
 
 if __name__ == '__main__':
