@@ -205,11 +205,7 @@ if __name__ == '__main__':
                         metavar='FILE', default=CONFPATH)
     parser.add_argument('--debug-conf', help='show configuration and exit',
                          action='store_true')
-    parser.add_argument('--su', action='store_true',
-                        help='create superuser and exit')
-    parser.add_argument('--email-test',
-                        help="send test email to this addres and exit",
-                        default=None, metavar='ADDR')
+    cli.configure_parser(parser)
 
     args = parser.parse_args(sys.argv[1:])
     print("Loading configuration from %s" % args.conf)
@@ -219,18 +215,15 @@ if __name__ == '__main__':
     mongoengine.connect(app.config['artexin.database'])
     print("Connected to database")
 
-    # Process any tasks first
-    if args.debug_conf:
-        cli.show_conf(args)
-    if args.su:
-        cli.create_superuser(args)
-    if args.email_test:
-        cli.test_email(args)
-
     # Drop privileges
     user = app.config.get('artexin.user')
     group = app.config.get('artexin.group')
     set_privileges(user, group)
+
+    # Process any tasks first
+    if args.debug_conf:
+        cli.show_conf(args)
+    cli.process_cli(args)  # Some actions will cause app to terminate here
 
     # Start the application
     print('Starting application')
