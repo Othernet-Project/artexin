@@ -15,7 +15,7 @@ from gnupg import GPG
 
 __version__ = 0.1
 __author__ = 'Outernet Inc. <branko@outernet.is>'
-__all__ = ('CryptoError', 'KeyImportError', 'import_key', 'process_content',
+__all__ = ('CryptoError', 'KeyImportError', 'DecryptionError', 'import_key',
            'extract_content', 'sign_content',)
 
 
@@ -29,6 +29,11 @@ class CryptoError(BaseException):
 
 class KeyImportError(CryptoError):
     """ Key import exception """
+    pass
+
+
+class DecryptionError(CryptoError):
+    """ Decryption failure exception """
     pass
 
 
@@ -51,44 +56,17 @@ def import_key(keypath, keyring):
         raise KeyImportError("Could not import '%s'" % keypath, keypath)
 
 
-def process_content(path, keyring, output_dir, output_ext, action, **kwargs):
-    """ Use keyring to process a file by applying specified action
-
-    This function automatically decrypts/encrypts into a new file that has the
-    same filename as the original but with specified ``output_ext`` extension
-    and in ``output_dir`` directory.
-
-    :param path:        path of the content file
-    :param keyring:     keyring path to use
-    :param output_dir:  directory in which to write the output file
-    :param output_ext:  extension of the output file
-    :param action:      `'encrypt'` or `'decrypt'`
-    :param kwargs:      any kwargs are passed to the ``GPG.encrypt()`` or
-                        the ``GPG.decrypt()`` call
-    """
-    if action not in ['encrypt', 'decrypt']:
-        raise CryptoError("Invalid action '%s'" % action, '')
+def extract_content(path, keyring, output_dir, output_ext):
+    """ Use the keyring to decrypt a document """
     name = os.path.splitext(os.path.basename(path))[0]
-    new_path = os.path.join(output_dir, name + '.' + output_ext)
     gpg = GPG(gnupghome=keyring)
-    method = getattr(gpg, action)
+    new_path = os.path.join(output_dir, '.'.join([name, output_ext]))
     try:
         with open(path, 'rb') as content:
-            method(content.read(), output=new_path, **kwargs)
+            data = gpg.decrypt(content.read(), output=new_path)
     except OSError as err:
-        raise CryptoError("Could not open '%s'" % path, path)
+        raise DecryptionError("Could not open '%s'" % path, path)
     return new_path
-
-
-def extract_content(path, keyring, output_dir, output_ext='zip'):
-    """ Use the keyring to decrypt a document
-
-    :param path:        path of the signed file
-    :param keyring:     keyring path to use
-    :param output_dir:  directory in which to write the content file
-    :param output_ext:  extension of the content file
-    """
-    return process_content(path, keyring, output_dir, output_ext, 'decrypt')
 
 
 def sign_content(path, keyring, key, passphrase, output_dir, output_ext='sig'):
@@ -96,11 +74,19 @@ def sign_content(path, keyring, key, passphrase, output_dir, output_ext='sig'):
 
     :param path:        path of the content file
     :param keyring:     keyring path to use
-    :param key:         key to use for sining
+    :param key:         key id
     :param passphrase:  key passphrase
     :param output_dir:  directory in which to write the signed file
     :param output_ext:  extension of the signed file
     """
-    return process_content(path, keyring, output_dir, output_ext, 'encrypt',
-                           recipients=key, passphrase=passphrase,
-                           always_trust=True)
+    name = os.path.splitext(os.path.basename(path))[0]
+    gpg = GPG(gnupghome=keyring)
+    with open(path, 'rb') as content:
+        signed = gpg.sign_file(content, keyid=key, passphrase=passphrase,
+                               binary=True, clearsign=False)
+    new_path = os.path.join(output_dir, name + '.' + output_ext)
+    with open(new_path, 'wb') as output:
+        output.write(signed.data)
+    return new_path
+
+
