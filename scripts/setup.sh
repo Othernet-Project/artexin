@@ -26,7 +26,7 @@ CONFPATH="$SRCDIR/conf/artexin.ini"
 SCRIPTDIR="$( cd "$( dirname "$0" )" && pwd )"
 STATICDIR=/srv/static
 ZIPDIR=/srv/zipballs
-APPUSER=artexin
+APPUSER=vagrant
 NGINXUSER=www-data
 NLTKDIR=/usr/share/nltk_data
 BINDIR=/usr/local/bin
@@ -101,6 +101,9 @@ while getopts ":hpc:" option; do
     esac
 done
 
+if [[ $PRODUCTION == $YES ]]; then
+    APPUSER=artexin
+fi
 
 ###############################################################################
 # USERS
@@ -200,7 +203,6 @@ exec python3 "$SRCDIR/artexin_webui/app.py" -c "$CONFPATH"
 EOF
 service artexin restart
 fi
-
 
 ###############################################################################
 # ENVIRONMENT
