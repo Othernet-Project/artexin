@@ -26,6 +26,7 @@ CONFPATH="$SRCDIR/conf/artexin.ini"
 SCRIPTDIR="$( cd "$( dirname "$0" )" && pwd )"
 STATICDIR=/srv/static
 ZIPDIR=/srv/zipballs
+KEYRINGDIR=/var/lib/artexin
 APPUSER=vagrant
 NGINXUSER=www-data
 NLTKDIR=/usr/share/nltk_data
@@ -122,6 +123,9 @@ ln -s "$SRCDIR/artexin_webui/static" "$STATICDIR"
 mkdir -p "$ZIPDIR"
 chown -R "$APPUSER":"$NGINXUSER" "$ZIPDIR"
 chmod 775 "$ZIPDIR"
+mkdir -p "$KEYRINGDIR"
+chmod 700 "$KEYRINGDIR"
+chown -R "$APPUSER":"$APPUSER" "$KEYRINGDIR"
 
 # Set up the runtest script
 echo "Set up scripts"
