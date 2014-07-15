@@ -12,6 +12,7 @@ import sys
 import pprint
 import getpass
 
+import bottle
 import mongoengine as mongo
 from bottle import default_app
 
@@ -24,7 +25,8 @@ from . import __version__ as _version, __author__ as _author
 
 __version__ = _version
 __author__ = _author
-__all__ = ('create_superuser',)
+__all__ = ('configure_parser', 'process_cli',)
+
 
 def configure_parser(parser):
     """ Add relevant command line switches to parser """
@@ -58,6 +60,8 @@ def create_superuser(args):
 
 
 def test_email(args):
+    app = default_app()
+    bottle.TEMPLATE_PATH.insert(0, app.config['artexin.views'])
     print("Sending message")
     conn, msg = send('email/test', {}, 'Test email', args.email_test)
     print("Sent using connection %s" % conn)
