@@ -18,6 +18,8 @@ import datetime
 import urllib.parse as urlparse
 from http.client import BadStatusLine
 
+from lib.content_crypto import sign_content
+
 try:
     import simplejson as json
 except ImportError:
@@ -57,7 +59,8 @@ def zipdir(path, dirpath):
         zipball.testzip()
 
 
-def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
+def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
+            base_dir=BASE_DIR, keep_dir=False):
     """ Collect at ``url`` into a directory within ``base_dir`` and zip it
 
     The directory is created within ``base_dir`` that is named after the md5
@@ -66,6 +69,9 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
     If the target directory already exists, it will be unlinked first.
 
     :param url:         Identifier for the batch (usually URL of the page)
+    :param keyring:     Keyring directory
+    :param key:         Key to use for signing
+    :param passphrase:  Key passphrase
     :param prep:        Iterable containing HTML preprocessors from
                         ``artexin.preprocessors``
     :param meta:        Document extra metadata
@@ -77,7 +83,7 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
     # Common metadata
     meta.update({
         'url': url,
-        'domain': urlparse.urlparse(url)[1],
+        'domain': urlparse.urlparse(url)[1]
     })
 
     # Create the destination directory
@@ -100,7 +106,7 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
         logging.exception('Error %s while processing %s' % (err, url))
         meta.update({
             'timestamp': datetime.datetime.utcnow(),
-            'error': err,
+            'error': str(err),
         })
 
     timestamp = datetime.datetime.utcnow()
@@ -136,6 +142,26 @@ def collect(url, prep=[], meta={}, base_dir=BASE_DIR, keep_dir=False):
         shutil.rmtree(dest)
 
     stat = os.stat(zippath)
+
+    # Encrypt zip file
+    if all([keyring, key, passphrase]):
+        print("Signing '%s' using key '%s' and passphrase '%s'" % (
+            zippath, key, passphrase))
+        signed = sign_content(zippath, keyring, key, passphrase,
+                              output_dir=base_dir)
+        if not os.path.exists(signed):
+            # Python-gnupg will silently fail. It will log a warning, but won't
+            # raise any exceptions. The only way to know is to test if the file
+            # exists. If the file does not exist, we assume it failed.
+            os.unlink(zippath)
+            meta.update({
+                'timestamp': datetime.datetime.now(),
+                'error': "Error signing '%s'" % zippath
+            })
+            return meta
+        os.unlink(zippath)
+        # Sanity check
+        zippath = signed
 
     meta.update({
         'zipfile': zippath,

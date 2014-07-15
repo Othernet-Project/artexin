@@ -70,12 +70,16 @@ def collections_form():
 @auth.restricted
 def collections_process():
     """ Process URLs that were passed through the collection form """
+    config = request.app.config
     urls = request.forms.get('urls')
     if urls is None:
         return "no URLs given"
     urls = list(set([url.strip() for url in urls.strip().split('\n')]))
     batch = Batch.process_urls(
         urls,
+        keyring=config.get('crypto.keyring', None),
+        key=config.get('crypto.key', None),
+        passphrase=config.get('crypto.passphrase', None),
         base_dir=request.app.config['artex.directory'],
         max_procs=int(request.app.config['artex.processes']))
     bottle.redirect('/batches/%s' % batch.id)
