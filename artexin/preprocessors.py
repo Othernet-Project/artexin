@@ -28,6 +28,37 @@ def pp_noop(html):
     return html
 
 
+def pp_fixheaders(html):
+    """ Fixes all headers so that top-most is always H1
+
+    It promotes all headers so that H1 is the top-most header::
+
+        >>> html = "<h2>This should be h1</h2><h3>Should be h2</h3>"
+        >>> pp_fixheaders(html)
+        '<html><body><h1>This should be h1</h1><h2>Should be h2</h2></body></html>'
+
+    It will not do anything to lower levels if H1 is already top-most::
+
+        >>> html = "<h1>This should be h1</h1><h3>But this is not h2</h3>"
+        >>> pp_fixheaders(html)
+        '<html><body><h1>This should be h1</h1><h3>But this is not h2</h3></body></html>'
+
+
+    :param html:    String containing the HTML document
+    :returns:       Processed HTML
+    """
+    soup = BeautifulSoup(html)
+    adjust = None
+    for level, h in enumerate(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], start=1):
+        headings = soup.find_all(h)
+        if headings and adjust is None:
+            adjust = level - 1
+        if adjust:
+            for elem in headings:
+                elem.name = 'h%s' % (level - adjust)
+    return str(soup)
+
+
 def pp_wikipedia(html):
     """ Preprocess Wikipedia article before extraction
 
