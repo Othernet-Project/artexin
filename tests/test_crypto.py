@@ -43,7 +43,7 @@ def test_import(open_p, GPG):
 @mock.patch('builtins.open')
 def test_os_error(open_p, GPG):
     """ Should raise on failure to open given key file """
-    open_p.side_effect = raise_os
+    open_p.side_effect = OSError()
     with pytest.raises(KeyImportError):
         import_key(keypath='foo', keyring='bar')
 
@@ -61,33 +61,53 @@ def test_import_failure(open_p, GPG):
 
 @mock.patch('lib.content_crypto.GPG')
 @mock.patch('builtins.open')
-def test_extract_uses_keyring(open_p, GPG):
+def test_process_uses_keyring(open_p, GPG):
     """ Should use provided keyring """
     gpg = GPG.return_value
     data = gpg.decrypt.return_value
-    data.trust_level = 2
-    data.TRUST_FULLY = 2
-    extract_content('/foo/bar.sig', 'bar', '/baz', 'zip')
+    process_content('/foo/bar.sig', 'bar', '/baz', 'zip', 'decrypt')
     GPG.assert_called_once_with(gnupghome='bar')
+
+
+@mock.patch('lib.content_crypto.GPG')
+@mock.patch('builtins.open')
+def test_action_selection(open_p, GPG):
+    gpg = GPG.return_value
+    file_content = open_p.return_value.__enter__.return_value.read.return_value
+    process_content('/foo/bar.sig', 'bar', '/baz', 'zip', 'decrypt')
+    gpg.decrypt.assert_called_with(file_content, output='/baz/bar.zip')
+    process_content('/foo/bar.zip', 'bar', '/baz', 'sig', 'encrypt')
+    gpg.encrypt.assert_called_with(file_content, output='/baz/bar.sig')
 
 
 @mock.patch('lib.content_crypto.GPG')
 @mock.patch('builtins.open')
 def test_fails_if_bad_file(open_p, GPG):
     """ Should raise if file cannot be opened """
-    open_p.side_effect = raise_os
-    with pytest.raises(DecryptionError):
-        extract_content('/foo/bar.sig', 'bar', '/baz', 'zip')
+    open_p.side_effect = OSError()
+    with pytest.raises(CryptoError):
+        process_content('/foo/bar.zip', 'bar', '/baz', 'sig', 'encrypt')
+
+
+@mock.patch('lib.content_crypto.GPG')
+def test_fails_if_wrong_action(GPG):
+    with pytest.raises(CryptoError):
+        process_content('/foo/bar.sig', 'bar', '/baz', 'zip', 'foo')
 
 
 @mock.patch('lib.content_crypto.GPG')
 @mock.patch('builtins.open')
-def test_extract_return_value(open_p, GPG):
+def test_process_return_value(open_p, GPG):
     """ Should return new file path with provided extension """
     gpg = GPG.return_value
-    data = gpg.decrypt.return_value
-    data.trust_level = 2
-    data.TRUST_FULLY = 2
-    path = extract_content('/foo/bar.sig', 'bar', '/baz', 'zip')
-    assert path == '/baz/bar.zip'
+    path = process_content('/foo/bar.zip', 'bar', '/baz', 'sig', 'encrypt')
+    assert path == '/baz/bar.sig'
+
+
+@mock.patch('lib.content_crypto.process_content')
+def test_decrypt_action(process_p):
+    """ Should return new file path with provided extension """
+    extract_content('/foo/bar.sig', 'bar', '/baz', 'zip')
+    process_p.assert_called_with('/foo/bar.sig', 'bar', '/baz', 'zip',
+                                 'decrypt')
 
