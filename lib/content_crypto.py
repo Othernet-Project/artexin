@@ -91,14 +91,16 @@ def extract_content(path, keyring, output_dir, output_ext='zip'):
     return process_content(path, keyring, output_dir, output_ext, 'decrypt')
 
 
-def sign_content(path, keyring, key, output_dir, output_ext='sig'):
+def sign_content(path, keyring, key, passphrase, output_dir, output_ext='sig'):
     """ Sign the content at specified path using provided keyring
 
     :param path:        path of the content file
     :param keyring:     keyring path to use
     :param key:         key to use for sining
+    :param passphrase:  key passphrase
     :param output_dir:  directory in which to write the signed file
     :param output_ext:  extension of the signed file
     """
     return process_content(path, keyring, output_dir, output_ext, 'encrypt',
-                           recipients=key)
+                           recipients=key, passphrase=passphrase,
+                           always_trust=True)
