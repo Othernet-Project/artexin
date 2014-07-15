@@ -15,7 +15,7 @@ from . import __version__ as _version, __author__ as _author
 
 __version__ = _version
 __author__ = _author
-__all__ = ('pp_noop', 'pp_wikipedia',)
+__all__ = ('pp_noop', 'pp_wikipedia', 'pp_fixheaders',)
 
 
 
@@ -26,6 +26,37 @@ def pp_noop(html):
     :returns:       Processed HTML
     """
     return html
+
+
+def pp_fixheaders(html):
+    """ Fixes all headers so that top-most is always H1
+
+    It promotes all headers so that H1 is the top-most header::
+
+        >>> html = "<h2>This should be h1</h2><h3>Should be h2</h3>"
+        >>> pp_fixheaders(html)
+        '<html><body><h1>This should be h1</h1><h2>Should be h2</h2></body></html>'
+
+    It will not do anything to lower levels if H1 is already top-most::
+
+        >>> html = "<h1>This should be h1</h1><h3>But this is not h2</h3>"
+        >>> pp_fixheaders(html)
+        '<html><body><h1>This should be h1</h1><h3>But this is not h2</h3></body></html>'
+
+
+    :param html:    String containing the HTML document
+    :returns:       Processed HTML
+    """
+    soup = BeautifulSoup(html)
+    adjust = None
+    for level, h in enumerate(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], start=1):
+        headings = soup.find_all(h)
+        if headings and adjust is None:
+            adjust = level - 1
+        if adjust:
+            for elem in headings:
+                elem.name = 'h%s' % (level - adjust)
+    return str(soup)
 
 
 def pp_wikipedia(html):
@@ -49,12 +80,12 @@ def pp_wikipedia(html):
 
         >>> '<h1 id="firstHeading" class="firstHeading" lang="en">' in s
         False
-        >>> '<h1>Sunflower</h1>' in s
+        >>> '<h1>Helianthus</h1>' in s
         True
 
     It will also remove any '[edit]' links::
 
-        >>> '<a href="/w/index.php?title=Sunflower&amp' in s
+        >>> '<a href="/w/index.php?title=Heliantus&amp' in s
         False
 
     Finally, it removes the 'zoom' links that are found next to images.
