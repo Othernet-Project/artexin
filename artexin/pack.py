@@ -145,8 +145,6 @@ def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
 
     # Encrypt zip file
     if all([keyring, key, passphrase]):
-        print("Signing '%s' using key '%s' and passphrase '%s'" % (
-            zippath, key, passphrase))
         signed = sign_content(zippath, keyring, key, passphrase,
                               output_dir=base_dir)
         if not os.path.exists(signed):
@@ -160,7 +158,6 @@ def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
             })
             return meta
         os.unlink(zippath)
-        # Sanity check
         zippath = signed
 
     meta.update({
