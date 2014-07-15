@@ -80,12 +80,12 @@ def pp_wikipedia(html):
 
         >>> '<h1 id="firstHeading" class="firstHeading" lang="en">' in s
         False
-        >>> '<h1>Sunflower</h1>' in s
+        >>> '<h1>Helianthus</h1>' in s
         True
 
     It will also remove any '[edit]' links::
 
-        >>> '<a href="/w/index.php?title=Sunflower&amp' in s
+        >>> '<a href="/w/index.php?title=Heliantus&amp' in s
         False
 
     Finally, it removes the 'zoom' links that are found next to images.
