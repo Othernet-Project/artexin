@@ -15,4 +15,4 @@
 SRCDIR=/vagrant
 
 cd $SRCDIR
-PYTHONPATH=$SRCDIR py.test tests
+PYTHONPATH=$SRCDIR py.test --doctest-modules artexin tests
