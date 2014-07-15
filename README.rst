@@ -98,8 +98,10 @@ This prints out a listing that looks like this::
         'email.ssl': 'yes',
         'email.user': 'root'}
 
-Once the application is started, it can be accessed as `on port 8080`_ on the
-host machine.
+Once the application is started, it can be accessed as `on port 8080`_ or
+`port 9090`_ on the host machine. The port 8080 is a forwarded nginx listening
+at port 80 on the Vagrant box. It only serves the prepared content so you can
+inspect the results. The port 9090 serves the actual web UI. 
 
 Known issues
 ============
@@ -126,3 +128,4 @@ Please report all bugs to our `issue tracker`_.
 .. _NLTK: http://www.nltk.org/
 .. _issue tracker: https://github.com/Outernet-Project/artexin/issues
 .. _on port 8080: http://localhost:8080/
+.. _port 9090: http://localhost:9090/

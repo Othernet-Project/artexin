@@ -28,14 +28,19 @@ def wrapper(data):
     :param data:    Tuple containing ``pack.collect()`` arguments
     :return:        Results of calling ``pack.collect()``
     """
-    url, preps, base_dir, keep_dir = data
-    return collect(url, prep=preps, base_dir=base_dir, keep_dir=keep_dir)
+    url, keyring, key, passphrase, preps, base_dir, keep_dir = data
+    return collect(url, keyring, key, passphrase, prep=preps,
+                   base_dir=base_dir, keep_dir=keep_dir)
 
 
-def batch(urls, base_dir=BASE_DIR, keep_dir=False, max_procs=None):
+def batch(urls, keyring=None, key=None, passphrase=None, base_dir=BASE_DIR,
+          keep_dir=False, max_procs=None):
     """ Batch-collect URLs using ``pack.collect()``
 
     :param urls:        Iterable containing URLs to process
+    :param keyring:     Keyring directory
+    :param key:         Key to use for signing
+    :param passphrase:  Key passphrase
     :param base_dir:    Base directory in which to operate
     :param keep_dir:    Keep the directory in which content was collected
     :param max_procs:   Maximum number of processes in the process pool that
@@ -44,7 +49,8 @@ def batch(urls, base_dir=BASE_DIR, keep_dir=False, max_procs=None):
                         ``multiprocessing.Pool()`` constructor's ``processes``
                         argument.
     """
-    urls = ((u, get_preps(u), base_dir, keep_dir) for u in urls)
+    urls = ((u, keyring, key, passphrase, get_preps(u), base_dir, keep_dir)
+            for u in urls)
     pool = multiprocessing.Pool(max_procs)
     results = pool.map(wrapper, urls)
     pool.close()
