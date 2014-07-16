@@ -127,9 +127,34 @@ def get_counts(sentences):
     Example::
 
         # Load the fixture file
-        >>> f = open('../fixtures/sample1.txt')
-        >>> text = f.read()
-        >>> f.close()
+        >>> text = """
+        ... It cannot be said that the Everhard Manuscript is an important
+        ... historical document. To the historian it bristles with errors--not
+        ... errors of fact, but errors of interpretation. Looking back across
+        ... the seven centuries that have lapsed since Avis Everhard completed
+        ... her manuscript, events, and the bearings of events, that were
+        ... confused and veiled to her, are clear to us. She lacked
+        ... perspective. She was too close to the events she writes about. Nay,
+        ... she was merged in the events she has described.
+        ...
+        ... Nevertheless, as a personal document, the Everhard Manuscript is of
+        ... inestimable value. But here again enter error of perspective, and
+        ... vitiation due to the bias of love. Yet we smile, indeed, and
+        ... forgive Avis Everhard for the heroic lines upon which she modelled
+        ... her husband. We know today that he was not so colossal, and that he
+        ... loomed among the events of his times less largely than the
+        ... Manuscript would lead us to believe.
+        ...
+        ... We know that Ernest Everhard was an exceptionally strong man, but
+        ... not so exceptional as his wife thought him to be. He was, after
+        ... all, but one of a large number of heroes who, throughout the world,
+        ... devoted their lives to the Revolution; though it must be conceded
+        ... that he did unusual work, especially in his elaboration and
+        ... interpretation of working-class philosophy. "Proletarian science"
+        ... and "proletarian philosophy" were his phrases for it, and therein
+        ... he shows the provincialism of his mind--a defect, however, that was
+        ... due to the times and that none in that day could escape.
+        ... """
 
         # First split into sentences
         >>> sentences = split_sentences(text)

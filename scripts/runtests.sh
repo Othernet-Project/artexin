@@ -12,9 +12,7 @@
 # file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 #
 
-START=/vagrant
-PKG="$START/artexin"
+SRCDIR=/vagrant
 
-cd $PKG
-/usr/local/bin/nosetests --with-doctest --doctest-options='+ELLIPSIS,+IGNORE_EXCEPTION_DETAIL' *.py
-
+cd $SRCDIR
+PYTHONPATH=$SRCDIR py.test --doctest-modules artexin tests

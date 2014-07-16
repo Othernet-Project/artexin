@@ -70,12 +70,16 @@ def collections_form():
 @auth.restricted
 def collections_process():
     """ Process URLs that were passed through the collection form """
+    config = request.app.config
     urls = request.forms.get('urls')
     if urls is None:
         return "no URLs given"
     urls = list(set([url.strip() for url in urls.strip().split('\n')]))
     batch = Batch.process_urls(
         urls,
+        keyring=config.get('crypto.keyring', None),
+        key=config.get('crypto.key', None),
+        passphrase=config.get('crypto.passphrase', None),
         base_dir=request.app.config['artex.directory'],
         max_procs=int(request.app.config['artex.processes']))
     bottle.redirect('/batches/%s' % batch.id)
@@ -205,11 +209,7 @@ if __name__ == '__main__':
                         metavar='FILE', default=CONFPATH)
     parser.add_argument('--debug-conf', help='show configuration and exit',
                          action='store_true')
-    parser.add_argument('--su', action='store_true',
-                        help='create superuser and exit')
-    parser.add_argument('--email-test',
-                        help="send test email to this addres and exit",
-                        default=None, metavar='ADDR')
+    cli.configure_parser(parser)
 
     args = parser.parse_args(sys.argv[1:])
     print("Loading configuration from %s" % args.conf)
@@ -219,18 +219,15 @@ if __name__ == '__main__':
     mongoengine.connect(app.config['artexin.database'])
     print("Connected to database")
 
-    # Process any tasks first
-    if args.debug_conf:
-        cli.show_conf(args)
-    if args.su:
-        cli.create_superuser(args)
-    if args.email_test:
-        cli.test_email(args)
-
     # Drop privileges
     user = app.config.get('artexin.user')
     group = app.config.get('artexin.group')
     set_privileges(user, group)
+
+    # Process any tasks first
+    if args.debug_conf:
+        cli.show_conf(args)
+    cli.process_cli(args)  # Some actions will cause app to terminate here
 
     # Start the application
     print('Starting application')
