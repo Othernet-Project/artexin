@@ -38,6 +38,20 @@ __all__ = ('zipdir', 'collect', 'BASE_DIR')
 COMPRESSION = zipfile.ZIP_DEFLATED
 BASE_DIR = tempfile.gettempdir()
 TS_FORMAT = '%Y-%m-%d %H:%M:%S UTC'
+ESCAPE_MAPPINGS = (
+    ('%', '%25'),
+    ('(', '%2528'),
+    (')', '%2529'),
+    ('[', '%255B'),
+    (']', '%255D'),
+)
+
+
+def percent_escape(url):
+    for s, t in ESCAPE_MAPPINGS:
+        url = url.replace(s, t)
+    return url
+
 
 
 def zipdir(path, dirpath):
@@ -97,7 +111,7 @@ def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
 
     # Fetch and prepare the HTML
     try:
-        page = fetch_rendered(url)
+        page = fetch_rendered(percent_escape(url))
     except Exception as err:
         # We will trap any exceptions and return a meta object with 'error' key
         # set to exception object. This won't help debugging a whole lot, but
