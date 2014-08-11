@@ -184,7 +184,6 @@ def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
 
     meta.update({
         'zipfile': zippath,
-        'images': len(images),
         'size': stat.st_size,
         'hash': checksum,
         'timestamp': timestamp,  # Pass timestamp as native datetime object
