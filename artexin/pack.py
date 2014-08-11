@@ -81,6 +81,21 @@ def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
 
     If the target directory already exists, it will be unlinked first.
 
+    Metadata format:
+
+    - ``url``: URL of the page
+    - ``domain``: domain of the URL
+    - ``timestamp``: time when page was retrieved
+    - ``title``: page title
+    - ``images``: number of images
+
+    The above keys are writtein in the JSON file. The following keys are
+    returned in addition:
+
+    - ``zipfile``: path to package file (zip or sig)
+    - ``size``: size of the package
+    - ``hash``: checksum of the page URL
+
     :param url:         Identifier for the batch (usually URL of the page)
     :param keyring:     Keyring directory
     :param key:         Key to use for signing
