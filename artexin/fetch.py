@@ -77,7 +77,7 @@ def fetch_rendered(url):
     """ Fetch content using headless browser
 
     The difference between this function and ``fetch_content()`` is that this
-    function will render the page using QT4 WebKit browser instead of simply
+    function will render the page using PhantomJS browser instead of simply
     donwloading the HTML. This function is therefore more resource-intensive,
     but yields better results for pages that use JavaScript to modify the DOM
     in a significant way (loads relevant images or content, for instance).

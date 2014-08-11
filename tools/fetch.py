@@ -39,11 +39,12 @@ def isdone(url, path):
     return os.path.exists(join(path, '%s.sig' % hash_url(url)))
 
 
-def fetch_and_zip(page, key, passphrase, out):
+def fetch_and_zip(page, key, passphrase, out, javascript=True,
+                  do_extract=True):
     start = time.time()
-    print('Processing: %s' % page)
     meta = collect(page, keyring=KEYRING, key=key, passphrase=passphrase,
-                   prep=get_preps(page), base_dir=out)
+                   prep=get_preps(page), base_dir=out, javascript=javascript,
+                   do_extract=do_extract)
     took = time.time() - start
     print('Took %s seconds' % (took))
     return took, meta
@@ -62,22 +63,33 @@ if __name__ == '__main__':
                         'containing a list of URLs (once URL per line)')
     parser.add_argument('--out', metavar='PATH', help='output directory '
                         '(default is /vagrant)', default='/vagrant')
+    parser.add_argument('--no-js', help='do not execute any JavaScript',
+                        action='store_false')
+    parser.add_argument('--verbatim', help='do not perform article extraction',
+                        action='store_false')
+    parser.add_argument('--debug', help='raise all exceptions',
+                        action='store_true')
     args = parser.parse_args()
 
     passphrase = input('Key passphrase: ')
     pfile = args.urllist
     with open(pfile, 'r') as ulist:
-        urllist = [u.strip() for u in ulist.read().split('\n')]
+        urllist = [u.strip() for u in ulist.read().split('\n')
+                   if u.strip() != '']
 
     faillog = open(FAILLOG, 'w')
     oklog = open(LOG, 'w', newline='')
     report = csv.writer(oklog, delimiter=',', quotechar='"')
     processed = []
+    count = 1
 
     start = time.time()
-    report.writerow(['url', 'time', 'hash', 'title', 'images'])
+    report.writerow(['url', 'size', 'time', 'hash', 'title', 'images'])
 
     for url in urllist:
+        print("Processing '%s' (%s/%s)" % (url, count, len(urllist)))
+        count += 1
+
         if url in processed:
             print("Duplicate URL '%s', skipping" % url)
             continue
@@ -92,14 +104,20 @@ if __name__ == '__main__':
         except Exception as e:
             print("Error processing '%s': %s" % (url, e))
             faillog.write(url + '\n')
+            if args.debug:
+                raise
             continue
 
         # Fetch and zip
         try:
-            took, meta = fetch_and_zip(url, args.key, passphrase, args.out)
+            took, meta = fetch_and_zip(url, args.key, passphrase, args.out,
+                                       javascript=bool(args.no_js),
+                                       do_extract=bool(args.verbatim))
         except Exception as e:
             print("Error processing '%s': %s" % (url, e))
             faillog.write(url + '\n')
+            if args.debug:
+                raise
             continue
 
         error = meta.get('error')
@@ -110,7 +128,7 @@ if __name__ == '__main__':
             continue
 
         # Write metadata to CSV file
-        report.writerow([url, took, meta['hash'], meta['title'],
+        report.writerow([url, meta['size'], took, meta['hash'], meta['title'],
                          meta['images']])
         processed.append(url)
 

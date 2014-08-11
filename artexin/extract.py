@@ -24,7 +24,6 @@ from .fetch import fetch_image
 
 __version__ = _version
 __author__ = _author
-__all__ = ('extract', 'process_images', 'strip_links',)
 
 
 PROCESSED_IMG_DIR = tempfile.gettempdir()
@@ -125,6 +124,12 @@ def extract(html, **kwargs):
     # Add doctype
     final = '<!DOCTYPE html>\n' + soup.prettify()
     return (title_text, final)
+
+
+def no_extract(html):
+    soup = BeautifulSoup(html)
+    title = get_title(soup)
+    return title, html
 
 
 def prepare_url(url, base, docpath):

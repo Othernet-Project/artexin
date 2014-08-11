@@ -28,6 +28,7 @@ DEFAULT_PREPROCESSORS = [pp_noop]
 # are doing. Also, keep the last set minimal.
 MAPPINGS = (
     (r'^https?://..\.wikipedia\.org', (pp_wikipedia,)),
+    (r'^http://www\.dw\.de/', (pp_dwelle,)),
     (r'.*', (pp_fixheaders,)),
 )
 
