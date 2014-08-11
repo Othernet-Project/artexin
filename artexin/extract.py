@@ -77,7 +77,9 @@ def get_title(soup):
     """
     try:
         return str(next((e for e in [soup.title, soup.h1, soup.h2, soup.h3]
-                         if e is not None)).string)
+                         if e is not None)).string).strip()
+    except TypeError:
+        return ''
     except StopIteration:
         return ''
 
