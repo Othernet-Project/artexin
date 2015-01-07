@@ -4,6 +4,7 @@
 *.png
 *.jpg
 *.gif
+*.sqlite
 /.vagrant
 /artexin_webui/static/.sass-cache
 /tmp

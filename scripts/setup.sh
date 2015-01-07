@@ -153,13 +153,7 @@ DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes upgrade
 # Install build requirements
 DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install build-essential \
     python3 python3-setuptools python3-dev python3-lxml python3-tk \
-    python3-imaging phantomjs nginx mongodb-org=2.6.1
-
-# Set up MongoDB from 10gen
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' > \
-    /etc/apt/sources.list.d/mongodb.list
-
+    python3-imaging phantomjs 
 
 ###############################################################################
 # LIBRARIES AND DATA FILES
