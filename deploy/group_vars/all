@@ -1,0 +1,16 @@
+deploy_user: artexin
+deploy_group: artexin
+
+static_root: /var/www/artexin/static
+
+app_name: artexin
+
+code_repository: git@github.com:Outernet-Project/artexin.git
+
+app_code_dir: "/home/{{ deploy_user }}/{{ app_name }}"
+
+virtualenv_dir: "/home/{{ deploy_user }}/.virtualenvs/{{ app_name }}"
+
+bottle_env_vars: {
+    CONFIG_PATH: '{{ config_path }}',
+}

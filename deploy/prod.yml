@@ -1,0 +1,23 @@
+---
+# This playbook deploys the whole application stack in this site.
+
+- name: install system dependencies
+  hosts: prod
+  remote_user: root
+
+  roles:
+    - mongodb
+
+- name: create deploy user
+  hosts: prod
+  remote_user: root
+
+  roles:
+    - usersetup
+
+- name: deploy application
+  hosts: prod
+  remote_user: "{{ deploy_user }}"
+
+  roles:
+    - app

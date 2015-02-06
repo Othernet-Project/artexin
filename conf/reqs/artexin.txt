@@ -1,0 +1,7 @@
+-r common.txt
+beautifulsoup4==4.3.2
+breadability==0.1.20
+selenium==2.42.1
+simplejson==3.5.2
+https://github.com/nltk/nltk/archive/3.0a4.zip#egg=nltk
+python-gnupg==0.3.6

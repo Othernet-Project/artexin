@@ -1,0 +1,23 @@
+---
+# This playbook deploys the whole application stack in this site.
+
+- name: install system dependencies
+  hosts: vagrant
+  remote_user: root
+
+  roles:
+    - mongodb
+
+- name: create deploy user
+  hosts: vagrant
+  remote_user: root
+
+  roles:
+    - usersetup
+
+- name: deploy application
+  hosts: vagrant
+  remote_user: "{{ deploy_user }}"
+
+  roles:
+    - app
