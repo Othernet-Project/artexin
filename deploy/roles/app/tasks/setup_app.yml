@@ -1,0 +1,112 @@
+---
+- name: checkout latest app code if it's a real deployment
+  git:
+    repo: "{{ code_repository }}"
+    version: "{{ code_version }}"
+    dest: "{{ app_code_dir }}"
+    accept_hostkey: yes
+  remote_user: "{{ deploy_user }}"
+  when: "'prod' in group_names"
+
+- name: symlink current source to app_code_dir (suitable for dev environments)
+  file:
+    src: /vagrant/
+    dest: "{{ app_code_dir }}"
+    state: link
+  remote_user: "{{ deploy_user }}"
+  when: "'vagrant' in group_names"
+
+- name: check if virtualenv already exists
+  stat: "path={{ virtualenv_dir }}"
+  register: venv_dir
+  remote_user: "{{ deploy_user }}"
+
+- name: create virtualenv
+  shell: "python3 -m venv {{ virtualenv_dir }} --without-pip"
+  when: venv_dir.stat.isdir is not defined
+  remote_user: "{{ deploy_user }}"
+
+- name: prepare shell script to run command in virtual environment
+  template:
+    src: venv_exec.j2
+    dest: "{{ virtualenv_dir }}/exec.sh"
+    mode: 0755
+  remote_user: "{{ deploy_user }}"
+
+- name: prepare pip install script (manual install due to broken pyvenv in ubuntu 14)
+  template:
+    src: pip.sh.j2
+    dest: "{{ virtualenv_dir }}/pip.sh"
+    mode: 0755
+  remote_user: "{{ deploy_user }}"
+
+- name: install pip in virtualenv
+  shell: "{{ virtualenv_dir }}/exec.sh {{ virtualenv_dir }}/pip.sh"
+  remote_user: "{{ deploy_user }}"
+
+- name: install app dependencies listed in requirements.txt (pip module is broken with pyvenv)
+  shell: "{{ virtualenv_dir }}/exec.sh pip install -r {{ requirements_file }}"
+  remote_user: "{{ deploy_user }}"
+
+- name: install nltk data files
+  shell: "{{ virtualenv_dir }}/exec.sh {{ virtualenv_dir }}/bin/python -m nltk.downloader all"
+  remote_user: "{{ deploy_user }}"
+
+- name: check if zip directory exists
+  stat: "path={{ zip_root }}"
+  register: zip_dir
+
+- name: create zip directory
+  file:
+    path: "{{ zip_root }}"
+    owner: "{{ deploy_user }}"
+    group: "{{ nginx_group }}"
+    state: directory
+    mode: 0755
+  when: zip_dir.stat.isdir is not defined
+  sudo: yes
+
+- name: symlink static folder
+  file:
+    src: "{{ app_code_dir }}/artexin_admin/static"
+    dest: "{{ static_root }}"
+    state: link
+  sudo: yes
+
+- name: setup phantom init script
+  template:
+    src: phantom.conf.j2
+    dest: /etc/init/phantom.conf
+  sudo: yes
+
+- name: start phantom on boot
+  service:
+    name: phantom
+    enabled: yes
+    state: restarted
+  sudo: yes
+
+- name: setup circus
+  template:
+    src: circus.ini.j2
+    dest: /etc/circus.ini
+  sudo: yes
+
+- name: setup circus init script
+  template:
+    src: circusd.j2
+    dest: /etc/init.d/circusd
+  sudo: yes
+
+- name: set circus init script to be executable
+  file:
+    path: /etc/init.d/circusd
+    mode: 0755
+  sudo: yes
+
+- name: start circus on boot
+  service:
+    name: circusd
+    enabled: yes
+    state: restarted
+  sudo: yes

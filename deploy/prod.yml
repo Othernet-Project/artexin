@@ -15,9 +15,9 @@
   roles:
     - usersetup
 
-- name: deploy application
+- name: deploy app
   hosts: prod
-  remote_user: "{{ deploy_user }}"
+  remote_user: root
 
   roles:
     - app

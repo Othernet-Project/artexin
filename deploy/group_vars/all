@@ -1,11 +1,13 @@
 deploy_user: artexin
 deploy_group: artexin
+nginx_group: www-data
 
-static_root: /var/www/artexin/static
+static_root: /srv/static
+zip_root: /srv/zipballs
 
 app_name: artexin
 
-code_repository: git@github.com:Outernet-Project/artexin.git
+code_repository: https://github.com/Outernet-Project/artexin.git
 
 app_code_dir: "/home/{{ deploy_user }}/{{ app_name }}"
 

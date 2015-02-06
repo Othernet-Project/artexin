@@ -1,0 +1,23 @@
+---
+
+
+- name: "add the official mongodb repository's key"
+  apt_key:
+    url: http://docs.mongodb.org/10gen-gpg-key.asc
+    validate_certs: no
+
+- name: add the official mongodb repository
+  copy:
+    src: ../files/mongodb.list
+    dest: /etc/apt/sources.list.d/
+    backup: yes
+
+- name: install mongodb
+  apt:
+    name: mongodb-org
+    update_cache: yes
+
+- name: enable mongodb service
+  service:
+    name: mongod
+    enabled: yes

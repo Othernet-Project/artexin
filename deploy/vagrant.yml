@@ -3,21 +3,23 @@
 
 - name: install system dependencies
   hosts: vagrant
-  remote_user: root
+  remote_user: vagrant
+  sudo: yes
 
   roles:
     - mongodb
 
 - name: create deploy user
   hosts: vagrant
-  remote_user: root
+  remote_user: vagrant
+  sudo: yes
 
   roles:
     - usersetup
 
-- name: deploy application
+- name: deploy app
   hosts: vagrant
-  remote_user: "{{ deploy_user }}"
+  remote_user: vagrant
 
   roles:
     - app

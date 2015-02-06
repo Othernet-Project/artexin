@@ -1,10 +1,7 @@
--r common.txt
-bottle==0.12.8
-werkzeug==0.10.1
 mongoengine==0.8.7
-circus==0.11.1
-circus-web==0.5
 chaussette==1.2
-gevent==1.0.1
+waitress==0.8.9
+werkzeug==0.10.1
+bottle==0.12.8
 bottle-cork==0.11.1
 jinja2==2.7.3
