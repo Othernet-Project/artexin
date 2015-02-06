@@ -7,7 +7,7 @@ logoutput = /var/log/circus/circus.log
 pidfile = /var/run/circus/circusd.pid
 
 [watcher:webapp]
-cmd = {{ virtualenv_dir }}/bin/chaussette --fd $(circus.sockets.webapp) --backend waitress app.application
+cmd = {{ virtualenv_dir }}/bin/chaussette --fd $(circus.sockets.webapp) --backend waitress artexin_admin.app.application
 numprocesses = 5
 use_sockets = True
 copy_env = True
