@@ -19,4 +19,4 @@ APPMOD="$WEBAPP/app.py"
 
 source {{ virtualenv_dir }}/bin/activate
 cd $SRCDIR
-$PY $APPMOD "$@"
+PYTHONPATH=$SRCDIR $PY $APPMOD "$@"
