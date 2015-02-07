@@ -3,5 +3,4 @@ chaussette==1.2
 waitress==0.8.9
 werkzeug==0.10.1
 bottle==0.12.8
-bottle-cork==0.11.1
 jinja2==2.7.3
