@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
-from os import environ
-from os.path import dirname, join
+import os
 
 import bottle
 
+import config
 import controllers
+import utils
 
 
-default_config_path = join(dirname(__file__), 'artexin.ini')
-config_path = environ.get('CONFIG_PATH', default_config_path)
+utils.discover(controllers)
+
+bottle.TEMPLATE_PATH.insert(0, config.VIEW_ROOT)
+
+config_path = os.environ.get('CONFIG_PATH', config.DEFAULT_CONFIG_PATH)
 
 application = bottle.default_app()
 application.config.load_config(config_path)
