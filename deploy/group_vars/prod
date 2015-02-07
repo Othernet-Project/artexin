@@ -2,6 +2,6 @@ root_domain_name: artexin.outernet.is
 
 requirements_file: "{{ app_code_dir }}/conf/requirements.txt"
 
-config_path: "{{ app_code_dir }}/artexin_admin/config/prod.ini"
+config_path: "{{ app_conf_dir }}/prod.ini"
 
 code_version: master

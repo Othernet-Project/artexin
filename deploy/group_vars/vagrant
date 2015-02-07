@@ -2,6 +2,6 @@ root_domain_name: artexin.local
 
 requirements_file: "{{ app_code_dir }}/conf/dev_requirements.txt"
 
-config_path: "{{ app_code_dir }}/artexin_admin/config/dev.ini"
+config_path: "{{ app_conf_dir }}/dev.ini"
 
 code_version: develop

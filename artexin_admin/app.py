@@ -8,14 +8,14 @@ import controllers
 import utils
 
 
-utils.discover(controllers)
-
 bottle.TEMPLATE_PATH.insert(0, config.VIEW_ROOT)
 
 config_path = os.environ.get('CONFIG_PATH', config.DEFAULT_CONFIG_PATH)
 
 application = bottle.default_app()
 application.config.load_config(config_path)
+
+utils.discover(controllers)
 
 
 if __name__ == '__main__':

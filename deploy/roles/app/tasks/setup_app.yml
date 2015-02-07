@@ -1,4 +1,6 @@
 ---
+
+
 - name: checkout latest app code if it's a real deployment
   git:
     repo: "{{ code_repository }}"
@@ -15,6 +17,22 @@
     state: link
   remote_user: "{{ deploy_user }}"
   when: "'vagrant' in group_names"
+
+- name: create admin app confs folder
+  file:
+    path: "{{ app_conf_dir }}"
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_group }}"
+    state: directory
+  sudo: yes
+
+- name: create admin app config
+  template:
+    src: artexin.ini.j2
+    dest: "{{ config_path }}"
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_group }}"
+  sudo: yes
 
 - name: check if virtualenv already exists
   stat: "path={{ virtualenv_dir }}"
@@ -68,7 +86,7 @@
 
 - name: symlink static folder
   file:
-    src: "{{ app_code_dir }}/artexin_admin/static"
+    src: "{{ admin_app_dir }}/static"
     dest: "{{ static_root }}"
     state: link
   sudo: yes
@@ -83,11 +101,6 @@
   template:
     src: circusd.j2
     dest: /etc/init.d/circusd
-  sudo: yes
-
-- name: set circus init script to be executable
-  file:
-    path: /etc/init.d/circusd
     mode: 0755
   sudo: yes
 
@@ -102,10 +115,5 @@
   template:
     src: startapp.sh.j2
     dest: /usr/local/bin/startapp
-  sudo: yes
-
-- name: make startapp script executable
-  file:
-    path: /usr/local/bin/startapp
     mode: 0755
   sudo: yes
