@@ -45,6 +45,5 @@
 
 - name: install circus process manager
   pip:
-    name: circus
-    version: 0.11.1
+    name: "git+https://github.com/circus-tent/circus.git#egg=circus"
   sudo: yes
