@@ -2,6 +2,8 @@ deploy_user: artexin
 deploy_group: artexin
 nginx_group: www-data
 
+daemon_working_dir: /var/run/circus
+daemon_log_dir: /var/log/circus
 static_root: /srv/static
 zip_root: /srv/zipballs
 
@@ -16,3 +18,8 @@ virtualenv_dir: "/home/{{ deploy_user }}/.virtualenvs/{{ app_name }}"
 bottle_env_vars: {
     CONFIG_PATH: '{{ config_path }}',
 }
+
+phantomjs_working_dir: /var/run/phantomjs
+phantomjs_log_dir: /var/log/phantomjs
+phantomjs_host: 127.0.0.1
+phantomjs_port: 8910

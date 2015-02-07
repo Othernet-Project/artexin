@@ -1,0 +1,21 @@
+---
+
+- name: install phantomjs
+  sudo: yes
+  apt:
+    pkg: phantomjs
+    state: present
+    update_cache: yes
+
+- name: setup phantomjs init script
+  template:
+    src: phantom.conf.j2
+    dest: /etc/init/phantom.conf
+  sudo: yes
+
+- name: start phantomjs on boot
+  service:
+    name: phantom
+    enabled: yes
+    state: restarted
+  sudo: yes

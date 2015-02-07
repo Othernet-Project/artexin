@@ -73,19 +73,6 @@
     state: link
   sudo: yes
 
-- name: setup phantom init script
-  template:
-    src: phantom.conf.j2
-    dest: /etc/init/phantom.conf
-  sudo: yes
-
-- name: start phantom on boot
-  service:
-    name: phantom
-    enabled: yes
-    state: restarted
-  sudo: yes
-
 - name: setup circus
   template:
     src: circus.ini.j2

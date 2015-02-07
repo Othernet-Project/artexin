@@ -30,7 +30,6 @@
     - python3-lxml
     - python3-tk
     - python3-imaging
-    - phantomjs
 
 - name: prepare shell script to install pip
   template:
