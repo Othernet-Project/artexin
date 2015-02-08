@@ -7,6 +7,16 @@
     state: present
     update_cache: yes
 
+- name: create phantomjs group
+  group:
+    name: "{{ phantomjs_group }}"
+    state: present
+
+- name: create phantomjs user
+  user:
+    name: "{{ phantomjs_user }}"
+    group: "{{ phantomjs_group }}"
+
 - name: setup phantomjs init script
   template:
     src: phantom.conf.j2

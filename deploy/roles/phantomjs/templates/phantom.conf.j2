@@ -7,8 +7,8 @@ respawn
 pre-start script
     mkdir -p {{ phantomjs_working_dir }}
     mkdir -p {{ phantomjs_log_dir }}
-    chown {{ deploy_user }}:{{ deploy_group }} {{ phantomjs_working_dir }}
-    chown {{ deploy_user }}:{{ deploy_group }} {{ phantomjs_log_dir }}
+    chown {{ phantomjs_user }}:{{ phantomjs_group }} {{ phantomjs_working_dir }}
+    chown {{ phantomjs_user }}:{{ phantomjs_group }} {{ phantomjs_log_dir }}
 end script
 
-exec start-stop-daemon --start --chuid {{ deploy_user }} --make-pidfile --pidfile {{ phantomjs_working_dir }}/phantomjs.pid --exec /usr/bin/phantomjs -- --webdriver={{ phantomjs_host }}:{{ phantomjs_port }} --webdriver-logfile={{ phantomjs_log_dir }}/phantomjs.log
+exec start-stop-daemon --start --chuid {{ phantomjs_user }} --make-pidfile --pidfile {{ phantomjs_working_dir }}/phantomjs.pid --exec /usr/bin/phantomjs -- --webdriver={{ phantomjs_host }}:{{ phantomjs_port }} --webdriver-logfile={{ phantomjs_log_dir }}/phantomjs.log
