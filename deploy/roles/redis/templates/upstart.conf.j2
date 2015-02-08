@@ -1,0 +1,14 @@
+description "redis server"
+
+start on runlevel [23]
+stop on shutdown
+
+pre-start script
+    mkdir -p {{ redis_working_dir }}
+    chown {{ redis_user }}:{{ redis_group }} {{ redis_working_dir }}
+end script
+
+exec start-stop-daemon --start --chuid {{ redis_user }} --make-pidfile --pidfile {{ redis_working_dir }}/redis.pid --exec /usr/local/bin/redis-server -- /etc/redis/redis.conf
+
+respawn
+respawn limit 5 60

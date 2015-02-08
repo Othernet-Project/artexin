@@ -1,6 +1,11 @@
 [database]
 url = {{ database_uri }}
 
+[redis]
+host = {{ redis_host }}
+port = {{ redis_port }}
+password = {{ redis_password }}
+
 [csrf]
 secret = {{ csrf_secret }}
 token_name = _csrf_token

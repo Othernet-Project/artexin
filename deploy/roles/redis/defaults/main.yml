@@ -1,0 +1,5 @@
+---
+
+redis_user: redis
+redis_group: redis
+redis_working_dir: /var/run/redis

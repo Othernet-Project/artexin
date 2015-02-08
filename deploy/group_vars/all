@@ -22,3 +22,7 @@ bottle_env_vars: {
 }
 
 csrf_secret: "{{ lookup('password', '~/.csrftoken chars=ascii_letters length=50') }}"
+
+redis_password: "{{ lookup('password', '~/.redispassword chars=ascii_letters length=32') }}"
+redis_port: 6379
+redis_host: localhost

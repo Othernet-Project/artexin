@@ -9,6 +9,7 @@
   roles:
     - mongodb
     - phantomjs
+    - redis
 
 - name: create deploy user
   hosts: vagrant
