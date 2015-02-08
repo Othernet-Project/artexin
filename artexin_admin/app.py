@@ -6,6 +6,7 @@ import mongoengine
 
 import config
 import controllers
+import rqueue
 import utils
 
 
@@ -17,6 +18,7 @@ application = bottle.default_app()
 application.config.load_config(config_path)
 
 mongoengine.connect('', host=application.config['database.url'])
+rqueue.RedisQueue.setup(application.config)
 
 utils.discover(controllers)
 

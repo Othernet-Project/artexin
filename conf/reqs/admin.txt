@@ -5,4 +5,5 @@ werkzeug==0.10.1
 bottle-utils==0.1a4
 bottle==0.12.8
 jinja2==2.7.3
+redis==2.10.3
 git+https://github.com/integricho/hotqueue#egg=hotqueue

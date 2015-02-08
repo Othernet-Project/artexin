@@ -4,6 +4,8 @@ import hashlib
 
 import mongoengine
 
+import rqueue
+
 
 MD5_LENGTH = 32
 
@@ -75,6 +77,12 @@ class Job(mongoengine.Document):
 
     @classmethod
     def create(cls, urls, **kwargs):
+        """Create a new job from the passed in list of URLs.
+
+        :param urls:    Iterable containing URLs to be processed
+        :param kwargs:  All kwargs are stored as additional options of the job
+        :returns:       ``Job`` instance
+        """
         creation_time = datetime.datetime.utcnow()
 
         md5 = hashlib.md5()
@@ -94,5 +102,16 @@ class Job(mongoengine.Document):
             job.tasks.append(task)
 
         job.save()
+        job.schedule()
 
         return job
+
+    def schedule(self):
+        """Schedule the job for processing by a background worker."""
+        queue = rqueue.RedisQueue()
+        queue.put({'type': 'job', 'id': self.job_id})
+
+    def retry(self):
+        """Retry a previously failed job."""
+        self.status = self.QUEUED
+        self.schedule()
