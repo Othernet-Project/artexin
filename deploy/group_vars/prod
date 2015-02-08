@@ -5,3 +5,5 @@ requirements_file: "{{ app_code_dir }}/conf/requirements.txt"
 config_path: "{{ app_conf_dir }}/prod.ini"
 
 code_version: master
+
+database_uri: mongodb://localhost/artexinadmin

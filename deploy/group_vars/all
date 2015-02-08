@@ -20,3 +20,5 @@ virtualenv_dir: "/home/{{ deploy_user }}/.virtualenvs/{{ app_name }}"
 bottle_env_vars: {
     CONFIG_PATH: '{{ config_path }}',
 }
+
+csrf_secret: "{{ lookup('password', '~/.csrftoken chars=ascii_letters length=50') }}"

@@ -108,6 +108,7 @@
   service:
     name: circusd
     enabled: yes
+    state: started
   sudo: yes
   notify:
     - restart circus
