@@ -3,3 +3,7 @@
 - name: restart nginx
   service: name=nginx state=restarted
   sudo: yes
+
+- name: restart circus
+  service: name=circusd state=restarted
+  sudo: yes

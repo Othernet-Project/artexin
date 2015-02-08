@@ -108,8 +108,9 @@
   service:
     name: circusd
     enabled: yes
-    state: restarted
   sudo: yes
+  notify:
+    - restart circus
 
 - name: create startapp script for development purposes
   template:
