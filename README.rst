@@ -24,17 +24,36 @@ Setting up the vagrant box
 After set-up, the root filesystem takes up around 3.5GB on disk, so make sure
 you have enough free space.
 
-Make sure Vagrant and VirtualBox are installed. Issue the following commands to
-to start the development box::
+Make sure Vagrant, VirtualBox and Ansible are installed:
 
-	vagrant box add ubuntu/trusty64
-	vagrant up
+    wget https://dl.bintray.com/mitchellh/vagrant/vagrant_1.7.2_x86_64.deb
+    sudo dpkg -i vagrant_1.7.2_x86_64.deb
+
+    sudo apt-get install virtualbox
+
+    sudo apt-get install software-properties-common
+    sudo apt-add-repository ppa:ansible/ansible
+    sudo apt-get update
+    sudo apt-get install ansible
+
+Issue the following commands to to start the development box::
+
+    vagrant box add ubuntu/trusty64
+    vagrant up
 
 Commands should be run from the source directory.
 
 Setting up the box may take a while, depending on your network connections
 because the complete corpora of the NLTK_ library is downloaded to the
 virtualbox.
+By the end of deployment, the admin application will be accessible on:
+
+    http://localhost:8080/
+
+To stop the server, SSH into the vagrant VM:
+
+    vagrant ssh
+    sudo service circusd stop
 
 Running unit tests
 ==================
@@ -42,11 +61,11 @@ Running unit tests
 First SSH into the development vagrant box (run ``vagrant up`` if it's not
 started yet)::
 
-	vagrant ssh
+    vagrant ssh
 
 Run the following command to run the unit tests::
 
-	runtests
+    runtests
 
 The above command simply runs the script in ``scripts/runtests.sh`` (it's just
 a symlink).
@@ -60,7 +79,7 @@ Starting the ArtExIn Web UI application
 The application can be started using the ``startapp`` script from your Vagrant
 box. To do this, simply ssh into Vagrant box and type::
 
-    sartapp
+    startapp
 
 The configuration settings for the application are located in
 ``conf/artexin.ini``. These settings are not quite useful generally, so you
@@ -101,7 +120,7 @@ This prints out a listing that looks like this::
 Once the application is started, it can be accessed as `on port 8080`_ or
 `port 9090`_ on the host machine. The port 8080 is a forwarded nginx listening
 at port 80 on the Vagrant box. It only serves the prepared content so you can
-inspect the results. The port 9090 serves the actual web UI. 
+inspect the results. The port 9090 serves the actual web UI.
 
 Known issues
 ============
