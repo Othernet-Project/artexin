@@ -2,6 +2,7 @@
 import os
 
 import bottle
+import mongoengine
 
 import config
 import controllers
@@ -14,6 +15,8 @@ config_path = os.environ.get('CONFIG_PATH', config.DEFAULT_CONFIG_PATH)
 
 application = bottle.default_app()
 application.config.load_config(config_path)
+
+mongoengine.connect('', host=application.config['database.url'])
 
 utils.discover(controllers)
 
