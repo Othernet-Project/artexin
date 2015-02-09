@@ -11,6 +11,8 @@ MD5_LENGTH = 32
 
 
 class Task(mongoengine.Document):
+    """Tasks are the smallest unit of work, which contain an exact target (URL)
+    that needs to be processed."""
     QUEUED = "QUEUED"
     PROCESSING = "PROCESSING"
     FAILED = "FAILED"
@@ -45,8 +47,21 @@ class Task(mongoengine.Document):
                                      default=QUEUED,
                                      help_text="Job status.")
 
+    @classmethod
+    def create(cls, job_id, url):
+        """Create a new task from the passed in list of URLs.
+
+        :param job_id:  The string ID of the parent job instance
+        :param url:     The target URL that needs to be processed
+        :returns:       ``Task`` instance
+        """
+        task = cls(job_id=job_id, url=url)
+        task.save()
+        return task
+
 
 class Job(mongoengine.Document):
+    """Jobs are container units, holding one or more tasks."""
     QUEUED = "QUEUED"
     PROCESSING = "PROCESSING"
     FAILED = "FAILED"
@@ -57,6 +72,8 @@ class Job(mongoengine.Document):
         (FAILED, "Failed"),
         (FINISHED, "Finished"),
     )
+
+    queue_class = rqueue.RedisQueue
 
     job_id = mongoengine.StringField(required=True,
                                      primary_key=True,
@@ -75,6 +92,16 @@ class Job(mongoengine.Document):
                                   help_text="References to subtasks of job.")
     options = mongoengine.DictField(help_text="Additional(free-form) options.")
 
+    def generate_id(cls, *args):
+        """Generate a unique job_id by feeding the hash object with the passed
+        in arguments."""
+        md5 = hashlib.md5()
+
+        for data in args:
+            md5.update(bytes(str(data), 'utf-8'))
+
+        return md5.hexdigest()
+
     @classmethod
     def create(cls, urls, **kwargs):
         """Create a new job from the passed in list of URLs.
@@ -85,22 +112,15 @@ class Job(mongoengine.Document):
         """
         creation_time = datetime.datetime.utcnow()
 
-        md5 = hashlib.md5()
-        add_to_md5 = lambda data: md5.update(bytes(str(data), 'utf-8'))
-        # generate job_id md5 from the current time + the passed urls
-        add_to_md5(creation_time)
-        map(add_to_md5, urls)
+        # generate job_id from the current time + the passed in urls
+        job_id = cls.generate_id(creation_time, *list(urls))
 
-        job = cls(job_id=md5.hexdigest(),
+        job = cls(job_id=job_id,
                   scheduled=creation_time,
                   updated=creation_time,
                   options=kwargs)
 
-        for url in urls:
-            task = Task(job_id=job.job_id, url=url)
-            task.save()
-            job.tasks.append(task)
-
+        job.tasks = [Task.create(job_id, url) for url in urls]
         job.save()
         job.schedule()
 
@@ -108,7 +128,7 @@ class Job(mongoengine.Document):
 
     def schedule(self):
         """Schedule the job for processing by a background worker."""
-        queue = rqueue.RedisQueue()
+        queue = self.queue_class()
         queue.put({'type': 'job', 'id': self.job_id})
 
     def retry(self):
