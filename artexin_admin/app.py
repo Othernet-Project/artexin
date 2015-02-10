@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
-
 import bottle
 import mongoengine
 
@@ -12,10 +10,8 @@ from artexin_admin import utils
 
 bottle.TEMPLATE_PATH.insert(0, settings.VIEW_ROOT)
 
-config_path = os.environ.get('CONFIG_PATH', settings.DEFAULT_CONFIG_PATH)
-
 application = bottle.default_app()
-application.config.load_config(config_path)
+application.config.load_dict(settings.BOTTLE_CONFIG)
 
 mongoengine.connect('', host=application.config['database.url'])
 rqueue.RedisQueue.setup(application.config)

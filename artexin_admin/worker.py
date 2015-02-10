@@ -1,24 +1,15 @@
 # -*- coding: utf-8 -*-
-import os
-
-from bottle import ConfigDict
-
 import mongoengine
 
-from artexin_admin import settings
 from artexin_admin import handlers
 from artexin_admin import rqueue
+from artexin_admin import settings
 from artexin_admin import utils
 from artexin_admin.decorators import registered
 
 
-config_path = os.environ.get('CONFIG_PATH', settings.DEFAULT_CONFIG_PATH)
-
-config = ConfigDict()
-config.load_config(config_path)
-
-mongoengine.connect('', host=config['database.url'])
-rqueue.RedisQueue.setup(config)
+mongoengine.connect('', host=settings.BOTTLE_CONFIG['database.url'])
+rqueue.RedisQueue.setup(settings.BOTTLE_CONFIG)
 queue = rqueue.RedisQueue()
 
 utils.discover(handlers)
