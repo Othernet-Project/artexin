@@ -4,15 +4,15 @@ import os
 import bottle
 import mongoengine
 
-from artexin_admin import config
 from artexin_admin import controllers
 from artexin_admin import rqueue
+from artexin_admin import settings
 from artexin_admin import utils
 
 
-bottle.TEMPLATE_PATH.insert(0, config.VIEW_ROOT)
+bottle.TEMPLATE_PATH.insert(0, settings.VIEW_ROOT)
 
-config_path = os.environ.get('CONFIG_PATH', config.DEFAULT_CONFIG_PATH)
+config_path = os.environ.get('CONFIG_PATH', settings.DEFAULT_CONFIG_PATH)
 
 application = bottle.default_app()
 application.config.load_config(config_path)
