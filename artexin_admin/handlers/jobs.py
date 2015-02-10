@@ -88,7 +88,7 @@ class JobHandler(object):
             if self.is_valid_task(task):
                 self.process_task(task, job.options)
 
-        if any(job.tasks.is_failed):
+        if any(task.is_failed for task in job.tasks):
             job.mark_erred()
         else:
             job.mark_finished()
