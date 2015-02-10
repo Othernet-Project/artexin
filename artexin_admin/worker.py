@@ -6,7 +6,10 @@ from bottle import ConfigDict
 import mongoengine
 
 from artexin_admin import config
-from artexin_admin.rqueue import RedisQueue
+from artexin_admin import handlers
+from artexin_admin import rqueue
+from artexin_admin import utils
+from artexin_admin.decorators import registered
 
 
 config_path = os.environ.get('CONFIG_PATH', config.DEFAULT_CONFIG_PATH)
@@ -15,13 +18,21 @@ config = ConfigDict()
 config.load_config(config_path)
 
 mongoengine.connect('', host=config['database.url'])
-RedisQueue.setup(config)
-queue = RedisQueue()
+rqueue.RedisQueue.setup(config)
+queue = rqueue.RedisQueue()
+
+utils.discover(handlers)
 
 
 @queue.worker
-def job_processor(job_data):
-    print(job_data)
+def dispatcher(message):
+    try:
+        handlers = registered.handlers[message.pop('type', None)]
+    except KeyError:
+        pass
+    else:
+        for hander_func in handlers:
+            hander_func(message)
 
 
-job_processor()
+dispatcher()
