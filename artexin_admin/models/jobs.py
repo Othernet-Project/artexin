@@ -59,17 +59,37 @@ class Task(mongoengine.Document):
         task.save()
         return task
 
+    @property
+    def is_finished(self):
+        return self.status == self.FINISHED
+
+    @property
+    def is_failed(self):
+        return self.status == self.FAILED
+
+    def mark_processing(self):
+        self.status = self.PROCESSING
+        self.save()
+
+    def mark_failed(self):
+        self.status = self.FAILED
+        self.save()
+
+    def mark_finished(self):
+        self.status = self.FINISHED
+        self.save()
+
 
 class Job(mongoengine.Document):
     """Jobs are container units, holding one or more tasks."""
     QUEUED = "QUEUED"
     PROCESSING = "PROCESSING"
-    FAILED = "FAILED"
+    ERRED = "ERRED"
     FINISHED = "FINISHED"
     STATUSES = (
         (QUEUED, "Queued"),
         (PROCESSING, "Processing"),
-        (FAILED, "Failed"),
+        (ERRED, "Erred"),
         (FINISHED, "Finished"),
     )
 
@@ -135,3 +155,15 @@ class Job(mongoengine.Document):
         """Retry a previously failed job."""
         self.status = self.QUEUED
         self.schedule()
+
+    def mark_processing(self):
+        self.status = self.PROCESSING
+        self.save()
+
+    def mark_erred(self):
+        self.status = self.ERRED
+        self.save()
+
+    def mark_finished(self):
+        self.status = self.FINISHED
+        self.save()
