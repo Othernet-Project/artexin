@@ -113,9 +113,12 @@
   notify:
     - restart circus
 
-- name: create startapp script for development purposes
+- name: create shortcut scripts for development purposes
   template:
-    src: startapp.sh.j2
-    dest: /usr/local/bin/startapp
+    src: "{{ item }}.sh.j2"
+    dest: "/usr/local/bin/{{ item }}"
     mode: 0755
+  with_items:
+    - startapp
+    - startworker
   sudo: yes
