@@ -20,7 +20,7 @@
 
 - name: create web app confs folder
   file:
-    path: "{{ app_conf_dir }}"
+    path: "{{ webapp_conf_dir }}"
     owner: "{{ deploy_user }}"
     group: "{{ deploy_group }}"
     state: directory
