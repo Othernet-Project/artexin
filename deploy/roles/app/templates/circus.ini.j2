@@ -36,7 +36,7 @@ PYTHONPATH = {{ app_code_dir }}:{{ webapp_dir }}
 
 
 [watcher:workerapp]
-cmd = {{ virtualenv_dir }}/bin/python {{ webapp_dir }}/worker.py
+cmd = {{ virtualenv_dir }}/bin/python3 {{ webapp_dir }}/worker.py
 numprocesses = 2
 copy_env = True
 copy_path = True
