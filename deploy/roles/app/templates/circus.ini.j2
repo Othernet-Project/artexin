@@ -43,13 +43,13 @@ copy_path = True
 virtualenv = {{ virtualenv_dir }}
 
 stdout_stream.class = FileStream
-stdout_stream.filename = {{ daemon_log_dir }}/app_out.log
+stdout_stream.filename = {{ daemon_log_dir }}/worker_out.log
 stdout_stream.refresh_time = 0.3
 stdout_stream.max_bytes = 1048576
 stdout_stream.backup_count = 10
 
 stderr_stream.class = FileStream
-stderr_stream.filename = {{ daemon_log_dir }}/app_err.log
+stderr_stream.filename = {{ daemon_log_dir }}/worker_err.log
 stderr_stream.refresh_time = 0.3
 stderr_stream.max_bytes = 1048576
 stderr_stream.backup_count = 10
