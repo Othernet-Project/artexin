@@ -81,6 +81,10 @@ class JobHandler(object):
             self.handle_task_result(task, meta)
 
     def run(self, job_data):
+        """Gets the scheduled job instance from the database and processes it.
+
+        :param job_data:  Deserialized message(dict) from the redis queue.
+        """
         job = Job.objects.get(job_id=job_data.get('id'))
         job.mark_processing()
 
