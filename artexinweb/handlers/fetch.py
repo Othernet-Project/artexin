@@ -15,7 +15,7 @@ from artexinweb.models import Job
 logger = logging.getLogger(__name__)
 
 
-class JobHandler(object):
+class FetchHandler(object):
 
     def is_valid_url(self, url):
         """Checks whether the passed in url is accessible.
@@ -98,7 +98,7 @@ class JobHandler(object):
             job.mark_finished()
 
 
-@registered('job')
-def job_handler(job_data):
-    handler_instance = JobHandler()
+@registered('fetch')
+def fetch_handler(job_data):
+    handler_instance = FetchHandler()
     handler_instance.run(job_data)

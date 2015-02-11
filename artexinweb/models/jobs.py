@@ -149,7 +149,7 @@ class Job(mongoengine.Document):
     def schedule(self):
         """Schedule the job for processing by a background worker."""
         queue = self.queue_class()
-        queue.put({'type': 'job', 'id': self.job_id})
+        queue.put({'type': 'fetch', 'id': self.job_id})
 
     def retry(self):
         """Retry a previously failed job."""
