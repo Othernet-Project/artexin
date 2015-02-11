@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from bottle import get, jinja2_view, static_file
 
-from artexin_admin import settings
+from artexinweb import settings
 
 
 @get('/static/<filename:path>')

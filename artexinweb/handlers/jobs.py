@@ -7,9 +7,9 @@ import time
 from artexin.pack import collect
 from artexin.preprocessor_mappings import get_preps
 
-from artexin_admin import settings
-from artexin_admin.decorators import registered
-from artexin_admin.models import Job
+from artexinweb import settings
+from artexinweb.decorators import registered
+from artexinweb.models import Job
 
 
 logger = logging.getLogger(__name__)

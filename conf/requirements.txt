@@ -1,2 +1,2 @@
 -r reqs/artexin.txt
--r reqs/admin.txt
+-r reqs/artexinweb.txt

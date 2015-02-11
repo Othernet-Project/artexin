@@ -24,7 +24,7 @@ Setting up the vagrant box
 After set-up, the root filesystem takes up around 3.5GB on disk, so make sure
 you have enough free space.
 
-Make sure Vagrant, VirtualBox and Ansible are installed:
+Make sure Vagrant, VirtualBox and Ansible are installed::
 
     wget https://dl.bintray.com/mitchellh/vagrant/vagrant_1.7.2_x86_64.deb
     sudo dpkg -i vagrant_1.7.2_x86_64.deb
@@ -46,11 +46,11 @@ Commands should be run from the source directory.
 Setting up the box may take a while, depending on your network connections
 because the complete corpora of the NLTK_ library is downloaded to the
 virtualbox.
-By the end of deployment, the admin application will be accessible on:
+By the end of deployment, the web application will be accessible on::
 
     http://localhost:8080/
 
-To stop the server, SSH into the vagrant VM:
+To stop the server, SSH into the vagrant VM::
 
     vagrant ssh
     sudo service circusd stop

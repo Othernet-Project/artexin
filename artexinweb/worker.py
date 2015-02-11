@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import mongoengine
 
-from artexin_admin import handlers
-from artexin_admin import rqueue
-from artexin_admin import settings
-from artexin_admin import utils
-from artexin_admin.decorators import registered
+from artexinweb import handlers
+from artexinweb import rqueue
+from artexinweb import settings
+from artexinweb import utils
+from artexinweb.decorators import registered
 
 
 mongoengine.connect('', host=settings.BOTTLE_CONFIG['database.url'])

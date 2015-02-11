@@ -2,10 +2,10 @@
 import bottle
 import mongoengine
 
-from artexin_admin import controllers
-from artexin_admin import rqueue
-from artexin_admin import settings
-from artexin_admin import utils
+from artexinweb import controllers
+from artexinweb import rqueue
+from artexinweb import settings
+from artexinweb import utils
 
 
 bottle.TEMPLATE_PATH.insert(0, settings.VIEW_ROOT)

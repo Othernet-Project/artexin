@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from bottle import request, get, post, jinja2_view, redirect
 
-from artexin_admin.models import Job
+from artexinweb.models import Job
 
 
 @get('/jobs/')

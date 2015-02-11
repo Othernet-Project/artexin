@@ -6,4 +6,4 @@ config_path: "{{ app_conf_dir }}/prod.ini"
 
 code_version: master
 
-database_uri: mongodb://localhost/artexinadmin
+database_uri: mongodb://localhost/artexinweb

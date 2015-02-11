@@ -12,8 +12,8 @@ app_name: artexin
 code_repository: https://github.com/Outernet-Project/artexin.git
 
 app_code_dir: "/home/{{ deploy_user }}/{{ app_name }}"
-admin_app_dir: "{{ app_code_dir }}/artexin_admin"
-app_conf_dir: "{{ admin_app_dir }}/confs"
+webapp_dir: "{{ app_code_dir }}/artexinweb"
+webapp_conf_dir: "{{ webapp_dir }}/confs"
 
 virtualenv_dir: "/home/{{ deploy_user }}/.virtualenvs/{{ app_name }}"
 

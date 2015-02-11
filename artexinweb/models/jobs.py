@@ -4,7 +4,7 @@ import hashlib
 
 import mongoengine
 
-from artexin_admin import rqueue
+from artexinweb import rqueue
 
 
 MD5_LENGTH = 32
