@@ -134,7 +134,7 @@ class Job(mongoengine.Document):
         return md5.hexdigest()
 
     @classmethod
-    def create(cls, targets, **kwargs):
+    def create(cls, targets, job_type, **kwargs):
         """Create a new job from the passed in list of target(s).
 
         :param targets:  Iterable containing URLs or filesystem paths
@@ -147,6 +147,7 @@ class Job(mongoengine.Document):
         job_id = cls.generate_id(creation_time, *list(targets))
 
         job = cls(job_id=job_id,
+                  job_type=job_type,
                   scheduled=creation_time,
                   updated=creation_time,
                   options=kwargs)

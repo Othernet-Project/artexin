@@ -27,7 +27,7 @@ def jobs_create():
     raw_urls = request.forms.get('urls')
     urls = list(set(url.strip() for url in raw_urls.strip().split('\n')))
 
-    Job.create(urls=urls, **options)
+    Job.create(targets=urls, job_type=Job.FETCHABLE, **options)
 
     return redirect('/jobs/')
 

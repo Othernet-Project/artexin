@@ -9,7 +9,7 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th>URL</th>
+              <th>Target</th>
               <th>MD5</th>
               <th>Title</th>
               <th>Size</th>
@@ -21,7 +21,7 @@
           <tbody>
           {% for task in task_list %}
             <tr>
-              <td>{{ task.url }}</td>
+              <td>{{ task.target }}</td>
               <td>{{ task.md5 }}</td>
               <td>{{ task.title }}</td>
               <td>{{ task.size }}</td>
