@@ -84,6 +84,20 @@
   when: zip_dir.stat.isdir is not defined
   sudo: yes
 
+- name: check if media directory exists
+  stat: "path={{ media_root }}"
+  register: media_dir
+
+- name: create media directory
+  file:
+    path: "{{ media_root }}"
+    owner: "{{ deploy_user }}"
+    group: "{{ nginx_group }}"
+    state: directory
+    mode: 0755
+  when: media_dir.stat.isdir is not defined
+  sudo: yes
+
 - name: symlink static folder
   file:
     src: "{{ webapp_dir }}/static"

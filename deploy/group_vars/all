@@ -5,6 +5,7 @@ nginx_group: www-data
 daemon_working_dir: /var/run/circus
 daemon_log_dir: /var/log/circus
 static_root: /srv/static
+media_root: /srv/media
 zip_root: /srv/zipballs
 
 app_name: artexin
