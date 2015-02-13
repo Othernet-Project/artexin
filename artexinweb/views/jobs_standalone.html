@@ -1,0 +1,40 @@
+{% extends "app.html" %}
+
+{% block content %}
+<div class="container-fluid job-editor">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1 class="page-header">Job editor</h1>
+      <p class="form-notes">Upload multiple files here. The processing will be completed asynchronously, but while waiting, you'll be able to track the progress on the <a href="/jobs/">job list</a> page.</p>
+      <form action="/jobs/" enctype="multipart/form-data" method="POST" class="form-horizontal">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+        <input type="hidden" name="type" value="STANDALONE" />
+        <div class="form-group">
+          <label for="files" class="control-label col-xs-2">Files:</label>
+          <div class="col-xs-10">
+            <input id="files" type="file" name="file[]" multiple="true" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="url" class="control-label col-xs-2">URL:</label>
+          <div class="col-xs-10">
+            <input type="text" class="form-control" name="url" placeholder="Default: relative path on filesystem" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="domain" class="control-label col-xs-2">Domain:</label>
+          <div class="col-xs-10">
+            <input type="text" class="form-control" name="domain" placeholder="Default: outernet" />
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-xs-offset-2 col-xs-10">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a class="btn btn-default" href="/jobs/">Cancel</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}

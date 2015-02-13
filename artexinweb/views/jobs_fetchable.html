@@ -8,6 +8,7 @@
       <p class="form-notes">Paste URLs in the box below(one per line) and submit. The processing will be completed asynchronously, but while waiting, you'll be able to track the progress on the <a href="/jobs/">job list</a> page.</p>
       <form action="/jobs/" method="POST" class="form-horizontal">
         <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+        <input type="hidden" name="type" value="FETCHABLE" />
         <div class="form-group">
           <label for="urls" class="control-label col-xs-2">URLs:</label>
           <div class="col-xs-10">

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
-import hashlib
 
 import mongoengine
 
-from artexinweb import rqueue
+from artexinweb import rqueue, utils
 
 
 MD5_LENGTH = 32
@@ -95,7 +94,7 @@ class Job(mongoengine.Document):
 
     STANDALONE = "STANDALONE"
     FETCHABLE = "FETCHABLE"
-    JOB_TYPES = (
+    TYPES = (
         (STANDALONE, "Standalone"),
         (FETCHABLE, "Fetchable")
     )
@@ -110,7 +109,7 @@ class Job(mongoengine.Document):
                                      required=True,
                                      default=QUEUED,
                                      help_text="Job status.")
-    job_type = mongoengine.StringField(choices=JOB_TYPES,
+    job_type = mongoengine.StringField(choices=TYPES,
                                        required=True,
                                        help_text="Job type.")
     scheduled = mongoengine.DateTimeField(required=True,
@@ -125,12 +124,7 @@ class Job(mongoengine.Document):
     def generate_id(cls, *args):
         """Generate a unique job_id by feeding the hash object with the passed
         in arguments."""
-        md5 = hashlib.md5()
-
-        for data in args:
-            md5.update(bytes(str(data), 'utf-8'))
-
-        return md5.hexdigest()
+        return utils.hash_data(*args)
 
     @classmethod
     def create(cls, targets, job_type, **kwargs):
@@ -156,6 +150,14 @@ class Job(mongoengine.Document):
         job.schedule()
 
         return job
+
+    @classmethod
+    def is_valid_type(cls, job_type):
+        """Check whether the passed in job type is a valid one.
+
+        :param job_type:  A job type code(string)"""
+        codes, _ = zip(*cls.TYPES)
+        return job_type in codes
 
     def schedule(self):
         """Schedule the job for processing by a background worker."""

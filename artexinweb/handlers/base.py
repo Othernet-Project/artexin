@@ -38,10 +38,11 @@ class BaseJobHandler(object):
         """
         raise NotImplementedError()
 
-    def handle_task_result(self, task, result):
+    def handle_task_result(self, task, result, options):
         """Handle the task results.
 
         :param task:     ``Task`` model instance
+        :param result:   Return value of ``handle_task``
         :param options:  Freeform dict holding the options of the parent job.
         :returns:        Dictionary containing task results.
         """
@@ -67,7 +68,7 @@ class BaseJobHandler(object):
             msg = "Task {0} finished in {1} seconds."
             logger.debug(msg.format(task.target, elapsed_time))
 
-            self.handle_task_result(task, result)
+            self.handle_task_result(task, result, options)
 
     def run(self, job_data):
         """Gets the scheduled job instance from the database and processes it.

@@ -3,7 +3,7 @@ body {
 }
 
 @media (min-width: 768px) {
-    .container-fluid.job-editor {
+    .container-fluid.job-editor, .container-fluid.job-wizard {
         max-width: 730px;
     }
 }
@@ -32,4 +32,15 @@ body {
 .nav-sidebar > .active > a:focus {
     color: #fff;
     background-color: #428bca;
+}
+
+.job-wizard {
+    padding: 50px;
+}
+
+.job-wizard .job-type {
+    margin-bottom: 50px;
+    text-align: center;
+    background: #eee;
+    padding: 50px;
 }

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
 import logging
 import urllib
 
@@ -34,7 +33,7 @@ class FetchableHandler(BaseJobHandler):
                        javascript=options.get('javascript', False),
                        do_extract=options.get('extract', False))
 
-    def handle_task_result(self, task, result):
+    def handle_task_result(self, task, result, options):
         error = result.get('error')
         if error is not None:
             msg = "Error processing {0}: {1}".format(task.target, error)
@@ -46,7 +45,7 @@ class FetchableHandler(BaseJobHandler):
         task.md5 = result['hash']
         task.title = result['title']
         task.images = result['images']
-        task.timestamp = datetime.datetime.utcnow()
+        task.timestamp = result['timestamp']
         task.mark_finished()  # implicit save
 
 

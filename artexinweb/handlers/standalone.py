@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
+import imghdr
 import logging
 import os
+
+from bs4 import BeautifulSoup
 
 from artexin.extract import get_title
 from artexin.pack import zipdir
 
-from artexinweb import settings
+from artexinweb import settings, utils
 from artexinweb.decorators import registered
 from artexinweb.handlers.base import BaseJobHandler
 from artexinweb.models import Job
@@ -26,14 +30,50 @@ class StandaloneHandler(BaseJobHandler):
         return True
 
     def handle_task(self, task, options):
-        pass
+        meta = {}
+        meta['hash'] = utils.hash_data([options.get('url')])
+        meta['title'] = self.read_title(task.target)
+        meta['images'] = self.count_images(task.target)
+        meta['timestamp'] = datetime.datetime.utcnow()
 
-    def handle_task_result(self, task, result):
+        meta_filepath = os.path.join(task.target, 'info.json')
+        with open(meta_filepath, 'w', encoding='utf-8') as meta_file:
+            meta_file.write(json.dumps(meta, indent=2))
+
+        zip_file_path = os.path.join(settings.BOTTLE_CONFIG['artexin.out_dir'],
+                                     '{0}.zip'.format(meta['hash']))
+        zipdir(zip_file_path, task.target)
+
+        meta['size'] = os.stat(zip_file_path).st_size
+
+        return meta
+
+    def read_title(self, target):
+        is_html_file = lambda filename: any(filename.endswith(ext)
+                                            for ext in ('htm', 'html'))
+        (html_filename,) = [filename for filename in os.listdir(target)
+                            if is_html_file(filename)]
+
+        with open(os.pathjoin(target, html_filename), 'r') as html_file:
+            soup = BeautifulSoup(html_file.read())
+
+        return get_title(soup)
+
+    def count_images(self, target):
+        is_image = lambda filename: imghdr.what(os.path.join(target, filename))
+
+        count = 0
+        for (dirpath, dirnames, filenames) in os.walk(target):
+            count += len(fname for fname in filenames if is_image(fname))
+
+        return count
+
+    def handle_task_result(self, task, result, options):
         task.size = result['size']
         task.md5 = result['hash']
         task.title = result['title']
         task.images = result['images']
-        task.timestamp = datetime.datetime.utcnow()
+        task.timestamp = result['timestamp']
         task.mark_finished()  # implicit save
 
 
