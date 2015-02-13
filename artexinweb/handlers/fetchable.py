@@ -46,7 +46,6 @@ class FetchableHandler(BaseJobHandler):
         task.md5 = result['hash']
         task.title = result['title']
         task.images = result['images']
-        task.domain = result['domain']
         task.timestamp = datetime.datetime.utcnow()
         task.mark_finished()  # implicit save
 

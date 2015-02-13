@@ -34,7 +34,6 @@ class Task(mongoengine.Document):
                                      help_text="ID of parent Job.")
     target = mongoengine.StringField(required=True,
                                      help_text="Target URL or filesystem path")
-    domain = mongoengine.StringField(help_text="URL Domain or outernet")
     md5 = mongoengine.StringField(max_length=MD5_LENGTH,
                                   min_length=MD5_LENGTH,
                                   help_text="MD5 hexdigest of target.")
