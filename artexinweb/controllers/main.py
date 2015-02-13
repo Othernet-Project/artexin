@@ -6,7 +6,7 @@ from artexinweb import settings
 
 @get('/static/<filename:path>')
 def send_static(filename):
-    return static_file(filename, root=settings.STATIC_ROOT)
+    return static_file(filename, root=settings.DEV_STATIC_ROOT)
 
 
 @get('/')
