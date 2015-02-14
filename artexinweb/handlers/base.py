@@ -60,7 +60,7 @@ class BaseJobHandler(object):
         try:
             result = self.handle_task(task, options)
         except Exception:
-            msg = "Unhandled exception while processing: {0}."
+            msg = "Unhandled exception while processing task: {0}."
             logger.exception(msg.format(task.target))
             task.mark_failed()
         else:
@@ -68,7 +68,12 @@ class BaseJobHandler(object):
             msg = "Task {0} finished in {1} seconds."
             logger.debug(msg.format(task.target, elapsed_time))
 
-            self.handle_task_result(task, result, options)
+            try:
+                self.handle_task_result(task, result, options)
+            except Exception:
+                msg = "Unhandled exception while processing task result: {0}."
+                logger.exception(msg.format(task.target))
+                task.mark_failed()
 
     def run(self, job_data):
         """Gets the scheduled job instance from the database and processes it.

@@ -39,21 +39,20 @@ class JobForm(object):
 
     @classmethod
     def standalone(cls):
-        folder_name = uuid.uuid4()
+        folder_name = str(uuid.uuid4())
         media_root = settings.BOTTLE_CONFIG['web.media_root']
         upload_path = os.path.join(media_root, folder_name)
+
+        os.makedirs(upload_path)
 
         for uploaded_file in request.files.getlist('file[]'):
             uploaded_file.save(upload_path)
 
-        domain = request.forms.get('domain', 'outernet')
-        default_url = '{0}://{1}'.format(domain, folder_name)
-        options = {'domain': domain,
-                   'url': request.forms.get('url', default_url)}
+        options = {'origin': request.forms.get('origin')}
 
-        Job.objects.create(targets=[upload_path],
-                           job_type=Job.STANDALONE,
-                           **options)
+        Job.create(targets=[upload_path],
+                   job_type=Job.STANDALONE,
+                   **options)
 
         return redirect('/jobs/')
 

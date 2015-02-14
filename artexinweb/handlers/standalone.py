@@ -4,11 +4,12 @@ import json
 import imghdr
 import logging
 import os
+import urllib
 
 from bs4 import BeautifulSoup
 
 from artexin.extract import get_title
-from artexin.pack import zipdir
+from artexin.pack import zipdir, serialize_datetime
 
 from artexinweb import settings, utils
 from artexinweb.decorators import registered
@@ -30,11 +31,16 @@ class StandaloneHandler(BaseJobHandler):
         return True
 
     def handle_task(self, task, options):
+        origin = options.get('origin')
+
         meta = {}
-        meta['hash'] = utils.hash_data([options.get('url')])
+        meta['hash'] = utils.hash_data([origin])
         meta['title'] = self.read_title(task.target)
         meta['images'] = self.count_images(task.target)
-        meta['timestamp'] = datetime.datetime.utcnow()
+        meta['timestamp'] = serialize_datetime(datetime.datetime.utcnow())
+
+        meta['url'] = origin
+        meta['domain'] = urllib.parse.urlparse(origin).netloc
 
         meta_filepath = os.path.join(task.target, 'info.json')
         with open(meta_filepath, 'w', encoding='utf-8') as meta_file:
@@ -54,7 +60,7 @@ class StandaloneHandler(BaseJobHandler):
         (html_filename,) = [filename for filename in os.listdir(target)
                             if is_html_file(filename)]
 
-        with open(os.pathjoin(target, html_filename), 'r') as html_file:
+        with open(os.path.join(target, html_filename), 'r') as html_file:
             soup = BeautifulSoup(html_file.read())
 
         return get_title(soup)
@@ -64,7 +70,7 @@ class StandaloneHandler(BaseJobHandler):
 
         count = 0
         for (dirpath, dirnames, filenames) in os.walk(target):
-            count += len(fname for fname in filenames if is_image(fname))
+            count += len([fname for fname in filenames if is_image(fname)])
 
         return count
 
