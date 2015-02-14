@@ -8,17 +8,23 @@
       <p class="form-notes">Upload multiple files here. The processing will be completed asynchronously, but while waiting, you'll be able to track the progress on the <a href="/jobs/">job list</a> page.</p>
       <form action="/jobs/" enctype="multipart/form-data" method="POST" class="form-horizontal">
         <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
-        <input type="hidden" name="type" value="STANDALONE" />
-        <div class="form-group">
+        <input type="hidden" name="type" value="{{ job_type }}" />
+        <div class="form-group {% if form.errors.files %}has-error{% endif %}">
           <label for="files" class="control-label col-xs-2">Files:</label>
           <div class="col-xs-10">
-            <input id="files" type="file" name="file[]" multiple="true" />
+            {{ form.files(multiple="true") }}
+            {% for err_msg in form.errors.files %}
+            <span class="help-block">{{ err_msg }}</span>
+            {% endfor %}
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-group {% if form.errors.origin %}has-error{% endif %}">
           <label for="url" class="control-label col-xs-2">Origin:</label>
           <div class="col-xs-10">
-            <input type="text" class="form-control" name="origin" placeholder="Origin URL of uploaded content." />
+            {{ form.origin(class="form-control", placeholder="Origin URL of uploaded content.") }}
+            {% for err_msg in form.errors.origin %}
+            <span class="help-block">{{ err_msg }}</span>
+            {% endfor %}
           </div>
         </div>
         <div class="form-group">

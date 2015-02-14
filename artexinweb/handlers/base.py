@@ -24,10 +24,7 @@ class BaseJobHandler(object):
         :param task:  ``Task`` model instance
         :returns:     bool
         """
-        if task.is_finished:
-            return False
-
-        return self.is_valid_target(task.target)
+        return not task.is_finished
 
     def handle_task(self, task, options):
         """Handle the task itself and return it's results.
@@ -57,6 +54,11 @@ class BaseJobHandler(object):
         """
         task.mark_processing()
         start_time = time.process_time()
+
+        if not self.is_valid_target(task.target):
+            task.mark_failed()
+            return
+
         try:
             result = self.handle_task(task, options)
         except Exception:

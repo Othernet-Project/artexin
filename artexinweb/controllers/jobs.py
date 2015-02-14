@@ -5,6 +5,7 @@ import uuid
 from bottle import request, get, post, jinja2_view, jinja2_template, redirect
 
 from artexinweb import settings
+from artexinweb.forms import FetchableJobForm, StandaloneJobForm
 from artexinweb.models import Job
 
 
@@ -22,38 +23,35 @@ def jobs_list():
             'statuses': Job.STATUSES}
 
 
-class JobForm(object):
+class JobController(object):
+
+    forms = {
+        Job.FETCHABLE: FetchableJobForm,
+        Job.STANDALONE: StandaloneJobForm
+    }
 
     @classmethod
-    def fetchable(cls):
-        option_names = ('javascript', 'extract')
-        options = dict((key, bool(request.forms.get(key)))
-                       for key in option_names)
-
-        raw_urls = request.forms.get('urls')
-        urls = list(set(url.strip() for url in raw_urls.strip().split('\n')))
-
-        Job.create(targets=urls, job_type=Job.FETCHABLE, **options)
-
+    def fetchable(cls, job_type, form):
+        Job.create(job_type=job_type,
+                   targets=form.urls.data,
+                   extract=form.extract.data,
+                   javascript=form.javascript.data)
         return redirect('/jobs/')
 
     @classmethod
-    def standalone(cls):
+    def standalone(cls, job_type, form):
         folder_name = str(uuid.uuid4())
         media_root = settings.BOTTLE_CONFIG['web.media_root']
         upload_path = os.path.join(media_root, folder_name)
 
         os.makedirs(upload_path)
 
-        for uploaded_file in request.files.getlist('file[]'):
+        for uploaded_file in request.files.getlist('files'):
             uploaded_file.save(upload_path)
 
-        options = {'origin': request.forms.get('origin')}
-
         Job.create(targets=[upload_path],
-                   job_type=Job.STANDALONE,
-                   **options)
-
+                   job_type=job_type,
+                   origin=form.origin.data)
         return redirect('/jobs/')
 
 
@@ -62,7 +60,16 @@ def jobs_create():
     job_type = request.forms.get('type')
 
     if Job.is_valid_type(job_type):
-        return getattr(JobForm, job_type.lower())()
+        form_cls = JobController.forms[job_type]
+        form_data = request.forms.decode()
+        form_data.update(request.files)
+        form = form_cls(form_data)
+
+        if form.validate():
+            return getattr(JobController, job_type.lower())(job_type, form)
+
+        template_name = 'jobs_{0}.html'.format(job_type.lower())
+        return jinja2_template(template_name, form=form, job_type=job_type)
 
     return jinja2_template('jobs_wizard.html')
 
@@ -71,7 +78,12 @@ def jobs_create():
 def jobs_new():
     job_type = request.query.get('type')
     if Job.is_valid_type(job_type):
-        return jinja2_template('jobs_{0}.html'.format(job_type.lower()))
+        form_cls = JobController.forms[job_type]
+        form = form_cls()
+
+        return jinja2_template('jobs_{0}.html'.format(job_type.lower()),
+                               form=form,
+                               job_type=job_type)
 
     return jinja2_template('jobs_wizard.html')
 
