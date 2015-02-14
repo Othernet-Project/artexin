@@ -53,6 +53,10 @@ def percent_escape(url):
     return url
 
 
+def serialize_datetime(date_obj):
+    return date_obj.strftime(TS_FORMAT)
+
+
 def zipdir(path, dirpath):
     """ Create a zipball at ``path`` containing the directory at ``dirpath``
 
@@ -157,7 +161,7 @@ def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
 
     # Write file metadata
     meta.update({
-        'timestamp': timestamp.strftime(TS_FORMAT),
+        'timestamp': serialize_datetime(timestamp),
         'title': title,
         'images': len(images),
     })
