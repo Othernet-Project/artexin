@@ -21,7 +21,7 @@ class FetchableHandler(BaseJobHandler):
             urllib.request.urlopen(target)
         except Exception:
             msg = "URL: {0} not accessible.".format(target)
-            logger.debug(msg, exc_info=True)
+            logger.error(msg, exc_info=True)
             return False
         else:
             return True

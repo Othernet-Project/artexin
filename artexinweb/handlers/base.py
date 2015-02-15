@@ -56,9 +56,12 @@ class BaseJobHandler(object):
         start_time = time.process_time()
 
         if not self.is_valid_target(task.target):
+            msg = "Task target {0} invalid. Marking it failed."
+            logger.error(msg.format(task.target))
             task.mark_failed()
             return
 
+        logger.info("Start processing of task {0}.".format(task.target))
         try:
             result = self.handle_task(task, options)
         except Exception:
@@ -68,7 +71,7 @@ class BaseJobHandler(object):
         else:
             elapsed_time = time.process_time() - start_time
             msg = "Task {0} finished in {1} seconds."
-            logger.debug(msg.format(task.target, elapsed_time))
+            logger.info(msg.format(task.target, elapsed_time))
 
             try:
                 self.handle_task_result(task, result, options)
@@ -76,6 +79,9 @@ class BaseJobHandler(object):
                 msg = "Unhandled exception while processing task result: {0}."
                 logger.exception(msg.format(task.target))
                 task.mark_failed()
+            else:
+                msg = "Task result handling of {0} finished."
+                logger.info(msg.format(task.target))
 
     def run(self, job_data):
         """Gets the scheduled job instance from the database and processes it.
@@ -83,6 +89,8 @@ class BaseJobHandler(object):
         :param job_data:  Deserialized message(dict) from the redis queue.
         """
         job = Job.objects.get(job_id=job_data.get('id'))
+        logger.info("Begin processing {0} job: {1}".format(job.job_type,
+                                                           job.job_id))
         job.mark_processing()
 
         for task in job.tasks:
@@ -90,6 +98,12 @@ class BaseJobHandler(object):
                 self.process_task(task, job.options)
 
         if any(task.is_failed for task in job.tasks):
+            msg = "Processing of {0} job: {1} erred.".format(job.job_type,
+                                                             job.job_id)
+            logger.info(msg)
             job.mark_erred()
         else:
+            msg = "Processing of {0} job: {1} succeeded.".format(job.job_type,
+                                                                 job.job_id)
+            logger.info(msg)
             job.mark_finished()

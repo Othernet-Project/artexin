@@ -25,7 +25,7 @@ class StandaloneHandler(BaseJobHandler):
     def is_valid_target(self, target):
         if not os.path.exists(target):
             msg = "Path: {0} not accessible.".format(target)
-            logger.debug(msg)
+            logger.error(msg)
             return False
 
         return True

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import logging.config
+
 import bottle
 import mongoengine
 
@@ -7,6 +9,8 @@ from artexinweb import rqueue
 from artexinweb import settings
 from artexinweb import utils
 
+
+logging.config.dictConfig(settings.LOGGING)
 
 bottle.TEMPLATE_PATH.insert(0, settings.VIEW_ROOT)
 
