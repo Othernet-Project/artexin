@@ -4,6 +4,8 @@ import json
 import imghdr
 import logging
 import os
+import shutil
+import tempfile
 import urllib
 
 from bs4 import BeautifulSoup
@@ -30,8 +32,26 @@ class StandaloneHandler(BaseJobHandler):
 
         return True
 
+    def zip_files(self, target_path, zip_filename):
+        # path of the output file, including the filename itself
+        zip_file_path = os.path.join(settings.BOTTLE_CONFIG['artexin.out_dir'],
+                                     '{0}.zip'.format(zip_filename))
+        # copy all files from target_path to a temporary folder, which name is
+        # the same as the zip_filename (without extension)
+        temp_dir = tempfile.mkdtemp()
+        zippable_dir = os.path.join(temp_dir, zip_filename)
+        shutil.copytree(target_path, zippable_dir)
+        # zip the newly prepared folder
+        zipdir(zip_file_path, zippable_dir)
+        # remove the temp folder (containing the previously zipped folder),
+        # since the zip file is created, it is no longer needed
+        shutil.rmtree(temp_dir)
+
+        return zip_file_path
+
     def handle_task(self, task, options):
         origin = options.get('origin')
+        origin_hash = utils.hash_data([origin])
 
         meta = {}
         meta['title'] = self.read_title(task.target)
@@ -45,12 +65,10 @@ class StandaloneHandler(BaseJobHandler):
         with open(meta_filepath, 'w', encoding='utf-8') as meta_file:
             meta_file.write(json.dumps(meta, indent=2))
 
-        zip_file_path = os.path.join(settings.BOTTLE_CONFIG['artexin.out_dir'],
-                                     '{0}.zip'.format(meta['hash']))
-        zipdir(zip_file_path, task.target)
+        zip_file_path = self.zip_files(task.target, zip_filename=origin_hash)
 
         meta['size'] = os.stat(zip_file_path).st_size
-        meta['hash'] = utils.hash_data([origin])
+        meta['hash'] = origin_hash
 
         return meta
 
