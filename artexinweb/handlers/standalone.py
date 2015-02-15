@@ -34,7 +34,6 @@ class StandaloneHandler(BaseJobHandler):
         origin = options.get('origin')
 
         meta = {}
-        meta['hash'] = utils.hash_data([origin])
         meta['title'] = self.read_title(task.target)
         meta['images'] = self.count_images(task.target)
         meta['timestamp'] = serialize_datetime(datetime.datetime.utcnow())
@@ -51,6 +50,7 @@ class StandaloneHandler(BaseJobHandler):
         zipdir(zip_file_path, task.target)
 
         meta['size'] = os.stat(zip_file_path).st_size
+        meta['hash'] = utils.hash_data([origin])
 
         return meta
 
