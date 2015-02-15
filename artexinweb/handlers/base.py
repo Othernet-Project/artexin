@@ -61,11 +61,11 @@ class BaseJobHandler(object):
             task.mark_failed()
             return
 
-        logger.info("Start processing of task {0}.".format(task.target))
+        logger.info("Start processing of task {0}".format(task.target))
         try:
             result = self.handle_task(task, options)
         except Exception:
-            msg = "Unhandled exception while processing task: {0}."
+            msg = "Unhandled exception while processing task: {0}"
             logger.exception(msg.format(task.target))
             task.mark_failed()
         else:
@@ -76,7 +76,7 @@ class BaseJobHandler(object):
             try:
                 self.handle_task_result(task, result, options)
             except Exception:
-                msg = "Unhandled exception while processing task result: {0}."
+                msg = "Unhandled exception while processing task result: {0}"
                 logger.exception(msg.format(task.target))
                 task.mark_failed()
             else:
