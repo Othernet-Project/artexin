@@ -24,7 +24,7 @@
               <th>Status</th>
               <th>Scheduled</th>
               <th>Updated</th>
-              <th>Tasks</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -34,7 +34,12 @@
               <td>{{ job.status }}</td>
               <td>{{ job.scheduled }}</td>
               <td>{{ job.updated }}</td>
-              <td><a href="/jobs/{{ job.job_id }}/tasks/">Show tasks</a></td>
+              <td>
+                <a href="/jobs/{{ job.job_id }}/tasks/">Show tasks</a>
+                {% if not job.is_finished %}
+                <a href="/jobs/{{ job.job_id }}/actions/retry/">Retry</a>
+                {% endif %}
+              </td>
             </tr>
           {% endfor %}
           </tbody>

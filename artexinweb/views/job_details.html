@@ -1,0 +1,25 @@
+{% extends "app.html" %}
+
+{% block content %}
+<div class="container-fluid job-details centered">
+  <div class="row">
+    <div class="col-sm-12">
+      <h2 class="page-header">Job details</h2>
+      <dl class="dl-horizontal">
+        <dt>Job ID:</dt>
+        <dd>{{ job.job_id }}</dd>
+        <dt>Status:</dt>
+        <dd>{{ job.status }}</dd>
+        <dt>Scheduled:</dt>
+        <dd>{{ job.scheduled }}</dd>
+        <dt>Updated:</dt>
+        <dd>{{ job.updated }}</dd>
+        <dt>Javascript enabled:</dt>
+        <dd>{{ job.options.javascript }}</dd>
+        <dt>Perform extraction:</dt>
+        <dd>{{ job.options.extract }}</dd>
+      </dl>
+    </div>
+  </div>
+</div>
+{% endblock content %}

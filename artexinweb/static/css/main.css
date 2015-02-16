@@ -3,7 +3,7 @@ body {
 }
 
 @media (min-width: 768px) {
-    .container-fluid.job-editor, .container-fluid.job-wizard {
+    .container-fluid.centered {
         max-width: 730px;
     }
 }
