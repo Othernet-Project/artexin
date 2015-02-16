@@ -15,6 +15,13 @@ from artexinweb.forms import FetchableJobForm, StandaloneJobForm
 from artexinweb.models import Job
 
 
+@get('/')
+@jinja2_view('job_dashboard.html')
+def job_dashboard():
+    return {'erred_job_count': Job.objects.filter(status=Job.ERRED).count(),
+            'erred_status': Job.ERRED}
+
+
 @get('/jobs/')
 @jinja2_view('job_list.html')
 def jobs_list():

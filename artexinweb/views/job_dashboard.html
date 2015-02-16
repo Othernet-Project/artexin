@@ -1,0 +1,23 @@
+{% extends "app.html" %}
+
+{% block content %}
+<div class="container-fluid centered">
+  <div class="row">
+    <div class="col-sm-12">
+      <h2 class="page-header">Overview</h2>
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">Events</h3>
+        </div>
+        <div class="panel-body">
+          {% if erred_job_count %}
+          <p>There are <a href="/jobs/?status={{ erred_status }}">{{ erred_job_count }} jobs</a> that require assistance.</p>
+          {% else %}
+          <p>No events.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
