@@ -121,6 +121,25 @@ class Job(mongoengine.Document):
                                   help_text="References to subtasks of job.")
     options = mongoengine.DictField(help_text="Additional(free-form) options.")
 
+    @property
+    def is_finished(self):
+        return self.status == self.FINISHED
+
+    @property
+    def is_erred(self):
+        return self.status == self.ERRED
+
+    def save(self, *args, **kwargs):
+        if self.updated:
+            # on creation, the factory `create` method will set the `updated`
+            # field to have the same value as the `scheduled` field. so update
+            # this field only on subsequent saves(which is indicated by whether
+            # it already has a value or not)
+            self.updated = datetime.datetime.utcnow()
+
+        return super(Job, self).save(*args, **kwargs)
+
+    @classmethod
     def generate_id(cls, *args):
         """Generate a unique job_id by feeding the hash object with the passed
         in arguments."""
@@ -167,6 +186,7 @@ class Job(mongoengine.Document):
     def retry(self):
         """Retry a previously failed job."""
         self.status = self.QUEUED
+        self.save()
         self.schedule()
 
     def mark_processing(self):
