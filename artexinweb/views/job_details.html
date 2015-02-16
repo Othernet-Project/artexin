@@ -8,16 +8,23 @@
       <dl class="dl-horizontal">
         <dt>Job ID:</dt>
         <dd>{{ job.job_id }}</dd>
+        <dt>Type:</dt>
+        <dd>{{ job.job_type }}</dd>
         <dt>Status:</dt>
         <dd>{{ job.status }}</dd>
         <dt>Scheduled:</dt>
         <dd>{{ job.scheduled }}</dd>
         <dt>Updated:</dt>
         <dd>{{ job.updated }}</dd>
+        {% if job.job_type == job.FETCHABLE %}
         <dt>Javascript enabled:</dt>
         <dd>{{ job.options.javascript }}</dd>
         <dt>Perform extraction:</dt>
         <dd>{{ job.options.extract }}</dd>
+        {% elif job.job_type == job.STANDALONE %}
+        <dt>Origin:</dt>
+        <dd>{{ job.options.origin }}</dd>
+        {% endif %}
       </dl>
     </div>
   </div>
