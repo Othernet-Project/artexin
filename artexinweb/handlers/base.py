@@ -96,6 +96,9 @@ class BaseJobHandler(object):
         for task in job.tasks:
             if self.is_valid_task(task):
                 self.process_task(task, job.options)
+            else:
+                msg = "Skip processing of task: {0}".format(task.target)
+                logger.info(msg)
 
         if any(task.is_failed for task in job.tasks):
             msg = "Processing of {0} job: {1} erred.".format(job.job_type,
@@ -103,7 +106,7 @@ class BaseJobHandler(object):
             logger.info(msg)
             job.mark_erred()
         else:
-            msg = "Processing of {0} job: {1} succeeded.".format(job.job_type,
-                                                                 job.job_id)
+            msg = "Processing of {0} job: {1} finished.".format(job.job_type,
+                                                                job.job_id)
             logger.info(msg)
             job.mark_finished()
