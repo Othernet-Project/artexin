@@ -1,9 +1,15 @@
-*.sw[op]
+# Python bytecode:
 *.py[co]
-*.png
-*.jpg
-*.gif
-/.vagrant
-/artexin_webui/static/.sass-cache
-/artexinweb/confs
-/tmp
+
+# Packaging files:
+*.egg*
+
+# Editor temp files:
+*.sw[op]
+*~
+
+# Coverage report
+.coverage
+
+# Tox generated files
+.tox

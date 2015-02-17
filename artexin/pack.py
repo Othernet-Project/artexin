@@ -18,14 +18,13 @@ import datetime
 import urllib.parse as urlparse
 from http.client import BadStatusLine
 
-from lib.content_crypto import sign_content
-
 try:
     import simplejson as json
 except ImportError:
     import json
 
 from . import __version__ as _version, __author__ as _author
+from .content_crypto import sign_content
 from .fetch import fetch_rendered, fetch_content
 from .extract import *
 

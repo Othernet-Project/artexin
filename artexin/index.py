@@ -127,7 +127,7 @@ def get_counts(sentences):
     Example::
 
         # Load the fixture file
-        >>> text = """
+        >>> text = '''
         ... It cannot be said that the Everhard Manuscript is an important
         ... historical document. To the historian it bristles with errors--not
         ... errors of fact, but errors of interpretation. Looking back across
@@ -154,7 +154,7 @@ def get_counts(sentences):
         ... and "proletarian philosophy" were his phrases for it, and therein
         ... he shows the provincialism of his mind--a defect, however, that was
         ... due to the times and that none in that day could escape.
-        ... """
+        ... '''
 
         # First split into sentences
         >>> sentences = split_sentences(text)

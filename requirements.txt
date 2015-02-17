@@ -1,0 +1,10 @@
+'beautifulsoup4==4.3.2',
+'breadability==0.1.20',
+'chardet==2.3.0',
+'docopt==0.6.2',
+'lxml==3.4.2',
+'nltk==3.0.1',
+'Pillow==2.7.0',
+'python-gnupg==0.3.6',
+'selenium==2.42.1',
+'simplejson==3.5.2'
