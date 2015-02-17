@@ -1,9 +1,0 @@
-root_domain_name: artexin.local
-
-requirements_file: "{{ app_code_dir }}/conf/dev_requirements.txt"
-
-config_path: "{{ webapp_conf_dir }}/dev.ini"
-
-code_version: develop
-
-database_uri: mongodb://localhost/artexinweb

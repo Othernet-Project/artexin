@@ -1,8 +1,0 @@
----
-
-phantomjs_user: phantomjs
-phantomjs_group: phantomjs
-phantomjs_working_dir: /var/run/phantomjs
-phantomjs_log_dir: /var/log/phantomjs
-phantomjs_host: 127.0.0.1
-phantomjs_port: 8910

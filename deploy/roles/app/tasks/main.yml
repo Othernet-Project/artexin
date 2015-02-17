@@ -1,5 +1,0 @@
----
-
-- include: install_deps.yml
-- include: config_nginx.yml
-- include: setup_app.yml
