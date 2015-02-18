@@ -73,8 +73,6 @@ def split(url):
         ('http://localhost', '/?foo=bar')
         >>> split('http://localhost/foo?bar=baz')
         ('http://localhost', '/foo?bar=baz')
-
-        # FIXME: This example does not work as expected, no idea why
         >>> split('http://localhost?foo=bar')
         ('http://localhost', '/?foo=bar')
 
@@ -85,7 +83,7 @@ def split(url):
     base = urlparse.urlunparse(mask(parsed, ROOT_MASK))
     stripped = urlparse.urlunparse(mask(parsed, TAIL_MASK))
     if stripped[0] != '/':
-        return '/' + stripped
+        stripped = '/' + stripped
     return base, stripped
 
 
