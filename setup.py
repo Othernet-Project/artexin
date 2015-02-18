@@ -6,11 +6,18 @@ from setuptools.command.test import test as TestCommand
 import artexin
 
 
-with open("requirements.txt") as reqs_file:
-    install_requires = reqs_file.read().split('\n')
-
 with open("README.rst") as readme_file:
     README = readme_file.read()
+
+install_requires = [
+    'beautifulsoup4',
+    'breadability',
+    'nltk',
+    'Pillow',
+    'python-gnupg',
+    'selenium',
+    'simplejson'
+]
 
 
 class PyTest(TestCommand):
