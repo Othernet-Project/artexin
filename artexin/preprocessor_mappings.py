@@ -38,7 +38,7 @@ def get_preps(url):
 
     Example::
 
-        >>> get_preps('http://www.example.com')[0] == pp_noop
+        >>> get_preps('http://www.example.com')[0] == pp_fixheaders
         True
         >>> get_preps('http://en.wikipedia.org/')[0] == pp_wikipedia
         True

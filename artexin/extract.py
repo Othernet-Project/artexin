@@ -217,7 +217,7 @@ def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
 
     Example::
 
-        >>> imgurl = '/img/logo.png'
+        >>> imgurl = '/static/img/outernet/site_logo_white.png'
         >>> docurl = 'https://www.outernet.is/test.html'  # not a real URL, tho
         >>> html = '<html><body><p><img src="%s"></p></body></html>' % imgurl
         >>> html, images = process_images(html, docurl)

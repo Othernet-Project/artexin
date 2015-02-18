@@ -114,7 +114,7 @@ def fetch_image(url, path):
 
     Example::
 
-        >>> url = 'https://www.outernet.is/img/logo.png'
+        >>> url = 'https://www.outernet.is/static/img/outernet/site_logo_white.png'
         >>> fmt, full_path = fetch_image(url, '/tmp/logo')
         >>> fmt
         'PNG'
