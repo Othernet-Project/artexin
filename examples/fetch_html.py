@@ -15,17 +15,10 @@ This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
-
-import sys
-import os
-from os.path import dirname as up, abspath, join
 import time
 
-sys.path.insert(0, up(up(abspath(__file__))))
-sys.path.insert(0, join(up(up(abspath(__file__))), 'artexin'))
-
-from artexin.fetch import fetch_content
 from artexin.extract import extract
+from artexin.fetch import fetch_content
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
 __version__ = 0.1
@@ -40,4 +33,3 @@ if __name__ == '__main__':
     with open('/vagrant/test.html', 'w') as f:
         f.write(html)
     print("Finished in %s seconds" % (time.time() - start))
-
