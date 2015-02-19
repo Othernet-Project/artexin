@@ -1,0 +1,18 @@
+branches:
+  only:
+    - master
+
+language: python
+
+python:
+  - 3.3
+  - 3.4
+
+install:
+  - pip install coveralls
+
+script: coverage run -m py.test artexin --doctest-modules
+
+after_success:
+  - coverage report -m --omit="*/site-packages/*"
+  - coveralls
