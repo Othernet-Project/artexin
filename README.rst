@@ -2,7 +2,10 @@
 ArtExIn
 =======
 .. image:: https://travis-ci.org/integricho/artexin.svg
-    :target: https://travis-ci.org/integricho/artexin
+  :target: https://travis-ci.org/integricho/artexin
+
+.. image:: https://coveralls.io/repos/integricho/artexin/badge.svg
+  :target: https://coveralls.io/r/integricho/artexin
 
 ArtExIn is short for Article Extraction and Indexing. It's a set of modules for
 fetching HTML pages, extracting relevant articles from it, and indexing the
