@@ -10,7 +10,7 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 
 import re
 import urllib.parse as urlparse
-import itertools
+
 from posixpath import join
 
 from . import __version__ as _version, __author__ as _author

@@ -16,7 +16,6 @@ import logging
 import tempfile
 import datetime
 import urllib.parse as urlparse
-from http.client import BadStatusLine
 
 try:
     import simplejson as json
@@ -26,7 +25,7 @@ except ImportError:
 from . import __version__ as _version, __author__ as _author
 from .content_crypto import sign_content
 from .fetch import fetch_rendered, fetch_content
-from .extract import *
+from .extract import extract, no_extract, strip_links, process_images
 
 
 __version__ = _version

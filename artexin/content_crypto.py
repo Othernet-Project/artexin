@@ -60,7 +60,7 @@ def extract_content(path, keyring, output_dir, output_ext):
     try:
         with open(path, 'rb') as content:
             data = gpg.decrypt(content.read(), output=new_path)
-    except OSError as err:
+    except OSError:
         raise DecryptionError("Could not open '%s'" % path, path)
     return new_path
 

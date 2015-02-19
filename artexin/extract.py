@@ -8,18 +8,21 @@ This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
-import urllib.parse as urlparse
-import tempfile
 import os
+import tempfile
+
 from itertools import repeat
 
 from breadability.readable import Article
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup
 
 from . import __version__ as _version, __author__ as _author
-from .htmlutils import get_cls
-from .urlutils import *
 from .fetch import fetch_image
+from .urlutils import (absolute_path,
+                       full_url,
+                       is_http_url,
+                       normalize_scheme,
+                       split)
 
 
 __version__ = _version
@@ -310,4 +313,3 @@ def strip_links(html):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-

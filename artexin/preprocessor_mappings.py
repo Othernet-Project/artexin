@@ -11,7 +11,7 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 import re
 
 from . import __version__ as _version, __author__ as _author
-from .preprocessors import *
+from .preprocessors import pp_noop, pp_wikipedia, pp_dwelle, pp_fixheaders
 
 
 __version__ = _version

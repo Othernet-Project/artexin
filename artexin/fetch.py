@@ -10,9 +10,10 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 
 import os
 import shutil
-from io import BytesIO
 import tempfile
 import time
+
+from io import BytesIO
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
