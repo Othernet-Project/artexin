@@ -14,6 +14,23 @@ extracted text.
 ArtExIn is developed by `Outernet Inc`_ and it powers the preparation of web
 pages for broadcast over the Outernet network.
 
+Installation
+============
+
+Install artexin using pip::
+
+    pip install git+git://github.com/Outernet-Project/artexin.git
+
+Tests
+=====
+
+Execute unittests with::
+
+    python setup.py test
+
+or if you've got tox installed::
+
+    tox
 
 Reporting bugs
 ==============
