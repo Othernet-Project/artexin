@@ -16,9 +16,6 @@ import logging
 import tempfile
 import datetime
 import urllib.parse as urlparse
-from http.client import BadStatusLine
-
-from lib.content_crypto import sign_content
 
 try:
     import simplejson as json
@@ -26,8 +23,9 @@ except ImportError:
     import json
 
 from . import __version__ as _version, __author__ as _author
-from .fetch import fetch_rendered
-from .extract import *
+from .content_crypto import sign_content
+from .fetch import fetch_rendered, fetch_content
+from .extract import extract, no_extract, strip_links, process_images
 
 
 __version__ = _version
@@ -53,6 +51,9 @@ def percent_escape(url):
     return url
 
 
+def serialize_datetime(date_obj):
+    return date_obj.strftime(TS_FORMAT)
+
 
 def zipdir(path, dirpath):
     """ Create a zipball at ``path`` containing the directory at ``dirpath``
@@ -65,22 +66,37 @@ def zipdir(path, dirpath):
 
     # Compress all directory contents
     with zipfile.ZipFile(path, 'w', COMPRESSION) as zipball:
-        for content in os.listdir(dirpath):
-            cpath = os.path.join(dirpath, content)
-            if os.path.isdir(cpath):
-                continue  # Skip directories
-            zipball.write(cpath, os.path.relpath(cpath, basepath))
+        for base_dir, subdirs, files in os.walk(dirpath):
+            for path in files:
+                cpath = os.path.join(base_dir, path)
+                zipball.write(cpath, os.path.relpath(cpath, basepath))
         zipball.testzip()
 
 
 def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
-            base_dir=BASE_DIR, keep_dir=False):
+            base_dir=BASE_DIR, keep_dir=False, javascript=True,
+            do_extract=True):
     """ Collect at ``url`` into a directory within ``base_dir`` and zip it
 
     The directory is created within ``base_dir`` that is named after the md5
     checksum of the ``identifier``.
 
     If the target directory already exists, it will be unlinked first.
+
+    Metadata format:
+
+    - ``url``: URL of the page
+    - ``domain``: domain of the URL
+    - ``timestamp``: time when page was retrieved
+    - ``title``: page title
+    - ``images``: number of images
+
+    The above keys are writtein in the JSON file. The following keys are
+    returned in addition:
+
+    - ``zipfile``: path to package file (zip or sig)
+    - ``size``: size of the package
+    - ``hash``: checksum of the page URL
 
     :param url:         Identifier for the batch (usually URL of the page)
     :param keyring:     Keyring directory
@@ -91,6 +107,8 @@ def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
     :param meta:        Document extra metadata
     :param base_dir:    Base directory in which to operate
     :param keep_dir:    Keep the directory in which content was collected
+    :param javascript:  Whether to execute JavaScript on the page
+    :param do_extract:  Whether to perform article extraction
     :returns:           Full path of the newly created zipball
     """
 
@@ -111,7 +129,10 @@ def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
 
     # Fetch and prepare the HTML
     try:
-        page = fetch_rendered(percent_escape(url))
+        if javascript:
+            page = fetch_rendered(percent_escape(url))
+        else:
+            page = fetch_content(url)
     except Exception as err:
         # We will trap any exceptions and return a meta object with 'error' key
         # set to exception object. This won't help debugging a whole lot, but
@@ -126,7 +147,11 @@ def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
     timestamp = datetime.datetime.utcnow()
     for preprocessor in prep:
         page = preprocessor(page)
-    title, html = extract(page)  # FIXME: Handle failure
+    if do_extract:
+        title, html = extract(page)  # FIXME: Handle failure
+    else:
+        title, html = no_extract(page)
+    title = title.strip()
     html = strip_links(html)
 
     # Process images
@@ -134,7 +159,7 @@ def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
 
     # Write file metadata
     meta.update({
-        'timestamp': timestamp.strftime(TS_FORMAT),
+        'timestamp': serialize_datetime(timestamp),
         'title': title,
         'images': len(images),
     })
@@ -176,7 +201,6 @@ def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
 
     meta.update({
         'zipfile': zippath,
-        'images': len(images),
         'size': stat.st_size,
         'hash': checksum,
         'timestamp': timestamp,  # Pass timestamp as native datetime object

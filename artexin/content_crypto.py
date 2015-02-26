@@ -1,9 +1,7 @@
 """
 content_crypto.py: Deals with public keys and content signatures
-
 Copyright 2014, Outernet Inc.
 Some rights reserved.
-
 This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
@@ -39,10 +37,8 @@ class DecryptionError(CryptoError):
 
 def import_key(keypath, keyring):
     """ Imports all keys from specified directory
-
     This function is idempotent, so importing the same key multiple times will
     always succeed.
-
     :param keypath:     path to armored key file
     :param keyring:     directory of the keyring
     """
@@ -64,14 +60,13 @@ def extract_content(path, keyring, output_dir, output_ext):
     try:
         with open(path, 'rb') as content:
             data = gpg.decrypt(content.read(), output=new_path)
-    except OSError as err:
+    except OSError:
         raise DecryptionError("Could not open '%s'" % path, path)
     return new_path
 
 
 def sign_content(path, keyring, key, passphrase, output_dir, output_ext='sig'):
     """ Sign the content at specified path using provided keyring
-
     :param path:        path of the content file
     :param keyring:     keyring path to use
     :param key:         key id
@@ -88,5 +83,3 @@ def sign_content(path, keyring, key, passphrase, output_dir, output_ext='sig'):
     with open(new_path, 'wb') as output:
         output.write(signed.data)
     return new_path
-
-

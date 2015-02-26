@@ -8,8 +8,6 @@ This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
-from bs4 import BeautifulSoup, NavigableString
-
 from . import __version__ as _version, __author__ as _author
 
 
@@ -23,11 +21,13 @@ def get_cls(tag):
 
     Example::
 
+        >>> from bs4 import BeautifulSoup
         >>> html = '<span class="foo bar">baz</span>'
         >>> soup = BeautifulSoup(html)
         >>> get_cls(soup.span)
         ['foo', 'bar']
 
+        >>> from bs4 import BeautifulSoup
         >>> html = '<span>baz</span>'
         >>> soup = BeautifulSoup(html)
         >>> get_cls(soup.span)
@@ -35,7 +35,6 @@ def get_cls(tag):
 
     """
     return tag.attrs and tag.get('class', []) or []
-
 
 
 if __name__ == '__main__':

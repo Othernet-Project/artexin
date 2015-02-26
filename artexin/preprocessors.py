@@ -15,8 +15,6 @@ from . import __version__ as _version, __author__ as _author
 
 __version__ = _version
 __author__ = _author
-__all__ = ('pp_noop', 'pp_wikipedia', 'pp_fixheaders',)
-
 
 
 def pp_noop(html):
@@ -154,6 +152,33 @@ def pp_wikipedia(html):
         tag.decompose()
 
     return str(soup)
+
+
+def pp_dwelle(html):
+    """ Fixes DW's page layout
+
+    This preprocessor moves the article title, date, lead, and main image into
+    the article container element (``DIV.longText``).
+
+    :param html:    String containing the HTML document
+    :returns:       Processed HTML
+    """
+    soup = BeautifulSoup(html)
+    intro = soup.find_all('p', {'class': 'intro'})[0]
+    ppicture = soup.new_tag('p')
+    picture = soup.find_all('div', {'class': 'picBox'})[0].a.img
+    ppicture.append(picture)
+    long_text = soup.find_all('div', {'class': 'longText'})[0]
+    pdate = soup.new_tag('p')
+    date = soup.find_all('ul', {'class': 'smallList'})[1].li
+    pdate.append(date)
+    date.unwrap()
+    pdate.strong.string.replace_with('Deutsche Welle')
+    for elem in [ppicture, intro, pdate, soup.h1]:
+        long_text.insert(0, elem)
+    soup.body.replace_with(long_text)
+    long_text.name = 'body'
+    return soup.prettify()
 
 
 if __name__ == '__main__':

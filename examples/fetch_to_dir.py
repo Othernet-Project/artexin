@@ -11,16 +11,12 @@ This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
-import sys
 import os
-from os.path import dirname as up, abspath
 import time
 
-sys.path.insert(0, up(up(abspath(__file__))))
-
+from artexin.extract import extract, process_images, strip_links
 from artexin.fetch import fetch_rendered
 from artexin.preprocessors import pp_wikipedia
-from artexin.extract import extract, process_images, strip_links
 
 
 __author__ = 'Outernet Inc <branko@outernet.is>'
@@ -39,6 +35,7 @@ PAGES = [
     ('http://freepythontips.wordpress.com/2013/07/30/20-python-libraries-you-cant-live-without/',
      '20_python_libs')
 ]
+
 
 def writefiles(url, name, preprocessors=[]):
     dirpath = os.path.join('/vagrant/', name)

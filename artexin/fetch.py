@@ -10,9 +10,10 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 
 import os
 import shutil
-from io import BytesIO
 import tempfile
 import time
+
+from io import BytesIO
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
@@ -77,7 +78,7 @@ def fetch_rendered(url):
     """ Fetch content using headless browser
 
     The difference between this function and ``fetch_content()`` is that this
-    function will render the page using QT4 WebKit browser instead of simply
+    function will render the page using PhantomJS browser instead of simply
     donwloading the HTML. This function is therefore more resource-intensive,
     but yields better results for pages that use JavaScript to modify the DOM
     in a significant way (loads relevant images or content, for instance).
@@ -114,7 +115,7 @@ def fetch_image(url, path):
 
     Example::
 
-        >>> url = 'https://www.outernet.is/img/logo.png'
+        >>> url = 'https://www.outernet.is/static/img/outernet/site_logo_white.png'
         >>> fmt, full_path = fetch_image(url, '/tmp/logo')
         >>> fmt
         'PNG'

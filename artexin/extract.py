@@ -8,23 +8,25 @@ This software is free software licensed under the terms of GPLv3. See COPYING
 file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
-import urllib.parse as urlparse
-import tempfile
 import os
+import tempfile
+
 from itertools import repeat
 
 from breadability.readable import Article
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup
 
 from . import __version__ as _version, __author__ as _author
-from .htmlutils import get_cls
-from .urlutils import *
 from .fetch import fetch_image
+from .urlutils import (absolute_path,
+                       full_url,
+                       is_http_url,
+                       normalize_scheme,
+                       split)
 
 
 __version__ = _version
 __author__ = _author
-__all__ = ('extract', 'process_images', 'strip_links',)
 
 
 PROCESSED_IMG_DIR = tempfile.gettempdir()
@@ -78,7 +80,9 @@ def get_title(soup):
     """
     try:
         return str(next((e for e in [soup.title, soup.h1, soup.h2, soup.h3]
-                         if e is not None)).string)
+                         if e is not None)).string).strip()
+    except TypeError:
+        return ''
     except StopIteration:
         return ''
 
@@ -125,6 +129,12 @@ def extract(html, **kwargs):
     # Add doctype
     final = '<!DOCTYPE html>\n' + soup.prettify()
     return (title_text, final)
+
+
+def no_extract(html):
+    soup = BeautifulSoup(html)
+    title = get_title(soup)
+    return title, html
 
 
 def prepare_url(url, base, docpath):
@@ -210,7 +220,7 @@ def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
 
     Example::
 
-        >>> imgurl = '/img/logo.png'
+        >>> imgurl = '/static/img/outernet/site_logo_white.png'
         >>> docurl = 'https://www.outernet.is/test.html'  # not a real URL, tho
         >>> html = '<html><body><p><img src="%s"></p></body></html>' % imgurl
         >>> html, images = process_images(html, docurl)
@@ -303,4 +313,3 @@ def strip_links(html):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-
