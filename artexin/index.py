@@ -116,7 +116,7 @@ def split_words(t, tdata='nltkdata/tokenizers/punkt/english.pickle'):
     :param tdata:   tokenizer data file path
     :returns:       iterator of all words
     """
-    tokenizer = nltk.tokenize.punkt.PunktWordTokenizer()
+    tokenizer = nltk.tokenize.TreebankWordTokenizer()
     tokens = tokenizer.tokenize(t)
     return (strip_period(w) for w in tokens if is_word(w))
 
@@ -171,7 +171,7 @@ def get_counts(sentences):
         >>> pc['of working-class']
         1
         >>> wc
-        255
+        256
 
         # Get words that appear more than 5 times
         >>> tc = sorted(tc.items(), key=lambda x: (x[1], x[0]), reverse=True)
