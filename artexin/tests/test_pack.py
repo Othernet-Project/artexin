@@ -291,3 +291,69 @@ class TestCollect(object):
 
         file_handle = m_open()
         file_handle.write.assert_called_once_with(processed_source)
+
+    @mock.patch('shutil.rmtree')
+    @mock.patch('tempfile.mkdtemp')
+    @mock.patch('artexin.pack.create_zipball')
+    @mock.patch('artexin.pack.process_images')
+    @mock.patch('artexin.pack.strip_links')
+    @mock.patch('artexin.pack.extract')
+    @mock.patch('artexin.pack.fetch_rendered')
+    def test_collect_override_title(self, fetch_rendered, extract, strip_links,
+                                    process_images, create_zipball,
+                                    tempfile_mkdtemp, shutil_rmtree):
+        page = 'html page'
+        page_title = 'page title'
+        page_source = 'page source'
+        processed_source = 'processed source'
+        images = range(5)
+        temp_dir = '/tmp/some_folder'
+        overridden_title = 'overridden title'
+        custom_meta = copy.copy(self.meta)
+        custom_meta['title'] = overridden_title
+
+        prep_func = mock.Mock()
+        prep_func.side_effect = lambda x: x
+        fetch_rendered.return_value = page
+        extract.return_value = (page_title, page_source)
+        strip_links.return_value = page_source
+        process_images.return_value = (processed_source, images)
+        tempfile_mkdtemp.return_value = temp_dir
+
+        def mocked_create_zipball(meta, **kwargs):
+            return meta
+        create_zipball.side_effect = mocked_create_zipball
+
+        m_open = mock.mock_open()
+        with mock.patch('builtins.open', m_open):
+            meta = collect(self.url,
+                           meta=custom_meta,
+                           javascript=True,
+                           do_extract=True,
+                           prep=[prep_func])
+
+        expected_meta = copy.copy(self.meta)
+        expected_meta.update({'url': self.url,
+                              'domain': urllib.parse.urlparse(self.url).netloc,
+                              'title': overridden_title,
+                              'images': len(images)})
+
+        assert len(meta) == len(expected_meta) + 1
+
+        for key, value in expected_meta.items():
+            assert meta[key] == value
+
+        assert isinstance(meta['timestamp'], datetime.datetime)
+
+        extract.assert_called_once_with(page)
+        prep_func.assert_called_once_with(page)
+        strip_links.assert_called_once_with(page_source)
+        tempfile_mkdtemp.assert_called_once_with()
+        shutil_rmtree.assert_called_once_with(temp_dir)
+        assert create_zipball.call_count == 1
+
+        html_path = os.path.join(temp_dir, 'index.html')
+        m_open.assert_called_once_with(html_path, 'w', encoding='utf-8')
+
+        file_handle = m_open()
+        file_handle.write.assert_called_once_with(processed_source)

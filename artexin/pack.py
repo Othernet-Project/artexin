@@ -235,7 +235,7 @@ def collect(url, keyring=None, key=None, passphrase=None, prep=[], meta={},
         html_file.write(html)
 
     meta.update({'timestamp': timestamp,
-                 'title': title,
+                 'title': meta.get('title') or title,
                  'images': len(images)})
 
     meta = create_zipball(src_dir=temp_dir,
