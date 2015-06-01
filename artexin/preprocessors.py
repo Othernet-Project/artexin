@@ -9,7 +9,6 @@ file that comes with the source code, or http://www.gnu.org/licenses/gpl.txt.
 """
 
 from bs4 import BeautifulSoup
-
 from . import __version__ as _version, __author__ as _author
 
 
@@ -166,7 +165,10 @@ def pp_dwelle(html):
     soup = BeautifulSoup(html)
     intro = soup.find_all('p', {'class': 'intro'})[0]
     ppicture = soup.new_tag('p')
-    picture = soup.find_all('div', {'class': 'picBox'})[0].a.img
+    try:
+        picture = soup.find_all('div', {'class': 'picBox'})[0].a.img
+    except IndexError:
+        print('No image found. This is likely expected behaviour.')
     ppicture.append(picture)
     long_text = soup.find_all('div', {'class': 'longText'})[0]
     pdate = soup.new_tag('p')
