@@ -72,13 +72,13 @@ def fetch_content(url):
     :returns:       Document contents as bytestring
     """
 
-    max_t = 12
-    t = 2
-    while t < max_t:
+    max_timeout = 12
+    timeout = 2
+    while timeout < max_timeout:
         try:
-            return urlopen(url, timeout=t).read()
+            return urlopen(url, timeout=timeout).read()
         except URLError:
-            t += 2
+            timeout += 2
     raise RuntimeError("Maximum timeout exceeding fetching URL: %s" % url)
 
 
