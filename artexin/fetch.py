@@ -14,7 +14,7 @@ import tempfile
 import time
 
 from io import BytesIO
-from urllib.request import urlopen
+from urllib.request import urlopen, URLError
 
 from bs4 import BeautifulSoup
 from PIL import Image
@@ -71,7 +71,15 @@ def fetch_content(url):
     :param url:     Document's URL
     :returns:       Document contents as bytestring
     """
-    return urlopen(url).read()
+
+    max_t = 12
+    t = 2
+    while t < max_t:
+        try:
+            return urlopen(url, timeout=t).read()
+        except URLError:
+            t += 2
+    raise RuntimeError("Maximum timeout exceeding fetching URL: %s" % url)
 
 
 def fetch_rendered(url):
