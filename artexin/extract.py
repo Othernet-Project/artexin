@@ -45,14 +45,14 @@ def get_title(soup):
         ... <title>Foo bar</title>
         ... </head>
         ... <body></body>
-        ... </html>''')
+        ... </html>''', 'lxml')
         >>> str(get_title(c))
         'Foo bar'
 
         >>> c = BeautifulSoup('''<html>
         ... <head></head>
         ... <body><h1>Foo bar baz</h1></body>
-        ... </html>''')
+        ... </html>''', 'lxml')
         >>> str(get_title(c))
         'Foo bar baz'
 
@@ -62,7 +62,7 @@ def get_title(soup):
         ... <h2>Foo bar baz 1</h2>
         ... <h2>Foo bar baz 2</h2>
         ... </body>
-        ... </html>''')
+        ... </html>''', 'lxml')
         >>> str(get_title(c))
         'Foo bar baz 1'
 
@@ -71,7 +71,7 @@ def get_title(soup):
         ... <body>
         ... <p>Foo bar baz</p>
         ... </body>
-        ... </html>''')
+        ... </html>''', 'lxml')
         >>> get_title(c)
         ''
 
@@ -107,14 +107,14 @@ def extract(html, **kwargs):
     :returns:           Two-tuple containing document title and article body
     """
     # Extract article
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, 'lxml')
     title_text = get_title(soup)
 
     doc = Article(html, return_fragment=False, **kwargs)
 
     # Create basic <head> tag with <title> and charset tags
     clean_html = doc.readable
-    soup = BeautifulSoup(clean_html)
+    soup = BeautifulSoup(clean_html, 'lxml')
     head = soup.new_tag('head')
     title = soup.new_tag('title')
     title.string = title_text
@@ -132,7 +132,7 @@ def extract(html, **kwargs):
 
 
 def no_extract(html):
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, 'lxml')
     title = get_title(soup)
     return title, html
 
@@ -241,7 +241,7 @@ def process_images(html, base_url, imgdir=PROCESSED_IMG_DIR):
     tags = []     # List of tags belonging to unique paths
     dupes = []    # Duplicate images (tuple: tag, index in uniques)
     images = []  # list of valid image paths
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, 'lxml')
 
     # The reason uniques have a bit of cruft is we anticipate sending all
     # necessary data to process the image as a single tuple to another
@@ -303,7 +303,7 @@ def strip_links(html):
     :param html:    HTML source
     :returns:       Processed HTML
     """
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, 'lxml')
     for tag in soup.find_all('a'):
         if not tag.get('href', '').startswith('#'):
             tag.unwrap()

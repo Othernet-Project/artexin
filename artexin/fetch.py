@@ -96,11 +96,11 @@ def fetch_rendered(url):
 
         >>> url = 'http://simile.mit.edu/crowbar/test.html'
         >>> c = fetch_content(url)
-        >>> s = BeautifulSoup(c)
+        >>> s = BeautifulSoup(c, 'lxml')
         >>> s.h1.string
         'Hi lame crawler'
         >>> c = fetch_rendered(url)
-        >>> s = BeautifulSoup(c)
+        >>> s = BeautifulSoup(c, 'lxml')
         >>> s.h1.string
         'Hi Crowbar!'
 
@@ -188,7 +188,7 @@ def get_parsed(url):
     :returns BeautifulSoup:     Parsed document as Soup object
     """
     c = fetch_content(url)
-    return BeautifulSoup(c)
+    return BeautifulSoup(c, 'lxml')
 
 
 if __name__ == '__main__':

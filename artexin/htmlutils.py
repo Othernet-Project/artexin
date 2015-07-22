@@ -23,13 +23,13 @@ def get_cls(tag):
 
         >>> from bs4 import BeautifulSoup
         >>> html = '<span class="foo bar">baz</span>'
-        >>> soup = BeautifulSoup(html)
+        >>> soup = BeautifulSoup(html, 'lxml')
         >>> get_cls(soup.span)
         ['foo', 'bar']
 
         >>> from bs4 import BeautifulSoup
         >>> html = '<span>baz</span>'
-        >>> soup = BeautifulSoup(html)
+        >>> soup = BeautifulSoup(html, 'lxml')
         >>> get_cls(soup.span)
         []
 

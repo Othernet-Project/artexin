@@ -44,7 +44,7 @@ def pp_fixheaders(html):
     :param html:    String containing the HTML document
     :returns:       Processed HTML
     """
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, 'lxml')
     adjust = None
     for level, h in enumerate(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], start=1):
         headings = soup.find_all(h)
@@ -69,7 +69,7 @@ def pp_wikipedia(html):
     It moves H1 into the content area so that it will be included during the
     extraction phase::
 
-        >>> soup = BeautifulSoup(s)
+        >>> soup = BeautifulSoup(s, 'lxml')
         >>> soup.h1.parent.name
         'div'
         >>> soup.h1.parent['id']
@@ -93,7 +93,7 @@ def pp_wikipedia(html):
     :param html:    String containing the HTML document
     :returns:       Processed HTML
     """
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, 'lxml')
 
     # Move H1 into article body container and extract the body container
     title = soup.new_tag('h1')
@@ -162,14 +162,17 @@ def pp_dwelle(html):
     :param html:    String containing the HTML document
     :returns:       Processed HTML
     """
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, 'lxml')
     intro = soup.find_all('p', {'class': 'intro'})[0]
     ppicture = soup.new_tag('p')
     try:
         picture = soup.find_all('div', {'class': 'picBox'})[0].a.img
+        if picture:
+            ppicture.append(picture)
     except IndexError:
-        print('No image found. This is likely expected behaviour.')
-    ppicture.append(picture)
+        print('IndexError')
+    except AttributeError:
+        print('AttributeError')
     long_text = soup.find_all('div', {'class': 'longText'})[0]
     pdate = soup.new_tag('p')
     date = soup.find_all('ul', {'class': 'smallList'})[1].li
